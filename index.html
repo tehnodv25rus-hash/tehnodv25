@@ -11,14 +11,15 @@
     body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; color: #1f2937; scroll-behavior: smooth; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
     .header { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(4px); }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 16px 0; gap: 16px; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 20px 0; gap: 16px; }
     .logo h1 { font-size: 1.7rem; font-weight: 800; color: #d97706; }
     .logo p { font-size: 0.75rem; color: #4b5563; }
     .nav { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
-    .nav a { text-decoration: none; font-weight: 600; color: #1f2937; transition: 0.2s; }
+    .nav a { text-decoration: none; font-weight: 600; color: #1f2937; transition: 0.2s; white-space: nowrap; }
     .nav a:hover { color: #d97706; }
     .header-phones { display: flex; gap: 16px; align-items: center; }
-    .header-phone { font-weight: 700; background: #fef3c7; padding: 8px 16px; border-radius: 40px; color: #b45309; white-space: nowrap; }
+    .header-phone { font-weight: 700; background: #fef3c7; padding: 8px 16px; border-radius: 40px; }
+    .header-phone a { text-decoration: none; color: #b45309; }
     .btn { display: inline-block; background-color: #d97706; color: white; padding: 10px 20px; border-radius: 40px; font-weight: 600; text-decoration: none; transition: 0.2s; border: none; cursor: pointer; }
     .btn:hover { background-color: #b45309; transform: translateY(-2px); }
     section { padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
@@ -28,20 +29,20 @@
     .calc-form { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end; justify-content: center; }
     .calc-field { flex: 1; min-width: 180px; }
     .calc-field label { font-weight: 500; margin-bottom: 8px; font-size: 0.85rem; color: #fcd34d; display: block; }
-    .calc-field select, .calc-field input { width: 100%; padding: 12px 16px; border-radius: 28px; border: none; background: #2d3a4b; color: white; }
-    .result-price { font-size: 1.8rem; font-weight: 800; background: #d97706; padding: 8px 24px; border-radius: 48px; display: inline-block; }
+    .calc-field select { width: 100%; padding: 12px 16px; border-radius: 28px; border: none; background: #2d3a4b; color: white; cursor: pointer; }
+    .result-price { font-size: 1.8rem; font-weight: 800; background: #d97706; padding: 8px 24px; border-radius: 48px; display: inline-block; text-align: center; }
     .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 40px; }
     .tab-btn { background: #f3f4f6; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; }
     .tab-btn.active { background: #d97706; color: white; }
-    .tech-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
-    .tech-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; text-align: center; transition: 0.2s; }
-    .tech-card .card-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 16px; margin-bottom: 16px; background: #f3f4f6; }
-    .tech-card .card-icon { width: 80px; height: 80px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; }
-    .tech-card .card-icon i { font-size: 3rem; color: #d97706; }
-    .tech-card h3 { font-size: 1.3rem; margin-bottom: 8px; }
-    .tech-card p { color: #4b5563; margin-bottom: 16px; font-size: 0.9rem; }
-    .status-tag { background: #fef3c7; display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #b45309; }
-    .order-btn { margin-top: 12px; width: 100%; }
+    .tech-grid, .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+    .tech-card, .team-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; text-align: center; transition: 0.2s; display: flex; flex-direction: column; height: 100%; }
+    .tech-card .card-img, .team-card .card-img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 16px; margin-bottom: 16px; background: #f3f4f6; }
+    .tech-card .card-icon, .team-card .card-icon { width: 80px; height: 80px; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; }
+    .tech-card .card-icon i, .team-card .card-icon i { font-size: 3rem; color: #d97706; }
+    .tech-card h3, .team-card h3 { font-size: 1.3rem; margin-bottom: 8px; white-space: pre-line; }
+    .tech-card p, .team-card p { color: #4b5563; margin-bottom: 16px; font-size: 0.9rem; flex-grow: 1; }
+    .status-tag { background: #fef3c7; display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: #b45309; align-self: center; margin-bottom: 16px; }
+    .order-btn { margin-top: auto; width: 100%; }
     .services-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 30px; }
     .services-list li { list-style: none; background: white; padding: 12px 18px; border-radius: 60px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-weight: 500; display: flex; align-items: center; gap: 12px; }
     .services-list i { color: #d97706; width: 28px; font-size: 1.2rem; text-align: center; }
@@ -69,6 +70,8 @@
     footer { background: #0f172a; color: #cbd5e1; padding: 48px 0 32px; }
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 32px; }
     .footer-grid i { margin-right: 8px; color: #d97706; }
+    .footer-grid a { color: #cbd5e1; text-decoration: none; }
+    .footer-grid a:hover { color: #d97706; }
     .social-links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap; }
     .social-links a { color: #cbd5e1; font-size: 1.6rem; transition: 0.2s; }
     .social-links a:hover { color: #d97706; }
@@ -80,10 +83,16 @@
     .modal-content { background: white; padding: 32px; border-radius: 32px; width: 90%; max-width: 450px; }
     @media (max-width: 860px) {
       .header-inner { flex-direction: column; text-align: center; }
-      .nav { justify-content: center; gap: 16px; }
+      .nav { justify-content: center; gap: 16px; flex-wrap: wrap; }
       .header-phones { justify-content: center; flex-wrap: nowrap; gap: 10px; }
       .calc-form { flex-direction: column; align-items: stretch; }
       .why-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .nav { gap: 8px; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; }
+      .nav a { font-size: 0.8rem; white-space: nowrap; }
+      .header-phone { padding: 4px 10px; font-size: 0.7rem; }
+      .section-title { font-size: 1.6rem; }
     }
     @media (max-width: 480px) { .why-grid { grid-template-columns: 1fr; } }
   </style>
@@ -93,90 +102,144 @@
   <div class="container header-inner">
     <div class="logo"><h1>Техно ДВ</h1><p>Транспортная компания | Спецтехника</p></div>
     <div class="nav">
-      <a href="#home">Главная</a><a href="#autopark">Автопарк</a><a href="#services">Услуги</a><a href="#contacts">Контакты</a><a href="cases.html" target="_blank">Кейсы</a>
+      <a href="#home">Главная</a><a href="#autopark">Автопарк</a><a href="#services">Услуги</a><a href="#contacts">Контакты</a><a href="cases.html" target="_blank">Заказы</a>
     </div>
     <div class="header-phones">
-      <div class="header-phone"><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</div>
-      <div class="header-phone"><i class="fas fa-phone-alt"></i> +7 (914) 707-60-90</div>
+      <div class="header-phone"><a href="tel:+79147312000"><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</a></div>
+      <div class="header-phone"><a href="tel:+79147076090"><i class="fas fa-phone-alt"></i> +7 (914) 707-60-90</a></div>
     </div>
   </div>
 </header>
 <main>
-  <!-- Блок 1: Калькулятор (изменён заголовок) -->
+  <!-- 1. Калькулятор -->
   <section id="home">
     <div class="container">
       <div class="calculator-block">
-        <h2 style="text-align:center; margin-bottom:24px;">🚛 Примерный расчет перевозки</h2>
+        <h2 style="text-align:center; margin-bottom:24px;">🚛 Расчет перевозки</h2>
         <div class="calc-form">
-          <div class="calc-field">
-            <label><i class="fas fa-box"></i> Что везем</label>
-            <select id="calcCargo">
-              <option value="auto">Авто</option>
-              <option value="container20">Контейнер 20ф</option>
-              <option value="container40">Контейнер 40ф</option>
-              <option value="boat">Лодка</option>
-            </select>
-          </div>
-          <div class="calc-field">
-            <label><i class="fas fa-map-marker-alt"></i> Откуда везем</label>
-            <select id="calcFrom">
-              <option value="vladivostok">Владивосток</option>
-              <option value="artem">Артем</option>
-              <option value="nakhodka">Находка</option>
-            </select>
-          </div>
-          <div class="calc-field">
-            <label><i class="fas fa-flag-checkered"></i> Куда везем</label>
-            <select id="calcTo">
-              <option value="vladivostok">Владивосток</option>
-              <option value="artem">Артем</option>
-              <option value="nakhodka">Находка</option>
-            </select>
-          </div>
-          <div class="calc-field">
-            <button class="btn" id="calcBtn">Рассчитать стоимость</button>
-          </div>
-          <div class="calc-field">
-            <span class="result-price" id="calcResult">≈ 5 000 ₽</span>
-          </div>
+          <div class="calc-field"><label><i class="fas fa-box"></i> Что везем</label><select id="calcCargo"><option value="auto">Авто</option><option value="container20">Контейнер 20ф</option><option value="container40">Контейнер 40ф</option><option value="boat">Лодка</option></select></div>
+          <div class="calc-field"><label><i class="fas fa-map-marker-alt"></i> Откуда везем</label><select id="calcFrom"><option value="vladivostok">Владивосток</option><option value="artem">Артем</option><option value="nakhodka">Находка</option></select></div>
+          <div class="calc-field"><label><i class="fas fa-flag-checkered"></i> Куда везем</label><select id="calcTo"><option value="vladivostok">Владивосток</option><option value="artem">Артем</option><option value="nakhodka">Находка</option></select></div>
+          <div class="calc-field"><span class="result-price" id="calcResult">≈ 5 000 ₽</span></div>
         </div>
         <p style="font-size:0.75rem; text-align:center; margin-top:20px;">*Цена ориентировочная, точную стоимость уточняйте у менеджера</p>
       </div>
     </div>
   </section>
 
-  <section id="autopark"><div class="container"><div class="section-title">Автопарк</div>
-    <div class="tabs" id="techTabs"><button class="tab-btn active" data-tab="all">Все</button><button class="tab-btn" data-tab="evacuators">Эвакуаторы</button><button class="tab-btn" data-tab="excavators">Экскаваторы</button><button class="tab-btn" data-tab="dump">Самосвалы</button><button class="tab-btn" data-tab="trucks">Грузовики</button><button class="tab-btn" data-tab="loaders">Погрузчики</button></div>
-    <div id="techContainer" class="tech-grid"></div></div></section>
-
-  <section><div class="container"><div class="section-title">Популярные услуги</div><div class="swiper popularSwiper"><div class="swiper-wrapper">
-    <div class="swiper-slide service-slide"><i class="fas fa-car-crash"></i><h4>Эвакуатор авто</h4></div>
-    <div class="swiper-slide service-slide"><i class="fas fa-ship"></i><h4>Подъем/перевозка лодок</h4></div>
-    <div class="swiper-slide service-slide"><i class="fas fa-box"></i><h4>Перевозка контейнера</h4></div>
-    <div class="swiper-slide service-slide"><i class="fas fa-truck-moving"></i><h4>Крупногабарит (трал)</h4></div>
-    <div class="swiper-slide service-slide"><i class="fas fa-draw-polygon"></i><h4>Планировка участка</h4></div>
-    <div class="swiper-slide service-slide"><i class="fas fa-hole"></i><h4>Копка ям, траншей</h4></div>
-    <div class="swiper-slide service-slide"><i class="fas fa-arrow-up"></i><h4>Подъем автовышкой</h4></div>
-    <div class="swiper-slide service-slide"><i class="fas fa-dumpster"></i><h4>Вывоз мусора</h4></div>
-  </div><div class="swiper-pagination"></div><div class="swiper-button-next"></div><div class="swiper-button-prev"></div></div></div></section>
-
-  <section><div class="container"><div class="section-title">Почему Техно ДВ?</div><div class="why-grid">
-    <div class="why-item"><i class="fas fa-building"></i><h4>Личный автопарк</h4><p>Свои эвакуаторы, экскаваторы, тралы</p></div>
-    <div class="why-item"><i class="fas fa-user-check"></i><h4>Опытные водители</h4><p>Стаж от 7 лет</p></div>
-    <div class="why-item"><i class="fas fa-camera"></i><h4>Фотофиксация</h4><p>Отчет по этапам</p></div>
-    <div class="why-item"><i class="fas fa-map-marked-alt"></i><h4>Система отслеживания</h4><p>GPS онлайн</p></div>
-    <div class="why-item"><i class="fas fa-file-signature"></i><h4>Договор, отчётность</h4><p>Работаем с НДС и без</p></div>
-    <div class="why-item"><i class="fas fa-credit-card"></i><h4>Любая форма оплаты</h4><p>Наличные, безнал</p></div>
-  </div></div></section>
-
+  <!-- 2. Форма обратной связи (первая) – как в файле -->
   <section>
     <div class="container">
-      <div class="section-title">Отзывы клиентов</div>
+      <div class="callback-form">
+        <h3><i class="fas fa-phone-volume"></i> Нужна консультация? Перезвоним за 5 минут</h3>
+        <form id="callbackForm1">
+          <input type="text" placeholder="Ваше имя" required>
+          <input type="tel" placeholder="+7 (___) ___-__-__" required>
+          <button type="submit" class="btn">Перезвоните мне</button>
+        </form>
+        <p style="margin-top:16px; font-size:12px;">Нажимая на кнопку, вы даете согласие на обработку данных</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Автопарк -->
+  <section id="autopark">
+    <div class="container">
+      <div class="section-title">Автопарк</div>
+      <div class="tabs" id="techTabs">
+        <button class="tab-btn active" data-tab="all">Все</button>
+        <button class="tab-btn" data-tab="evacuators">Эвакуаторы</button>
+        <button class="tab-btn" data-tab="excavators">Экскаваторы/Спецтехника</button>
+        <button class="tab-btn" data-tab="trucks_dump">Самосвалы/Грузовики</button>
+      </div>
+      <div id="techContainer" class="tech-grid"></div>
+    </div>
+  </section>
+
+  <!-- 4. Заказы -->
+  <section>
+    <div class="container">
+      <div class="section-title">Заказы</div>
+      <div class="cases-grid">
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/14763372/2a0000019448914f7f9b573430f728f41fec/XL?referer=lkb" alt="Перевозка вертолета"><p><strong>Перевозка вертолёта эвакуатором</strong> — 10т с кму</p></div>
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18769949/2a0000019c26195185094cc6f9bf6a3b47cb/XL?referer=lkb" alt="Перевозка экскаватора"><p><strong>Перевозка гусеничного экскаватора тралом</strong> 25т</p></div>
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/19720204/2a0000019b7225a6df4750dd65a4fd760442/XL?referer=lkb" alt="Вывоз снега"><p><strong>Вывоз снега</strong> с территории ТЦ, 12 самосвалов</p></div>
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18005133/2a0000019bb5f6f194242ef7f143d9932f9f/XL?referer=lkb" alt="Перевозка катера"><p><strong>Подъём и транспортировка катера эвакуатором 10т с кму</strong></p></div>
+      </div>
+      <div style="text-align:center; margin-top:32px;"><a href="cases.html" class="btn">Все заказы →</a></div>
+    </div>
+  </section>
+
+  <!-- 5. Услуги -->
+  <section id="services">
+    <div class="container">
+      <div class="section-title">Услуги</div>
+      <div style="background:#fff; border-radius:36px; padding:20px;">
+        <ul class="services-list">
+          <li><i class="fas fa-crane"></i> Аренда спецтехники</li>
+          <li><i class="fas fa-truck"></i> Вывоз снега</li>
+          <li><i class="fas fa-oil-can"></i> Перевозка бочек</li>
+          <li><i class="fas fa-home"></i> Перевозка бытовки</li>
+          <li><i class="fas fa-helicopter"></i> Перевозка вертолета</li>
+          <li><i class="fas fa-car-side"></i> Перевозка внедорожника</li>
+          <li><i class="fas fa-truck-moving"></i> Перевозка грузовика</li>
+          <li><i class="fas fa-warehouse"></i> Перевозка гаража</li>
+          <li><i class="fas fa-bolt"></i> Перевозка генератора</li>
+          <li><i class="fas fa-couch"></i> Перевозка жилого модуля</li>
+          <li><i class="fas fa-ship"></i> Перевозка катера</li>
+          <li><i class="fas fa-coil"></i> Перевозка катушки</li>
+          <li><i class="fas fa-motorcycle"></i> Перевозка квадроцикла</li>
+          <li><i class="fas fa-shipping-container"></i> Перевозка контейнера</li>
+          <li><i class="fas fa-box"></i> Перевозка кунга</li>
+          <li><i class="fas fa-car"></i> Перевозка автомобиля</li>
+          <li><i class="fas fa-ship"></i> Перевозка лодки</li>
+          <li><i class="fas fa-car"></i> Перевозка микроавтобуса</li>
+          <li><i class="fas fa-car"></i> Перевозка минивена</li>
+          <li><i class="fas fa-motorcycle"></i> Перевозка мотоцикла</li>
+          <li><i class="fas fa-hard-hat"></i> Перевозка опалубки</li>
+          <li><i class="fas fa-building"></i> Перевозка павильона</li>
+          <li><i class="fas fa-building"></i> Перевозка поста охраны</li>
+          <li><i class="fas fa-lock"></i> Перевозка сейфа</li>
+          <li><i class="fas fa-toilet"></i> Перевозка септика</li>
+          <li><i class="fas fa-tractor"></i> Перевозка спецтехники</li>
+          <li><i class="fas fa-glass-cheers"></i> Перевозка стекол</li>
+          <li><i class="fas fa-trailer"></i> Перевозка вагончика</li>
+          <li><i class="fas fa-shovel"></i> Перевозка экскаватора</li>
+          <li><i class="fas fa-car"></i> Перевозка кроссовера</li>
+          <li><i class="fas fa-ladder"></i> Подъем автовышкой</li>
+          <li><i class="fas fa-snowplow"></i> Уборка снега</li>
+          <li><i class="fas fa-broom"></i> Чистка от снега</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Транспортная компания Техно Дв. -->
+  <section>
+    <div class="container">
+      <div class="section-title">Транспортная компания Техно Дв.</div>
+      <div class="why-grid">
+        <div class="why-item"><i class="fas fa-building"></i><h4>Личный автопарк</h4><p>Свои эвакуаторы, экскаваторы, тралы</p></div>
+        <div class="why-item"><i class="fas fa-user-check"></i><h4>Опытные водители</h4><p>Опыт от 3 лет</p></div>
+        <div class="why-item"><i class="fas fa-camera"></i><h4>Фотофиксация</h4><p>Фиксируем каждый этап</p></div>
+        <div class="why-item"><i class="fas fa-map-marked-alt"></i><h4>Система отслеживания</h4><p>GPS онлайн</p></div>
+        <div class="why-item"><i class="fas fa-file-signature"></i><h4>Договор, отчётность</h4><p>Работаем с НДС и без</p></div>
+        <div class="why-item"><i class="fas fa-credit-card"></i><h4>Любая форма оплаты</h4><p>Наличные, безнал</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Отзывы -->
+  <section>
+    <div class="container">
+      <div class="section-title">Отзывы</div>
       <div class="swiper reviewsSwiper">
         <div class="swiper-wrapper">
           <div class="swiper-slide"><div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>"Оперативно привезли 40ф контейнер эвакуатором. Рекомендую!"</p><h4>— Алексей</h4></div>
           <div class="swiper-slide"><div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>Автовышка для вывески — вовремя, аккуратно. Спасибо!</p><h4>— Елена</h4></div>
           <div class="swiper-slide"><div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>Перевозка экскаватора тралом — фотоотчёт, цена адекватная.</p><h4>— Дмитрий</h4></div>
+          <div class="swiper-slide"><div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>Быстро и без повреждений доставили катер. Всё по договору.</p><h4>— Сергей</h4></div>
+          <div class="swiper-slide"><div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div><p>Заказывал эвакуатор 5т с кму — приехал через 20 минут. Спасибо!</p><h4>— Михаил</h4></div>
         </div>
         <div class="swiper-pagination"></div>
       </div>
@@ -191,113 +254,100 @@
     </div>
   </section>
 
-  <section><div class="container"><div class="section-title">Кейсы и примеры работ</div><div class="cases-grid">
-    <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/14763372/2a0000019448914f7f9b573430f728f41fec/XL?referer=lkb" alt="Перевозка вертолета"><p><strong>Перевозка вертолёта эвакуатором</strong> — 10т с КМУ</p></div>
-    <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18769949/2a0000019c26195185094cc6f9bf6a3b47cb/XL?referer=lkb" alt="Перевозка экскаватора"><p><strong>Перевозка гусеничного экскаватора тралом</strong> 25т</p></div>
-    <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/19720204/2a0000019b7225a6df4750dd65a4fd760442/XL?referer=lkb" alt="Вывоз снега"><p><strong>Вывоз снега</strong> с территории ТЦ, 12 самосвалов</p></div>
-    <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18005133/2a0000019bb5f6f194242ef7f143d9932f9f/XL?referer=lkb" alt="Перевозка катера"><p><strong>Подъём и транспортировка катера эвакуатором 10т с КМУ</strong></p></div>
-  </div><div style="text-align:center; margin-top:32px;"><a href="cases.html" class="btn">Все кейсы →</a></div></div></section>
+  <!-- 8. Команда "Работаем как часы благодаря" -->
+  <section>
+    <div class="container">
+      <div class="section-title">Работаем как часы благодаря</div>
+      <div class="team-grid" id="teamContainer"></div>
+    </div>
+  </section>
 
-  <section id="services"><div class="container"><div class="section-title">Все услуги компании</div><div style="background:#fff; border-radius:36px; padding:20px;"><h3 style="margin-bottom:20px;"><i class="fas fa-cog"></i> Аренда спецтехники и специализированные перевозки</h3>
-    <ul class="services-list">
-      <li><i class="fas fa-crane"></i> Аренда спецтехники</li>
-      <li><i class="fas fa-snowplow"></i> Уборка снега</li>
-      <li><i class="fas fa-broom"></i> Чистка от снега</li>
-      <li><i class="fas fa-truck"></i> Вывоз снега</li>
-      <li><i class="fas fa-ladder"></i> Подъем автовышкой</li>
-      <li><i class="fas fa-helicopter"></i> Перевозка вертолета эвакуатором</li>
-      <li><i class="fas fa-motorcycle"></i> Перевозка квадроцикла</li>
-      <li><i class="fas fa-oil-can"></i> Перевозка бочек</li>
-      <li><i class="fas fa-toilet"></i> Перевозка септика</li>
-      <li><i class="fas fa-glass-cheers"></i> Перевозка стекол</li>
-      <li><i class="fas fa-coil"></i> Перевозка катушки</li>
-      <li><i class="fas fa-hard-hat"></i> Перевозка опалубки</li>
-      <li><i class="fas fa-bolt"></i> Перевозка генератора</li>
-      <li><i class="fas fa-shovel"></i> Перевозка экскаватора</li>
-      <li><i class="fas fa-truck-moving"></i> Перевозка грузовика</li>
-      <li><i class="fas fa-box"></i> Перевозка кунга</li>
-      <li><i class="fas fa-home"></i> Перевозка бытовки 40,20,10,5 футов</li>
-      <li><i class="fas fa-shipping-container"></i> Перевозка контейнера 40,20,10,5 футов</li>
-      <li><i class="fas fa-building"></i> Перевозка поста охраны, будки</li>
-      <li><i class="fas fa-couch"></i> Перевозка жилого/бытового модуля</li>
-      <li><i class="fas fa-trailer"></i> Перевозка вагончика, павильона</li>
-      <li><i class="fas fa-warehouse"></i> Перевозка гаража (сейф, дальзаводской)</li>
-      <li><i class="fas fa-ship"></i> Перевозка катера / лодки</li>
-      <li><i class="fas fa-car"></i> Перевозка микроавтобуса, внедорожника, минивена, кроссовера</li>
-      <li><i class="fas fa-tractor"></i> Перевозка спецтехники</li>
-      <li><i class="fas fa-motorcycle"></i> Перевозка мотоцикла</li>
-      <li><i class="fas fa-car-side"></i> Перевозка джипа, легкового авто</li>
-    </ul></div></div></section>
-
-  <section><div class="container"><div class="callback-form"><h3><i class="fas fa-phone-volume"></i> Нужна консультация? Перезвоним за 5 минут</h3>
-    <form id="callbackForm"><input type="text" placeholder="Ваше имя" required><input type="tel" placeholder="+7 (___) ___-__-__" required><button type="submit" class="btn">Перезвоните мне</button></form>
-    <p style="margin-top:16px; font-size:12px;">Нажимая на кнопку, вы даете согласие на обработку данных</p></div></div></section>
+  <!-- 9. Форма обратной связи (дублированная, над подвалом) – как в файле -->
+  <section>
+    <div class="container">
+      <div class="callback-form">
+        <h3><i class="fas fa-phone-volume"></i> Нужна консультация? Перезвоним за 5 минут</h3>
+        <form id="callbackForm2">
+          <input type="text" placeholder="Ваше имя" required>
+          <input type="tel" placeholder="+7 (___) ___-__-__" required>
+          <button type="submit" class="btn">Перезвоните мне</button>
+        </form>
+        <p style="margin-top:16px; font-size:12px;">Нажимая на кнопку, вы даете согласие на обработку данных</p>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer id="contacts"><div class="container footer-grid">
-  <div><h4>Контакты</h4><p><i class="fas fa-map-marker-alt"></i> г. Владивосток, СДПК Дальзавод, 69</p><p><i class="fas fa-envelope"></i> 690002, г. Владивосток, Океанский пр-т, 110, а/я 23</p><p><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</p><p><i class="fas fa-phone-alt"></i> +7 (914) 707-60-90</p><p><i class="fas fa-briefcase"></i> Корп. отдел: +7 (914) 707-60-10</p><p><i class="fas fa-at"></i> 2779010@mail.ru</p><p><i class="fas fa-globe"></i> спецтехдв.рф</p></div>
-  <div><h4>Режим работы</h4><p>Ежедневно: 24/7</p><p>Офис: Пн-Пт 9:00–18:00</p><div class="messenger-links">
-    <a href="https://wa.me/79147312000" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp +7 (914) 731-20-00</a>
-    <a href="https://t.me/+79147312000" target="_blank"><i class="fab fa-telegram"></i> Telegram +7 (914) 731-20-00</a>
-    <a href="https://wa.me/79147076090" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp +7 (914) 707-60-90</a>
-    <a href="https://t.me/+79147076090" target="_blank"><i class="fab fa-telegram"></i> Telegram +7 (914) 707-60-90</a>
-    <a href="https://wa.me/79147312000?text=Здравствуйте!%20Вопрос%20к%20Максу" target="_blank"><i class="fab fa-whatsapp"></i> Макс (WhatsApp)</a>
+  <div><h4>Контакты</h4><p><i class="fas fa-map-marker-alt"></i> г. Владивосток, СДПК Дальзавод, 69</p><p><i class="fas fa-envelope"></i> 690002, г. Владивосток, Океанский пр-т, 110, а/я 23</p><p><i class="fas fa-phone-alt"></i> <a href="tel:+79147312000">+7 (914) 731-20-00</a></p><p><i class="fas fa-phone-alt"></i> <a href="tel:+79147076090">+7 (914) 707-60-90</a></p><p><i class="fas fa-briefcase"></i> Корп. отдел: <a href="tel:+79147076010">+7 (914) 707-60-10</a></p><p><i class="fas fa-at"></i> <a href="mailto:2779010@mail.ru">2779010@mail.ru</a></p><p><i class="fas fa-globe"></i> спецтехдв.рф</p></div>
+  <div><h4>Режим работы</h4><p>Офис: Пн-Пт 9:00–19:00</p><p>Водители: 24/7</p><div class="messenger-links">
+    <a href="https://wa.me/79147312000" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    <a href="https://t.me/+79147312000" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+    <a href="https://max.ru/u/f9LHodD0cOKK3KaezC_A2zWrtnN3wqEbSGjSUaDtWJ9jmXJSRlQVt0dFz5s" target="_blank"><i class="fas fa-user"></i> Max</a>
   </div></div>
-  <div><h4>Мы в соцсетях</h4><div class="social-links">
+  <div><h4>Социальные сети</h4><div class="social-links">
     <a href="https://www.youtube.com/@tehnodv25rus" target="_blank"><i class="fab fa-youtube"></i></a>
     <a href="https://www.instagram.com/tehnodv25.ru" target="_blank"><i class="fab fa-instagram"></i></a>
-    <a href="https://vk.com/tehnodv25" target="_blank"><i class="fab fa-vk"></i></a>
+    <a href="https://vk.com/tehnodv25ru" target="_blank"><i class="fab fa-vk"></i></a>
     <a href="https://t.me/evak_vl125" target="_blank"><i class="fab fa-telegram"></i></a>
-    <a href="https://rutube.ru/u/tehnodv/" target="_blank"><i class="fas fa-video"></i></a>
-  </div><p style="margin-top:16px;">YouTube: @tehnodv25rus<br>Instagram: @tehnodv25.ru<br>VK: tehnodv25<br>Telegram: evak_vl125<br>Rutube: tehnodv</p></div>
-</div><div class="copy"><p>© 2025 Транспортная компания «Техно ДВ». Все права защищены.</p></div></footer>
+    <a href="https://rutube.ru/channel/76106040" target="_blank"><i class="fas fa-video"></i></a>
+  </div></div>
+</div><div class="copy"><p>© 2017 Транспортная компания «Техно ДВ».</p></div></footer>
 
 <div id="orderModal" class="modal"><div class="modal-content"><span style="float:right; cursor:pointer; font-size:28px;" id="closeModal">&times;</span><h3>Заказать технику</h3><form id="orderForm"><input type="text" placeholder="Ваше имя" style="width:100%; margin:10px 0;" required><input type="tel" placeholder="Телефон" style="width:100%; margin:10px 0;" required><input type="text" placeholder="Какая техника / груз" style="width:100%; margin:10px 0;" required><button type="submit" class="btn">Отправить заявку</button></form></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Данные техники (фотографии для ряда позиций)
+  // Данные техники (автопарк)
   const techData = {
     evacuators: [
-      { name: "Эвакуатор 5т с КМУ 2т", desc: "Воровайка, манипулятор", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор 7т с КМУ", desc: "Автоборт, удлинённая стрела", image: "https://avatars.mds.yandex.net/get-altay/16874425/2a0000019b33d7bf76cc7910706ffb027b36/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор 10т с КМУ", desc: "Мощный манипулятор, до 10т", image: "https://avatars.mds.yandex.net/get-altay/18105464/2a0000019c9d1c5d95fc23d09478e8e4e491/XL?referer=lkb", hasImage: true, status: "🚩 Будет у вас через 15 минут" }
+      { name: "Эвакуатор манипулятор Mitsubishi\nБорт 5т, кму 2т", desc: "Стандартная воровайка, манипулятор для повседневных задач", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор Isuzu\nБорт 7т, кму 3т", desc: "Усиленная платформа, повышенная проходимость", image: "https://avatars.mds.yandex.net/get-altay/20285938/2a0000019e86c69fd13fa26f412088118dfa/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор Isuzu. Борт 10т, кму 3т", desc: "Эвакуатор сороконожка с усиленной колесной базой", image: "https://avatars.mds.yandex.net/get-altay/18105464/2a0000019c9d1c5d95fc23d09478e8e4e491/XL?referer=lkb", hasImage: true, status: "🚩 Освободится через 15 минут" },
+      { name: "Эвакуатор манипулятор Fuso. Борт 10т, кму 3т", desc: "Эвакуатор сороконожка с усиленной колесной базой", image: "https://avatars.mds.yandex.net/get-altay/14586367/2a0000019d28c3b61ee54add148f48934411/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
     excavators: [
-      { name: "Экскаватор №1", desc: "Гусеничный, ковш 0.8м³, копка траншей", image: "https://avatars.mds.yandex.net/get-altay/18748727/2a0000019c26195a31c73b69078196ba0e76/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Экскаватор №2", desc: "Гусеничный, усиленный, планировка", icon: "fas fa-hard-hat", hasImage: false, status: "🚩 возможно занят" },
-      { name: "Фронтальный погрузчик Петушок", desc: "Ковш/вилы, складские работы", icon: "fas fa-tractor", hasImage: false, status: "🚩 свободен" }
+      { name: "Экскаватор гусеничный 7,5т с гидромолотом", desc: "Демонтаж бетона, вскрытие асфальта, корчевание", image: "https://avatars.mds.yandex.net/get-altay/15352901/2a0000019448910594b726be2b483d33c56d/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Экскаватор гусеничный 7,5т с ковшом", desc: "Ковш 0.8м³, планировка участка, обратная лопата", image: "https://avatars.mds.yandex.net/get-altay/18748727/2a0000019c26195a31c73b69078196ba0e76/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" },
+      { name: "Автовышка", desc: "Подъем на высоту до 20 метров для монтажных работ", image: "https://avatars.mds.yandex.net/get-altay/19579876/2a0000019b7225ac01a7f77154ecc0942180/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Фронтальный погрузчик Komatsu", desc: "Высокая маневренность, ковш 2.5м³, для погрузки сыпучих материалов", image: "https://avatars.mds.yandex.net/get-altay/19555209/2a0000019c4a6a12e5236974f69d732d2b02/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Погрузчик с вилами", desc: "Грузоподъемность 3т, вилы длиной 1.2м, идеален для складских работ и погрузки поддонов", image: "https://avatars.mds.yandex.net/get-altay/18184740/2a0000019b2ad8f21c737f49db5497ca21eb/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
-    dump: [
-      { name: "Самосвал №1", desc: "Грузоподъемность 15т, вывоз грунта", icon: "fas fa-dump-truck", hasImage: false, status: "🚩 свободен" },
-      { name: "Самосвал №2", desc: "20т, для снега и сыпучих", icon: "fas fa-truck", hasImage: false, status: "🚩 возможно занят" }
-    ],
-    trucks: [
-      { name: "Трал / шаланда / платформа с бортом", desc: "До 25т, для спецтехники", icon: "fas fa-trailer", hasImage: false, status: "🚩 свободен" },
-      { name: "Еврофура (тент/рефрижератор)", desc: "20т, 90м³, междугород", icon: "fas fa-truck", hasImage: false, status: "🚩 свободен" },
-      { name: "Длинномер (шаланда) до 25т", desc: "До 13 метров", icon: "fas fa-truck-moving", hasImage: false, status: "🚩 свободен" },
-      { name: "Грузовик открытый с бортом 2т-15т", desc: "Самосвальная платформа", icon: "fas fa-truck-ramp-box", hasImage: false, status: "🚩 свободен" },
-      { name: "Грузовик фургон до 2т / 9м³ / 3 паллеты", desc: "Для малогабаритных грузов", icon: "fas fa-box", hasImage: false, status: "🚩 свободен" }
-    ],
-    loaders: [
-      { name: "Погрузчик с вилами", desc: "Грузоподъемность 3т", icon: "fas fa-arrow-up", hasImage: false, status: "🚩 свободен" },
-      { name: "Погрузчик с ковшом", desc: "Для сыпучих материалов", icon: "fas fa-shovel", hasImage: false, status: "🚩 свободен" }
+    trucks_dump: [
+      { name: "Трал", desc: "Универсальный трал для перевозки тяжелой спецтехники до 25 тонн, низкий угол заезда, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019c79d69d3256578c96acfa00d6f3/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Бортовой полуприцеп", desc: "Перевозка длинномеров до 13 метров, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019b2fd5072a3cccca4543c5b18490/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Самосвал 5т", desc: "Оптимален для малых строек, вывоз грунта до 5 тонн", image: "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019b33d7d5d3cc22f6bda53c6af0fc/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Грузовик 1т", desc: "Компактный грузовик для перевозки малых партий грузов, маневренный, удобен для доставки по городу", image: "https://avatars.mds.yandex.net/get-altay/18133168/2a0000019e86b67c9b2ee88033a151fef0a0/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ]
   };
 
+  // Данные сотрудников
+  const teamMembers = [
+    { name: "Директор", desc: "Общее руководство", icon: "fas fa-user-tie", status: "На связи" },
+    { name: "Зам директора", desc: "Оперативное управление", icon: "fas fa-user-tie", status: "На связи" },
+    { name: "Старший менеджер", desc: "Координация проектов", icon: "fas fa-chart-line", status: "На связи" },
+    { name: "Менеджер Имя 1", desc: "Работа с клиентами", icon: "fas fa-user", status: "На связи" },
+    { name: "Менеджер Имя 2", desc: "Работа с клиентами", icon: "fas fa-user", status: "На связи" },
+    { name: "Менеджер Имя 3", desc: "Работа с клиентами", icon: "fas fa-user", status: "На связи" },
+    { name: "Водитель Имя 1", desc: "Стаж 8 лет, без аварий", icon: "fas fa-truck", status: "На связи" },
+    { name: "Водитель Имя 2", desc: "Стаж 5 лет, спецтехника", icon: "fas fa-truck", status: "На связи" },
+    { name: "Водитель Имя 3", desc: "Стаж 6 лет, эвакуаторы", icon: "fas fa-truck", status: "На связи" },
+    { name: "Бухгалтер", desc: "Финансовые вопросы", icon: "fas fa-calculator", status: "На связи" },
+    { name: "Маркетолог", desc: "Продвижение и реклама", icon: "fas fa-chart-simple", status: "На связи" },
+    { name: "Автомеханик", desc: "Техническое состояние парка", icon: "fas fa-wrench", status: "На связи" }
+  ];
+
   function renderTech(activeTab) {
     let items = [];
-    if (activeTab === 'all') items = [...techData.evacuators, ...techData.excavators, ...techData.dump, ...techData.trucks, ...techData.loaders];
+    if (activeTab === 'all') items = [...techData.evacuators, ...techData.excavators, ...techData.trucks_dump];
     else if (activeTab === 'evacuators') items = techData.evacuators;
     else if (activeTab === 'excavators') items = techData.excavators;
-    else if (activeTab === 'dump') items = techData.dump;
-    else if (activeTab === 'trucks') items = techData.trucks;
-    else if (activeTab === 'loaders') items = techData.loaders;
+    else if (activeTab === 'trucks_dump') items = techData.trucks_dump;
     
     const container = document.getElementById('techContainer');
     container.innerHTML = items.map(item => {
       if (item.hasImage && item.image) {
-        return `<div class="tech-card"><img class="card-img" src="${item.image}" alt="${item.name}" loading="lazy"><h3>${item.name}</h3><p>${item.desc}</p><span class="status-tag">${item.status}</span><button class="btn order-btn open-order" data-tech="${item.name}">Заказать</button></div>`;
+        return `<div class="tech-card"><img class="card-img" src="${item.image}" alt="${item.name}" loading="lazy"><h3 style="white-space: pre-line;">${item.name}</h3><p>${item.desc}</p><span class="status-tag">${item.status}</span><button class="btn order-btn open-order" data-tech="${item.name.replace(/\n/g, ' ')}">Заказать</button></div>`;
       } else {
         return `<div class="tech-card"><div class="card-icon"><i class="${item.icon}"></i></div><h3>${item.name}</h3><p>${item.desc}</p><span class="status-tag">${item.status}</span><button class="btn order-btn open-order" data-tech="${item.name}">Заказать</button></div>`;
       }
@@ -310,15 +360,26 @@
     }));
   }
 
+  function renderTeam() {
+    const container = document.getElementById('teamContainer');
+    container.innerHTML = teamMembers.map(member => `
+      <div class="team-card">
+        <div class="card-icon"><i class="${member.icon}"></i></div>
+        <h3>${member.name}</h3>
+        <p>${member.desc}</p>
+        <span class="status-tag">${member.status}</span>
+      </div>
+    `).join('');
+  }
+
   document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => { 
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
     btn.classList.add('active'); 
     renderTech(btn.getAttribute('data-tab')); 
   }));
   renderTech('all');
+  renderTeam();
 
-  // Логика калькулятора
-  const calcBtn = document.getElementById('calcBtn');
   const calcCargo = document.getElementById('calcCargo');
   const calcFrom = document.getElementById('calcFrom');
   const calcTo = document.getElementById('calcTo');
@@ -345,16 +406,26 @@
     const total = Math.round(basePrice * distanceFactor);
     calcResultSpan.innerText = `≈ ${total.toLocaleString()} ₽`;
   }
-  calcBtn.addEventListener('click', updatePrice);
+
+  calcCargo.addEventListener('change', updatePrice);
+  calcFrom.addEventListener('change', updatePrice);
+  calcTo.addEventListener('change', updatePrice);
   updatePrice();
 
-  new Swiper('.popularSwiper', { slidesPerView:1, spaceBetween:20, loop:true, pagination:{el:'.swiper-pagination', clickable:true}, navigation:{nextEl:'.swiper-button-next', prevEl:'.swiper-button-prev'}, breakpoints:{640:{slidesPerView:2},1024:{slidesPerView:4}} });
   new Swiper('.reviewsSwiper', { slidesPerView:1, spaceBetween:24, pagination:{el:'.swiper-pagination', clickable:true}, breakpoints:{768:{slidesPerView:2}} });
   
   const modal = document.getElementById('orderModal'); 
   document.getElementById('closeModal').onclick = () => modal.style.display = 'none'; 
   window.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
-  document.getElementById('callbackForm').addEventListener('submit', (e) => { e.preventDefault(); alert('Спасибо! Менеджер перезвонит.'); e.target.reset(); });
+  
+  function handleCallbackSubmit(e) {
+    e.preventDefault();
+    alert('Спасибо! Менеджер перезвонит.');
+    e.target.reset();
+  }
+  document.getElementById('callbackForm1')?.addEventListener('submit', handleCallbackSubmit);
+  document.getElementById('callbackForm2')?.addEventListener('submit', handleCallbackSubmit);
+  
   document.getElementById('orderForm').addEventListener('submit', (e) => { e.preventDefault(); alert('Заявка отправлена!'); modal.style.display = 'none'; e.target.reset(); });
 </script>
 </body>
