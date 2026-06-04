@@ -157,21 +157,19 @@
 
         .payment-options {
             display: flex;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
             gap: 24px;
             background: #f8fafc;
             padding: 16px 24px;
             border-radius: 60px;
             margin-bottom: 28px;
-            overflow-x: auto;
-            white-space: nowrap;
+            align-items: center;
         }
         .payment-option {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             font-weight: 500;
-            white-space: nowrap;
         }
 
         .result-block {
@@ -241,6 +239,13 @@
             }
             .double-row .field-card {
                 width: 100%;
+            }
+            /* Способ оплаты на мобильных: без горизонтального скролла, перенос строк */
+            .payment-options {
+                flex-wrap: wrap;
+                overflow-x: visible;
+                white-space: normal;
+                gap: 16px;
             }
         }
     </style>
@@ -361,7 +366,7 @@
         '12t': { base2h: 15000, nextHour: 6000, name: '12т + КМУ 5т' }
     };
 
-    // ----- ФИКСИРОВАННЫЕ ЦЕНЫ ЗАГОРОД (КАЖДЫЙ ПУНКТ ОТДЕЛЬНО, ЦЕНЫ ИЗ ПРЕЖНЕЙ ТАБЛИЦЫ) -----
+    // ----- ФИКСИРОВАННЫЕ ЦЕНЫ ЗАГОРОД -----
     const rawItems = [
         { name: "Артем", dist: 50, prices: { "5t": 13000, "7t": 17000, "10t": 21000, "12t": 24000 } },
         { name: "Артем Грэс", dist: 55, prices: { "5t": 15000, "7t": 20000, "10t": 24000, "12t": 27000 } },
@@ -400,6 +405,7 @@
 
     const suburbPrices = [...rawItems].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 
+    // ----- СПИСОК ГРУЗОВ (исправлено: удалён "Жилой модуль", "Эксоватор" → "Экскаватор") -----
     const cargoDataRaw = [
         { name: "Автомобиль джип", allowed: ["5t"] },
         { name: "Автомобиль кроссовер", allowed: ["5t"] },
@@ -412,7 +418,6 @@
         { name: "Гараж цельносборный", allowed: ["7t", "10t"] },
         { name: "Генератор", allowed: ["5t", "7t", "10t"] },
         { name: "Грузовик", allowed: ["7t", "10t"] },
-        { name: "Жилой модуль", allowed: ["7t", "10t"] },
         { name: "Катушка", allowed: ["5t", "7t", "10t"] },
         { name: "Квадроцикл", allowed: ["5t"] },
         { name: "Контейнер 5ф", allowed: ["5t"] },
@@ -434,7 +439,7 @@
         { name: "Спецтехника", allowed: ["5t"] },
         { name: "Стекла", allowed: ["5t"] },
         { name: "Фронтальный погрузчик", allowed: ["7t", "10t"] },
-        { name: "Эксоватор", allowed: ["7t", "10t"] }
+        { name: "Экскаватор", allowed: ["7t", "10t"] }   // было "Эксоватор", исправлено на "Экскаватор"
     ];
 
     const cargoData = [...cargoDataRaw].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
