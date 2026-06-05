@@ -102,7 +102,11 @@
   <div class="container header-inner">
     <div class="logo"><h1>Техно ДВ</h1><p>Транспортная компания | Спецтехника</p></div>
     <div class="nav">
-      <a href="#home">Главная</a><a href="#autopark">Автопарк</a><a href="#services">Услуги</a><a href="#contacts">Контакты</a><a href="cases.html" target="_blank">Заказы</a>
+      <a href="#home">Главная</a>
+      <a href="#autopark">Автопарк</a>
+      <a href="#services">Услуги</a>
+      <a href="#contacts">Контакты</a>
+      <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zakaz.html" target="_blank">Заказы</a>
     </div>
     <div class="header-phones">
       <div class="header-phone"><a href="tel:+79147312000"><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</a></div>
@@ -123,20 +127,18 @@
           <div class="calc-field"><span class="result-price" id="calcResult">≈ 5 000 ₽</span></div>
         </div>
         <p style="font-size:0.75rem; text-align:center; margin-top:20px;">*Цена ориентировочная, точную стоимость уточняйте у менеджера</p>
+        <div style="text-align:center; margin-top:24px;">
+          <a href="https://tehnodv25rus-hash.github.io/tehnodv25/calc.html" target="_blank" class="btn" style="background:#d97706; border:none;">📝 Заполнить заявку</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 2. Форма обратной связи (первая) – как в файле -->
+  <!-- 2. Форма обратной связи (первая) -->
   <section>
     <div class="container">
-      <div class="callback-form">
-        <h3><i class="fas fa-phone-volume"></i> Нужна консультация? Перезвоним за 5 минут</h3>
-        <form id="callbackForm1">
-          <input type="text" placeholder="Ваше имя" required>
-          <input type="tel" placeholder="+7 (___) ___-__-__" required>
-          <button type="submit" class="btn">Перезвоните мне</button>
-        </form>
+      <div class="callback-form"><h3><i class="fas fa-phone-volume"></i> Нужна консультация? Перезвоним за 5 минут</h3>
+        <form id="callbackForm1"><input type="text" placeholder="Ваше имя" required><input type="tel" placeholder="+7 (___) ___-__-__" required><button type="submit" class="btn">Перезвоните мне</button></form>
         <p style="margin-top:16px; font-size:12px;">Нажимая на кнопку, вы даете согласие на обработку данных</p>
       </div>
     </div>
@@ -156,7 +158,7 @@
     </div>
   </section>
 
-  <!-- 4. Заказы -->
+  <!-- 4. Заказы (ссылка убрана) -->
   <section>
     <div class="container">
       <div class="section-title">Заказы</div>
@@ -166,7 +168,6 @@
         <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/19720204/2a0000019b7225a6df4750dd65a4fd760442/XL?referer=lkb" alt="Вывоз снега"><p><strong>Вывоз снега</strong> с территории ТЦ, 12 самосвалов</p></div>
         <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18005133/2a0000019bb5f6f194242ef7f143d9932f9f/XL?referer=lkb" alt="Перевозка катера"><p><strong>Подъём и транспортировка катера эвакуатором 10т с кму</strong></p></div>
       </div>
-      <div style="text-align:center; margin-top:32px;"><a href="cases.html" class="btn">Все заказы →</a></div>
     </div>
   </section>
 
@@ -262,16 +263,11 @@
     </div>
   </section>
 
-  <!-- 9. Форма обратной связи (дублированная, над подвалом) – как в файле -->
+  <!-- 9. Форма обратной связи (дублированная, над подвалом) -->
   <section>
     <div class="container">
-      <div class="callback-form">
-        <h3><i class="fas fa-phone-volume"></i> Нужна консультация? Перезвоним за 5 минут</h3>
-        <form id="callbackForm2">
-          <input type="text" placeholder="Ваше имя" required>
-          <input type="tel" placeholder="+7 (___) ___-__-__" required>
-          <button type="submit" class="btn">Перезвоните мне</button>
-        </form>
+      <div class="callback-form"><h3><i class="fas fa-phone-volume"></i> Нужна консультация? Перезвоним за 5 минут</h3>
+        <form id="callbackForm2"><input type="text" placeholder="Ваше имя" required><input type="tel" placeholder="+7 (___) ___-__-__" required><button type="submit" class="btn">Перезвоните мне</button></form>
         <p style="margin-top:16px; font-size:12px;">Нажимая на кнопку, вы даете согласие на обработку данных</p>
       </div>
     </div>
@@ -298,7 +294,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Данные техники (автопарк)
   const techData = {
     evacuators: [
       { name: "Эвакуатор манипулятор Mitsubishi\nБорт 5т, кму 2т", desc: "Стандартная воровайка, манипулятор для повседневных задач", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
@@ -309,32 +304,31 @@
     excavators: [
       { name: "Экскаватор гусеничный 7,5т с гидромолотом", desc: "Демонтаж бетона, вскрытие асфальта, корчевание", image: "https://avatars.mds.yandex.net/get-altay/15352901/2a0000019448910594b726be2b483d33c56d/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
       { name: "Экскаватор гусеничный 7,5т с ковшом", desc: "Ковш 0.8м³, планировка участка, обратная лопата", image: "https://avatars.mds.yandex.net/get-altay/18748727/2a0000019c26195a31c73b69078196ba0e76/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" },
-      { name: "Автовышка", desc: "Подъем на высоту до 20 метров для монтажных работ", image: "https://avatars.mds.yandex.net/get-altay/19579876/2a0000019b7225ac01a7f77154ecc0942180/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Фронтальный погрузчик Komatsu", desc: "Высокая маневренность, ковш 2.5м³, для погрузки сыпучих материалов", image: "https://avatars.mds.yandex.net/get-altay/19555209/2a0000019c4a6a12e5236974f69d732d2b02/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Погрузчик с вилами", desc: "Грузоподъемность 3т, вилы длиной 1.2м, идеален для складских работ и погрузки поддонов", image: "https://avatars.mds.yandex.net/get-altay/18184740/2a0000019b2ad8f21c737f49db5497ca21eb/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Автовышка 15 метров", desc: "Подъем на высоту до 20 метров для монтажных работ", image: "https://avatars.mds.yandex.net/get-altay/19579876/2a0000019b7225ac01a7f77154ecc0942180/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Фронтальный погрузчик Komatsu (петушок)", desc: "Высокая маневренность, ковш 2.5м³, для погрузки сыпучих материалов", image: "https://avatars.mds.yandex.net/get-altay/19555209/2a0000019c4a6a12e5236974f69d732d2b02/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Погрузчик с вилами", desc: "Грузоподъемность 1т, вилы длиной 1.2м, идеален для складских работ и погрузки поддонов", image: "https://avatars.mds.yandex.net/get-altay/18184740/2a0000019b2ad8f21c737f49db5497ca21eb/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
     trucks_dump: [
-      { name: "Трал", desc: "Универсальный трал для перевозки тяжелой спецтехники до 25 тонн, низкий угол заезда, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019c79d69d3256578c96acfa00d6f3/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Трал", desc: "Универсальный трал для перевозки тяжелых грузов до 25 тонн, низкий угол заезда, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019c79d69d3256578c96acfa00d6f3/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
       { name: "Бортовой полуприцеп", desc: "Перевозка длинномеров до 13 метров, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019b2fd5072a3cccca4543c5b18490/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Самосвал 5т", desc: "Оптимален для малых строек, вывоз грунта до 5 тонн", image: "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019b33d7d5d3cc22f6bda53c6af0fc/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Грузовик 1т", desc: "Компактный грузовик для перевозки малых партий грузов, маневренный, удобен для доставки по городу", image: "https://avatars.mds.yandex.net/get-altay/18133168/2a0000019e86b67c9b2ee88033a151fef0a0/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Самосвал борт 5т", desc: "Оптимален для малых строек, вывоз грунта до 5 тонн", image: "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019b33d7d5d3cc22f6bda53c6af0fc/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Грузовик борт 1т", desc: "Компактный грузовик для перевозки малых партий грузов, маневренный, удобен для доставки по городу", image: "https://avatars.mds.yandex.net/get-altay/18133168/2a0000019e86b67c9b2ee88033a151fef0a0/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ]
   };
 
-  // Данные сотрудников
   const teamMembers = [
-    { name: "Директор", desc: "Общее руководство", icon: "fas fa-user-tie", status: "На связи" },
-    { name: "Зам директора", desc: "Оперативное управление", icon: "fas fa-user-tie", status: "На связи" },
-    { name: "Старший менеджер", desc: "Координация проектов", icon: "fas fa-chart-line", status: "На связи" },
-    { name: "Менеджер Имя 1", desc: "Работа с клиентами", icon: "fas fa-user", status: "На связи" },
-    { name: "Менеджер Имя 2", desc: "Работа с клиентами", icon: "fas fa-user", status: "На связи" },
-    { name: "Менеджер Имя 3", desc: "Работа с клиентами", icon: "fas fa-user", status: "На связи" },
-    { name: "Водитель Имя 1", desc: "Стаж 8 лет, без аварий", icon: "fas fa-truck", status: "На связи" },
-    { name: "Водитель Имя 2", desc: "Стаж 5 лет, спецтехника", icon: "fas fa-truck", status: "На связи" },
-    { name: "Водитель Имя 3", desc: "Стаж 6 лет, эвакуаторы", icon: "fas fa-truck", status: "На связи" },
-    { name: "Бухгалтер", desc: "Финансовые вопросы", icon: "fas fa-calculator", status: "На связи" },
-    { name: "Маркетолог", desc: "Продвижение и реклама", icon: "fas fa-chart-simple", status: "На связи" },
-    { name: "Автомеханик", desc: "Техническое состояние парка", icon: "fas fa-wrench", status: "На связи" }
+    { name: "Директор", desc: "Знает, где лежат ключи от всего.", icon: "fas fa-user-tie", status: "На связи" },
+    { name: "Зам директора", desc: "Способен организовать вывоз снега посреди лета.", icon: "fas fa-user-tie", status: "На связи" },
+    { name: "Старший менеджер", desc: "Всегда находит компромисс, даже между диваном и телевизором.", icon: "fas fa-chart-line", status: "На связи" },
+    { name: "Менеджер Имя 1", desc: "Организатор доставки кофе - основной инструмент работы.", icon: "fas fa-user", status: "На связи" },
+    { name: "Менеджер Имя 2", desc: "Помнит все заказы за последние 5 лет (и что обедал во вторник).", icon: "fas fa-user", status: "На связи" },
+    { name: "Менеджер Имя 3", desc: "Говорит так быстро, что диспетчеры записывают на скорость.", icon: "fas fa-user", status: "На связи" },
+    { name: "Водитель Имя 1", desc: "Проезжает там, где карты показывают поле.", icon: "fas fa-truck", status: "На связи" },
+    { name: "Водитель Имя 2", desc: "Знает каждую яму во Владивостоке по имени.", icon: "fas fa-truck", status: "На связи" },
+    { name: "Водитель Имя 3", desc: "Спит за рулём с открытыми глазами (шутка, не спит!).", icon: "fas fa-truck", status: "На связи" },
+    { name: "Бухгалтер", desc: "Сводит дебет с кредитом быстрее, чем вы моргнете.", icon: "fas fa-calculator", status: "На связи" },
+    { name: "Маркетолог", desc: "Может продать снег эскимосам.", icon: "fas fa-chart-simple", status: "На связи" },
+    { name: "Автомеханик", desc: "Слышит неисправность за три квартала.", icon: "fas fa-wrench", status: "На связи" }
   ];
 
   function renderTech(activeTab) {
@@ -343,7 +337,7 @@
     else if (activeTab === 'evacuators') items = techData.evacuators;
     else if (activeTab === 'excavators') items = techData.excavators;
     else if (activeTab === 'trucks_dump') items = techData.trucks_dump;
-    
+
     const container = document.getElementById('techContainer');
     container.innerHTML = items.map(item => {
       if (item.hasImage && item.image) {
@@ -352,11 +346,11 @@
         return `<div class="tech-card"><div class="card-icon"><i class="${item.icon}"></i></div><h3>${item.name}</h3><p>${item.desc}</p><span class="status-tag">${item.status}</span><button class="btn order-btn open-order" data-tech="${item.name}">Заказать</button></div>`;
       }
     }).join('');
-    
-    document.querySelectorAll('.open-order').forEach(btn => btn.addEventListener('click', () => { 
-      document.getElementById('orderModal').style.display = 'flex'; 
+
+    document.querySelectorAll('.open-order').forEach(btn => btn.addEventListener('click', () => {
+      document.getElementById('orderModal').style.display = 'flex';
       const input = document.querySelector('#orderForm input[placeholder="Какая техника / груз"]');
-      if (input) input.value = btn.getAttribute('data-tech'); 
+      if (input) input.value = btn.getAttribute('data-tech');
     }));
   }
 
@@ -372,10 +366,10 @@
     `).join('');
   }
 
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => { 
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
-    btn.classList.add('active'); 
-    renderTech(btn.getAttribute('data-tab')); 
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTech(btn.getAttribute('data-tab'));
   }));
   renderTech('all');
   renderTeam();
@@ -413,11 +407,11 @@
   updatePrice();
 
   new Swiper('.reviewsSwiper', { slidesPerView:1, spaceBetween:24, pagination:{el:'.swiper-pagination', clickable:true}, breakpoints:{768:{slidesPerView:2}} });
-  
-  const modal = document.getElementById('orderModal'); 
-  document.getElementById('closeModal').onclick = () => modal.style.display = 'none'; 
+
+  const modal = document.getElementById('orderModal');
+  document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
   window.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
-  
+
   function handleCallbackSubmit(e) {
     e.preventDefault();
     alert('Спасибо! Менеджер перезвонит.');
@@ -425,7 +419,7 @@
   }
   document.getElementById('callbackForm1')?.addEventListener('submit', handleCallbackSubmit);
   document.getElementById('callbackForm2')?.addEventListener('submit', handleCallbackSubmit);
-  
+
   document.getElementById('orderForm').addEventListener('submit', (e) => { e.preventDefault(); alert('Заявка отправлена!'); modal.style.display = 'none'; e.target.reset(); });
 </script>
 </body>
