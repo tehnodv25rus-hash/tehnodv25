@@ -3,732 +3,548 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Перевозка грузов эвакуаторами манипуляторами, бортовыми, самосвалами, тралами</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <title>Калькулятор: План рассадки и карточки | Сервис-Плюс</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            background: linear-gradient(145deg, #eef2f9 0%, #dfe6ef 100%);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            padding: 32px 20px;
-            min-height: 100vh;
+            background: #f0f2f5;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 24px 16px;
         }
-
-        .calc-card {
-            max-width: 1280px;
+        .calculator-container {
+            max-width: 1000px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 48px;
-            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25);
-            overflow: visible;
         }
-
+        .calc-card {
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+        }
         .calc-header {
-            background: #0f2b3d;
-            padding: 32px 40px;
+            background: #1e2f41;
+            padding: 24px 32px;
             color: white;
         }
         .calc-header h1 {
             font-size: 1.8rem;
             font-weight: 700;
-            letter-spacing: -0.3px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .calc-header p {
             font-size: 0.95rem;
             opacity: 0.85;
         }
-
-        .calc-body {
-            padding: 36px 40px;
-        }
-
-        .mode-switch {
-            display: flex;
-            gap: 12px;
-            background: #f0f4f9;
-            padding: 6px;
-            border-radius: 60px;
-            width: fit-content;
-            margin-bottom: 32px;
-        }
-        .mode-btn {
-            padding: 10px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 0.95rem;
-            transition: 0.2s;
-            color: #2c3e50;
-        }
-        .mode-btn.active {
-            background: #1e5a7d;
-            color: white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .two-columns {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 28px;
-            margin-bottom: 28px;
-        }
-        .col {
-            flex: 1;
-            min-width: 260px;
-        }
-
-        .field-card {
-            background: white;
-            border-radius: 28px;
-            padding: 20px;
-            margin-bottom: 24px;
-            border: 1px solid #eef2f6;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.02);
-            transition: 0.2s;
-        }
-        .field-card:hover {
-            border-color: #cbdde9;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.04);
-        }
-        .field-label {
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-            color: #1e4663;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        select, input, .field-card select, .field-card input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 24px;
-            border: 1px solid #cfdfed;
-            font-family: inherit;
-            font-size: 0.9rem;
-            background: white;
-            transition: 0.2s;
-        }
-        select:focus, input:focus {
-            outline: none;
-            border-color: #2c7da0;
-            box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
-        }
-
-        .auto-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px,1fr));
-            gap: 14px;
-            margin-top: 12px;
-        }
-        .auto-item {
-            background: #fafcff;
-            border-radius: 20px;
-            padding: 6px 12px;
-            border: 1px solid #e9eff4;
-        }
-        .auto-item label {
-            font-size: 0.7rem;
-            font-weight: 500;
-            display: block;
-            margin-bottom: 4px;
-            color: #2c5a7a;
-        }
-
-        .double-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-        .double-row .field-card {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        .payment-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            background: #f8fafc;
-            padding: 16px 24px;
-            border-radius: 60px;
-            margin-bottom: 28px;
-            align-items: center;
-        }
-        .payment-option {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-        }
-
-        .result-block {
-            background: #eef6fc;
-            border-radius: 32px;
-            padding: 24px;
-            margin-top: 24px;
-            border-left: 6px solid #1e5a7d;
-        }
-        .big-price {
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: #155f7c;
-            line-height: 1.2;
-        }
-        .client-chip {
-            background: white;
-            border-radius: 40px;
-            padding: 8px 20px;
+        .btn-home {
             display: inline-block;
-            margin: 12px 0 8px;
-            font-weight: 500;
-            font-size: 0.9rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .detail-text {
-            margin-top: 16px;
-            border-top: 1px solid #cbdff2;
-            padding-top: 14px;
-            font-size: 0.85rem;
-            color: #2c3e66;
-        }
-        .warning-box {
-            background: #fff3e3;
-            border-radius: 24px;
-            padding: 12px 16px;
-            margin-top: 16px;
-            font-size: 0.85rem;
-            display: none;
-        }
-        .order-button {
-            background: #2b6e3c;
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 60px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
             color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 12px;
+            transition: 0.2s;
+        }
+        .btn-home:hover {
+            background: rgba(255,255,255,0.35);
+            border-color: rgba(255,255,255,0.8);
+        }
+        .calc-body {
+            padding: 28px 32px;
+        }
+        .section {
+            margin-bottom: 28px;
+            border-bottom: 1px solid #e9edf2;
+            padding-bottom: 24px;
+        }
+        .section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .section-title {
             font-weight: 700;
             font-size: 1.2rem;
-            margin-top: 28px;
+            color: #1e2f41;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .radio-label, .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 18px;
+            border-radius: 48px;
             cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .radio-label.selected, .checkbox-label.selected {
+            background: #eef2ff;
+            border-color: #2c5f8a;
+            color: #1e3a5f;
+        }
+        .radio-label input, .checkbox-label input {
+            margin: 0;
+            width: 18px;
+            height: 18px;
+            accent-color: #2c5f8a;
+        }
+        .select-full {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 28px;
+            background: white;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .counter {
+            display: inline-flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 60px;
+            padding: 4px 8px;
+            gap: 12px;
+        }
+        .counter button {
+            background: white;
+            border: 1px solid #cbd5e1;
+            width: 30px;
+            height: 30px;
+            border-radius: 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .counter button:hover {
+            background: #e2e8f0;
+        }
+        .counter span {
+            font-weight: 700;
+            font-size: 1rem;
+            min-width: 36px;
+            text-align: center;
+        }
+        .btn-order {
+            background: #2c5f8a;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 40px;
+            cursor: pointer;
+            width: 100%;
             transition: 0.2s;
-            font-family: inherit;
+            margin-top: 16px;
         }
-        .order-button:hover {
-            background: #1f5430;
-            transform: scale(0.98);
+        .btn-order:hover {
+            background: #1f4668;
         }
-
-        @media (max-width: 780px) {
-            .calc-body { padding: 24px; }
-            .calc-header h1 { font-size: 1.4rem; }
-            .big-price { font-size: 2rem; }
-            .double-row {
-                flex-direction: column;
-                gap: 20px;
+        .footnote {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 16px;
+            color: #5b6e8c;
+        }
+        .product-panel {
+            display: none;
+        }
+        .product-panel.active {
+            display: block;
+        }
+        .bottom-home {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .bottom-home .btn-home {
+            background: #2c5f8a;
+            border: none;
+            padding: 10px 24px;
+            font-weight: 600;
+        }
+        @media (max-width: 650px) {
+            .calc-body {
+                padding-left: 20px;
+                padding-right: 20px;
             }
-            .double-row .field-card {
-                width: 100%;
-            }
-            /* Способ оплаты на мобильных: без горизонтального скролла, перенос строк */
-            .payment-options {
-                flex-wrap: wrap;
-                overflow-x: visible;
-                white-space: normal;
-                gap: 16px;
+            .radio-group {
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body>
-<div class="calc-card">
-    <div class="calc-header">
-        <h1>🚛 Перевозка грузов эвакуаторами манипуляторами, бортовыми грузовиками, самосвалами, тралами</h1>
-        <p>По городу — почасовая оплата | Загород — фиксированные цены</p>
-    </div>
-    <div class="calc-body">
-        <div class="mode-switch" id="modeTabs">
-            <button class="mode-btn active" data-mode="city">🏙️ По городу</button>
-            <button class="mode-btn" data-mode="suburb">🌲 Загород</button>
+<div class="calculator-container">
+    <div class="calc-card">
+        <div class="calc-header">
+            <h1>📋 План рассадки и карточки</h1>
+            <p>Выберите параметры — оставьте заявку</p>
+            <!-- Кнопка "Вернуться на главную" вверху -->
+            <a href="https://tehnodv25rus-hash.github.io/tehnodv25/index" class="btn-home">← Вернуться на главную</a>
         </div>
-
-        <div class="two-columns">
-            <div class="col">
-                <div class="field-card">
-                    <div class="field-label">📦 Что везем</div>
-                    <select id="cargoSelect"></select>
-                    <div style="font-size:0.7rem; margin-top:6px;">Автоматически фильтрует доступные типы машин</div>
-                </div>
-                <div class="field-card">
-                    <div class="field-label">🚚 Автомобиль (доступные под груз)</div>
-                    <select id="truckSelect">
-                        <option value="5t">Борт 5т + КМУ 3т</option>
-                        <option value="7t">Борт 7т + КМУ 3т</option>
-                        <option value="10t">Борт 10т + КМУ 3т</option>
-                        <option value="12t">Борт 12т + КМУ 5т</option>
-                    </select>
+        <div class="calc-body">
+            <!-- Продукт -->
+            <div class="section">
+                <div class="section-title">🏷️ Продукт</div>
+                <div class="radio-group" id="productGroup">
+                    <label class="radio-label" data-product="plan"><input type="radio" name="product" value="plan" checked> План рассадки</label>
+                    <label class="radio-label" data-product="banquet"><input type="radio" name="product" value="banquet"> Банкетные карточки</label>
+                    <label class="radio-label" data-product="tablenumber"><input type="radio" name="product" value="tablenumber"> Номерки на стол</label>
                 </div>
             </div>
-            <div class="col">
-                <div id="carDetailsBlock" class="field-card" style="display: none;">
-                    <div class="field-label">🚘 Дополнительно</div>
-                    <div class="auto-grid">
-                        <div class="auto-item"><label>Марка автомобиля</label><input type="text" id="carBrand" placeholder="Например: Toyota Camry"></div>
-                        <div class="auto-item"><label>Колеса крутятся?</label><select id="wheelsSpin"><option>да</option><option>нет</option></select></div>
-                        <div class="auto-item"><label>Подъездной путь</label><select id="accessRoad"><option>без проблем</option><option>могут быть сложности</option></select></div>
-                        <div class="auto-item"><label>Деревья/провода</label><select id="obstaclesPresence"><option>нет</option><option>есть</option><option>есть, но не помешают крану</option></select></div>
-                        <div class="auto-item"><label>Документы</label><select id="documents"><option>предоставлю</option><option>отсутствуют</option></select></div>
-                        <div class="auto-item"><label>Электрокар</label><select id="electricCar"><option>нет</option><option>да</option></select></div>
+
+            <!-- ========== ПЛАН РАССАДКИ ========== -->
+            <div id="panel-plan" class="product-panel active">
+                <!-- 1. Тип (упрощённый) -->
+                <div class="section">
+                    <div class="section-title">📌 Тип</div>
+                    <div class="radio-group" id="planMainType">
+                        <label class="radio-label"><input type="radio" name="planMainType" value="poster" checked> Плакат</label>
+                        <label class="radio-label"><input type="radio" name="planMainType" value="cardset"> Набор карточек</label>
+                    </div>
+                </div>
+
+                <!-- 2. Параметры для Плаката -->
+                <div id="planPosterParams">
+                    <div class="section">
+                        <div class="section-title">🖨️ Материал</div>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="planPosterMaterial" value="canvas"> Холст на подрамнике</label>
+                            <label class="radio-label"><input type="radio" name="planPosterMaterial" value="pvc"> ПВХ пластик</label>
+                            <label class="radio-label"><input type="radio" name="planPosterMaterial" value="paper" checked> Бумага</label>
+                            <label class="radio-label"><input type="radio" name="planPosterMaterial" value="foamboard"> Пенокартон</label>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">📏 Формат</div>
+                        <select id="planFormat" class="select-full">
+                            <option value="A3">A3 (29.7×42 см)</option>
+                            <option value="A2" selected>A2 (42×59.4 см)</option>
+                            <option value="A1">A1 (59.4×84.1 см)</option>
+                            <option value="A0">A0 (84.1×118.9 см)</option>
+                            <option value="50x70">50×70 см</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 3. Параметры для Набора карточек -->
+                <div id="planCardsetParams" style="display: none;">
+                    <div class="section">
+                        <div class="section-title">📐 Размер карточек</div>
+                        <div class="radio-group">
+                            <label class="radio-label"><input type="radio" name="planCardSize" value="9x5" checked> 9×5 см</label>
+                            <label class="radio-label"><input type="radio" name="planCardSize" value="6x9"> 6×9 см</label>
+                            <label class="radio-label"><input type="radio" name="planCardSize" value="12x12"> 12×12 см</label>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="section-title">🔢 Количество</div>
+                        <div class="counter">
+                            <button id="planCardsetMinus">–</button>
+                            <span id="planCardsetCount">10</span>
+                            <button id="planCardsetPlus">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Дополнительно (общий блок для обоих типов) -->
+                <div class="section">
+                    <div class="section-title">✨ Дополнительно</div>
+                    <div class="radio-group" id="planAddons">
+                        <label class="radio-label"><input type="radio" name="planAddon" value="none" checked> Без дополнений</label>
+                        <label class="radio-label"><input type="radio" name="planAddon" value="frame"> Рамка</label>
+                        <label class="radio-label"><input type="radio" name="planAddon" value="easel"> Мольберт</label>
+                        <label class="radio-label"><input type="radio" name="planAddon" value="frame_easel"> Рамка и мольберт</label>
+                        <label class="radio-label"><input type="radio" name="planAddon" value="corkboard"> Пробковая доска</label>
+                        <label class="radio-label"><input type="radio" name="planAddon" value="string_frame"> Шпагат, прищепки, рамка</label>
+                        <label class="radio-label"><input type="radio" name="planAddon" value="string_only"> Шпагат, прищепки</label>
+                    </div>
+                </div>
+
+                <!-- Дополнительные уточнения для рамки (если выбрана) -->
+                <div id="planFrameDetails" style="display: none;" class="section">
+                    <div class="section-title">🖼️ Тип рамки</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="planFrameType" value="frame1" checked> Рамка №1</label>
+                        <label class="radio-label"><input type="radio" name="planFrameType" value="frame2"> Рамка №2</label>
+                    </div>
+                </div>
+                <div id="planStringDetails" style="display: none;" class="section">
+                    <div class="section-title">🧵 Тип шпагата</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="planStringType" value="string1" checked> Шпагат 1</label>
+                        <label class="radio-label"><input type="radio" name="planStringType" value="string2"> Шпагат 2</label>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="cityPanel" class="field-card">
-            <div class="field-label">⏱️ Время работы (часы)</div>
-            <input type="number" id="hoursCity" value="2" step="1" min="2">
-            <div style="font-size:0.7rem;">Первые 2 часа — базовый тариф, далее почасовая ставка</div>
-        </div>
-        <div id="suburbPanel" class="field-card" style="display: none;">
-            <div class="field-label">🗺️ Пункт назначения (из Владивостока)</div>
-            <select id="destinationSelect"></select>
-            <div style="font-size:0.7rem; margin-top:6px;">Список отсортирован по алфавиту</div>
-        </div>
-
-        <div class="double-row">
-            <div class="field-card">
-                <div class="field-label">📍 Точный адрес места погрузки</div>
-                <input type="text" id="pickupAddress" placeholder="Например: ул. Ленинская, 10">
+            <!-- ========== БАНКЕТНЫЕ КАРТОЧКИ ========== -->
+            <div id="panel-banquet" class="product-panel">
+                <div class="section">
+                    <div class="section-title">📄 Сгиб</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="banquetFold" value="fold" checked> Со сгибом</label>
+                        <label class="radio-label"><input type="radio" name="banquetFold" value="nofold"> Без сгиба</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">📄 Бумага</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="banquetPaper" value="matte" checked> Матовая</label>
+                        <label class="radio-label"><input type="radio" name="banquetPaper" value="glossy"> Глянцевая</label>
+                        <label class="radio-label"><input type="radio" name="banquetPaper" value="designer"> Дизайнерская</label>
+                        <label class="radio-label"><input type="radio" name="banquetPaper" value="kraft"> Крафт</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">📏 Плотность</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="banquetDensity" value="250" checked> 250 г/м²</label>
+                        <label class="radio-label"><input type="radio" name="banquetDensity" value="300"> 300 г/м²</label>
+                        <label class="radio-label"><input type="radio" name="banquetDensity" value="350"> 350 г/м²</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">📐 Размер</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="banquetSize" value="9x5" checked> 9×5 см</label>
+                        <label class="radio-label"><input type="radio" name="banquetSize" value="6x9"> 6×9 см</label>
+                        <label class="radio-label"><input type="radio" name="banquetSize" value="12x12"> 12×12 см</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">🔢 Количество</div>
+                    <div class="counter">
+                        <button id="banquetMinus">–</button>
+                        <span id="banquetCount">10</span>
+                        <button id="banquetPlus">+</button>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Дополнительно:</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="banquetExtra" value="extra1" checked> Дополнительно 1</label>
+                        <label class="radio-label"><input type="radio" name="banquetExtra" value="extra2"> Дополнительно 2</label>
+                    </div>
+                </div>
             </div>
-            <div class="field-card">
-                <div class="field-label">📍 Точный адрес места выгрузки</div>
-                <input type="text" id="deliveryAddress" placeholder="Например: ул. Находкинская, 5">
+
+            <!-- ========== НОМЕРКИ НА СТОЛ ========== -->
+            <div id="panel-tablenumber" class="product-panel">
+                <div class="section">
+                    <div class="section-title">📄 Сгиб</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="tnFold" value="fold" checked> Со сгибом</label>
+                        <label class="radio-label"><input type="radio" name="tnFold" value="nofold"> Без сгиба</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">📄 Бумага</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="tnPaper" value="matte" checked> Матовая</label>
+                        <label class="radio-label"><input type="radio" name="tnPaper" value="glossy"> Глянцевая</label>
+                        <label class="radio-label"><input type="radio" name="tnPaper" value="designer"> Дизайнерская</label>
+                        <label class="radio-label"><input type="radio" name="tnPaper" value="kraft"> Крафт</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">📏 Плотность</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="tnDensity" value="250" checked> 250 г/м²</label>
+                        <label class="radio-label"><input type="radio" name="tnDensity" value="300"> 300 г/м²</label>
+                        <label class="radio-label"><input type="radio" name="tnDensity" value="350"> 350 г/м²</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">📐 Размер</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="tnSize" value="9x5" checked> 9×5 см</label>
+                        <label class="radio-label"><input type="radio" name="tnSize" value="6x9"> 6×9 см</label>
+                        <label class="radio-label"><input type="radio" name="tnSize" value="12x12"> 12×12 см</label>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">🔢 Количество</div>
+                    <div class="counter">
+                        <button id="tnMinus">–</button>
+                        <span id="tnCount">5</span>
+                        <button id="tnPlus">+</button>
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="section-title">Дополнительно:</div>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="tnExtra" value="extra1" checked> Дополнительно 1</label>
+                        <label class="radio-label"><input type="radio" name="tnExtra" value="extra2"> Дополнительно 2</label>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="field-card">
-            <div class="field-label">📎 Прикрепить фотографии места погрузки, выгрузки</div>
-            <input type="file" id="photoUpload" multiple accept="image/jpeg,image/png,image/jpg">
-            <div class="photo-hint" style="font-size:0.7rem; margin-top:8px;">Стоимость считается исходя из стандартного заказа. Сложный рельеф, подъездные пути, низкие провода, невозможность подъехать к грузу и др. могут увеличить стоимость перевозки. Рекомендуется прикрепить фотографии, чтобы избежать незапланированного повышения цены.</div>
-        </div>
-
-        <div class="double-row">
-            <div class="field-card">
-                <div class="field-label">👤 Имя</div>
-                <input type="text" id="clientName" placeholder="Иван Иванов">
+            <button class="btn-order" id="orderBtn">📩 Отправить заявку</button>
+            <!-- Кнопка "Вернуться на главную" внизу -->
+            <div class="bottom-home">
+                <a href="https://tehnodv25rus-hash.github.io/tehnodv25/index" class="btn-home">← Вернуться на главную</a>
             </div>
-            <div class="field-card">
-                <div class="field-label">📞 Номер телефона</div>
-                <input type="tel" id="clientPhone" placeholder="+7 999 123-45-67">
-            </div>
-        </div>
-
-        <div class="payment-options">
-            <span style="font-weight:600;">💳 Способ оплаты:</span>
-            <label class="payment-option"><input type="radio" name="payment" value="cash" checked> Безнал</label>
-            <label class="payment-option"><input type="radio" name="payment" value="nds5"> НДС 5%</label>
-            <label class="payment-option"><input type="radio" name="payment" value="nds22"> НДС 22%</label>
-        </div>
-
-        <div class="result-block">
-            <div style="font-weight:600; margin-bottom:4px;">💰 Итоговая стоимость</div>
-            <div class="big-price" id="finalPrice">— ₽</div>
-            <div id="clientInfoDisplay" class="client-chip"></div>
-            <div class="detail-text" id="priceDetails"></div>
-            <div id="warningMsg" class="warning-box"></div>
-        </div>
-
-        <button class="order-button" id="orderBtn">📞 Заказать</button>
-
-        <div style="font-size:0.7rem; text-align:center; margin-top: 20px;">
-            ⚡ <strong>Городские тарифы:</strong> 5т (7000/2ч → 4000/ч) · 7т (10000→5000/ч) · 10т (13000→5500/ч) · 12т (15000→6000/ч)<br>
-            🌲 <strong>Загород:</strong> фиксированные цены на направления.
+            <div class="footnote">* Доставка по Владивостоку или до ТК — рассчитывается отдельно.</div>
         </div>
     </div>
 </div>
 
 <script>
-    // ----- ТАРИФЫ ДЛЯ ГОРОДА -----
-    const cityTariffs = {
-        '5t': { base2h: 7000, nextHour: 4000, name: '5т + КМУ 3т' },
-        '7t': { base2h: 10000, nextHour: 5000, name: '7т + КМУ 3т' },
-        '10t': { base2h: 13000, nextHour: 5500, name: '10т + КМУ 3т' },
-        '12t': { base2h: 15000, nextHour: 6000, name: '12т + КМУ 5т' }
-    };
+    // Переключение основного продукта
+    const productRadios = document.querySelectorAll('input[name="product"]');
+    const planPanel = document.getElementById('panel-plan');
+    const banquetPanel = document.getElementById('panel-banquet');
+    const tnPanel = document.getElementById('panel-tablenumber');
 
-    // ----- ФИКСИРОВАННЫЕ ЦЕНЫ ЗАГОРОД -----
-    const rawItems = [
-        { name: "Артем", dist: 50, prices: { "5t": 13000, "7t": 17000, "10t": 21000, "12t": 24000 } },
-        { name: "Артем Грэс", dist: 55, prices: { "5t": 15000, "7t": 20000, "10t": 24000, "12t": 27000 } },
-        { name: "Арсеньев", dist: 250, prices: { "5t": 43000, "7t": 54000, "10t": 69000, "12t": 72000 } },
-        { name: "Б.Камень", dist: 100, prices: { "5t": 21000, "7t": 27000, "10t": 34000, "12t": 37000 } },
-        { name: "Барабаш", dist: 100, prices: { "5t": 21000, "7t": 27000, "10t": 34000, "12t": 37000 } },
-        { name: "Ботанический сад", dist: 25, prices: { "5t": 9000, "7t": 13000, "10t": 17000, "12t": 20000 } },
-        { name: "Врангель", dist: 210, prices: { "5t": 34000, "7t": 45000, "10t": 64000, "12t": 67000 } },
-        { name: "Двойка", dist: 50, prices: { "5t": 13000, "7t": 17000, "10t": 21000, "12t": 24000 } },
-        { name: "Де Фриз", dist: 45, prices: { "5t": 11000, "7t": 15000, "10t": 19000, "12t": 22000 } },
-        { name: "Камень рыболов", dist: 210, prices: { "5t": 34000, "7t": 45000, "10t": 64000, "12t": 67000 } },
-        { name: "Кипарисово", dist: 65, prices: { "5t": 19000, "7t": 24000, "10t": 29000, "12t": 32000 } },
-        { name: "Надеждинск, Соловей Ключ", dist: 55, prices: { "5t": 15000, "7t": 20000, "10t": 24000, "12t": 27000 } },
-        { name: "Находка", dist: 180, prices: { "5t": 31000, "7t": 40000, "10t": 59000, "12t": 62000 } },
-        { name: "о. Русский ДВФУ", dist: 25, prices: { "5t": 9000, "7t": 13000, "10t": 17000, "12t": 20000 } },
-        { name: "Океанская", dist: 35, prices: { "5t": 10000, "7t": 14000, "10t": 19000, "12t": 22000 } },
-        { name: "Партизанск", dist: 170, prices: { "5t": 29000, "7t": 35000, "10t": 54000, "12t": 57000 } },
-        { name: "Раздольное", dist: 65, prices: { "5t": 19000, "7t": 24000, "10t": 29000, "12t": 32000 } },
-        { name: "Садгород", dist: 45, prices: { "5t": 11000, "7t": 15000, "10t": 19000, "12t": 22000 } },
-        { name: "Сахарный ключ", dist: 35, prices: { "5t": 10000, "7t": 14000, "10t": 19000, "12t": 22000 } },
-        { name: "Седанка", dist: 25, prices: { "5t": 9000, "7t": 13000, "10t": 17000, "12t": 20000 } },
-        { name: "Славянка", dist: 180, prices: { "5t": 31000, "7t": 40000, "10t": 59000, "12t": 62000 } },
-        { name: "Спасск", dist: 250, prices: { "5t": 43000, "7t": 54000, "10t": 69000, "12t": 72000 } },
-        { name: "Спутник", dist: 35, prices: { "5t": 10000, "7t": 14000, "10t": 19000, "12t": 22000 } },
-        { name: "ст. Весенняя", dist: 45, prices: { "5t": 11000, "7t": 15000, "10t": 19000, "12t": 22000 } },
-        { name: "Суражевка", dist: 65, prices: { "5t": 19000, "7t": 24000, "10t": 29000, "12t": 32000 } },
-        { name: "Угловая", dist: 45, prices: { "5t": 11000, "7t": 15000, "10t": 19000, "12t": 22000 } },
-        { name: "Угловое", dist: 45, prices: { "5t": 11000, "7t": 15000, "10t": 19000, "12t": 22000 } },
-        { name: "Уссурийск", dist: 100, prices: { "5t": 21000, "7t": 27000, "10t": 34000, "12t": 37000 } },
-        { name: "Фанзавод", dist: 35, prices: { "5t": 10000, "7t": 14000, "10t": 19000, "12t": 22000 } },
-        { name: "Фокино", dist: 120, prices: { "5t": 23000, "7t": 27000, "10t": 41000, "12t": 44000 } },
-        { name: "Хабаровск", dist: 750, prices: { "5t": 109000, "7t": 134000, "10t": 154000, "12t": 159000 } },
-        { name: "Шамора", dist: 45, prices: { "5t": 11000, "7t": 15000, "10t": 19000, "12t": 22000 } },
-        { name: "Шкотово", dist: 65, prices: { "5t": 19000, "7t": 24000, "10t": 29000, "12t": 32000 } }
-    ];
-
-    const suburbPrices = [...rawItems].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-
-    // ----- СПИСОК ГРУЗОВ (исправлено: удалён "Жилой модуль", "Эксоватор" → "Экскаватор") -----
-    const cargoDataRaw = [
-        { name: "Автомобиль джип", allowed: ["5t"] },
-        { name: "Автомобиль кроссовер", allowed: ["5t"] },
-        { name: "Автомобиль легковой", allowed: ["5t"] },
-        { name: "Автомобиль минивэн", allowed: ["5t"] },
-        { name: "Автомобиль внедорожник", allowed: ["5t"] },
-        { name: "Бочки", allowed: ["5t", "7t", "10t"] },
-        { name: "Гараж дальзаводского", allowed: ["7t", "10t"] },
-        { name: "Гараж сейф", allowed: ["7t", "10t"] },
-        { name: "Гараж цельносборный", allowed: ["7t", "10t"] },
-        { name: "Генератор", allowed: ["5t", "7t", "10t"] },
-        { name: "Грузовик", allowed: ["7t", "10t"] },
-        { name: "Катушка", allowed: ["5t", "7t", "10t"] },
-        { name: "Квадроцикл", allowed: ["5t"] },
-        { name: "Контейнер 5ф", allowed: ["5t"] },
-        { name: "Контейнер 10ф", allowed: ["7t", "10t"] },
-        { name: "Контейнер 20ф", allowed: ["7t", "10t"] },
-        { name: "Контейнер 40ф", allowed: ["traktor"] },
-        { name: "Кунг", allowed: ["7t", "10t"] },
-        { name: "Лодка, катер 5-7м", allowed: ["5t"] },
-        { name: "Лодка, катер 7-12м", allowed: ["5t"] },
-        { name: "Лодка, катер до 5м", allowed: ["5t"] },
-        { name: "Микроавтобус", allowed: ["5t"] },
-        { name: "Модуль 5ф", allowed: ["7t", "10t"] },
-        { name: "Модуль 10ф", allowed: ["7t", "10t"] },
-        { name: "Модуль 20ф", allowed: ["7t", "10t"] },
-        { name: "Модуль 40ф", allowed: ["traktor"] },
-        { name: "Мотоцикл", allowed: ["5t"] },
-        { name: "Опалубка", allowed: ["5t", "7t", "10t"] },
-        { name: "Септик", allowed: ["5t"] },
-        { name: "Спецтехника", allowed: ["5t"] },
-        { name: "Стекла", allowed: ["5t"] },
-        { name: "Фронтальный погрузчик", allowed: ["7t", "10t"] },
-        { name: "Экскаватор", allowed: ["7t", "10t"] }   // было "Эксоватор", исправлено на "Экскаватор"
-    ];
-
-    const cargoData = [...cargoDataRaw].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-
-    const cargoSelect = document.getElementById('cargoSelect');
-    cargoData.forEach(cargo => {
-        const opt = document.createElement('option');
-        opt.value = cargo.allowed.join(',');
-        opt.textContent = cargo.name;
-        opt.setAttribute('data-allowed', cargo.allowed.join(','));
-        cargoSelect.appendChild(opt);
-    });
-
-    const destSelect = document.getElementById('destinationSelect');
-    suburbPrices.forEach((dest, idx) => {
-        const opt = document.createElement('option');
-        opt.value = idx;
-        opt.textContent = `${dest.name} (${dest.dist} км)`;
-        destSelect.appendChild(opt);
-    });
-
-    const truckSelect = document.getElementById('truckSelect');
-    const cityPanel = document.getElementById('cityPanel');
-    const suburbPanel = document.getElementById('suburbPanel');
-    const modeTabs = document.querySelectorAll('.mode-btn');
-    const finalPriceSpan = document.getElementById('finalPrice');
-    const priceDetailsDiv = document.getElementById('priceDetails');
-    const warningDiv = document.getElementById('warningMsg');
-    const hoursCity = document.getElementById('hoursCity');
-    const paymentRadios = document.querySelectorAll('input[name="payment"]');
-    const carDetailsBlock = document.getElementById('carDetailsBlock');
-    const carBrandInput = document.getElementById('carBrand');
-    const wheelsSpin = document.getElementById('wheelsSpin');
-    const accessRoad = document.getElementById('accessRoad');
-    const obstaclesPresence = document.getElementById('obstaclesPresence');
-    const documents = document.getElementById('documents');
-    const electricCar = document.getElementById('electricCar');
-    const orderBtn = document.getElementById('orderBtn');
-    const clientName = document.getElementById('clientName');
-    const clientPhone = document.getElementById('clientPhone');
-
-    let currentMode = 'city';
-
-    function isCarCargo() {
-        const selected = cargoSelect.options[cargoSelect.selectedIndex]?.text;
-        return selected && selected.startsWith("Автомобиль");
+    function switchProduct(product) {
+        planPanel.classList.toggle('active', product === 'plan');
+        banquetPanel.classList.toggle('active', product === 'banquet');
+        tnPanel.classList.toggle('active', product === 'tablenumber');
+        if (product === 'plan') togglePlanType();
     }
 
-    function toggleCarDetails() {
-        if (isCarCargo()) {
-            carDetailsBlock.style.display = 'block';
-        } else {
-            carDetailsBlock.style.display = 'none';
-            carBrandInput.value = '';
-            wheelsSpin.value = 'да';
-            accessRoad.value = 'без проблем';
-            obstaclesPresence.value = 'нет';
-            documents.value = 'предоставлю';
-            electricCar.value = 'нет';
+    // Переключение типа Плакат / Набор карточек
+    const planMainTypeRadios = document.querySelectorAll('input[name="planMainType"]');
+    const posterParams = document.getElementById('planPosterParams');
+    const cardsetParams = document.getElementById('planCardsetParams');
+    function togglePlanType() {
+        const isPoster = document.querySelector('input[name="planMainType"]:checked').value === 'poster';
+        posterParams.style.display = isPoster ? 'block' : 'none';
+        cardsetParams.style.display = isPoster ? 'none' : 'block';
+    }
+
+    // Доп. опции для плана: показываем дополнительные поля в зависимости от выбранного дополнения
+    const planAddonRadios = document.querySelectorAll('input[name="planAddon"]');
+    const frameDetails = document.getElementById('planFrameDetails');
+    const stringDetails = document.getElementById('planStringDetails');
+    function toggleAddonDetails() {
+        const selected = document.querySelector('input[name="planAddon"]:checked').value;
+        // Скрываем всё
+        frameDetails.style.display = 'none';
+        stringDetails.style.display = 'none';
+        if (selected === 'frame' || selected === 'frame_easel') {
+            frameDetails.style.display = 'block';
+        } else if (selected === 'string_frame') {
+            frameDetails.style.display = 'block';
+            stringDetails.style.display = 'block';
+        } else if (selected === 'string_only') {
+            stringDetails.style.display = 'block';
         }
     }
 
-    function filterTrucksByCargo() {
-        const selectedOption = cargoSelect.options[cargoSelect.selectedIndex];
-        const allowedStr = selectedOption.getAttribute('data-allowed');
-        if (!allowedStr) return;
-        const allowed = allowedStr.split(',');
-        if (allowed.includes('traktor')) {
-            truckSelect.disabled = true;
-            truckSelect.innerHTML = '<option value="">Тягач — уточняйте стоимость</option>';
-            return;
-        }
-        truckSelect.disabled = false;
-        const allOptions = { '5t': 'Борт 5т + КМУ 3т', '7t': 'Борт 7т + КМУ 3т', '10t': 'Борт 10т + КМУ 3т', '12t': 'Борт 12т + КМУ 5т' };
-        let newHtml = '';
-        for (let key of allowed) if (allOptions[key]) newHtml += `<option value="${key}">${allOptions[key]}</option>`;
-        if (!newHtml) newHtml = '<option value="5t">Борт 5т + КМУ 3т</option>';
-        truckSelect.innerHTML = newHtml;
-        if (truckSelect.options.length) truckSelect.value = truckSelect.options[0].value;
-    }
+    // Счётчики для набора карточек (план)
+    const planCardsetMinus = document.getElementById('planCardsetMinus');
+    const planCardsetPlus = document.getElementById('planCardsetPlus');
+    const planCardsetCountSpan = document.getElementById('planCardsetCount');
+    let planCardsetCount = 10;
+    planCardsetMinus.addEventListener('click', () => { if (planCardsetCount > 1) { planCardsetCount--; planCardsetCountSpan.innerText = planCardsetCount; } });
+    planCardsetPlus.addEventListener('click', () => { planCardsetCount++; planCardsetCountSpan.innerText = planCardsetCount; });
 
-    function getPaymentMultiplier() {
-        const selected = document.querySelector('input[name="payment"]:checked').value;
-        if (selected === 'nds5') return 1.05;
-        if (selected === 'nds22') return 1.22;
-        return 1.0;
-    }
-    function getPaymentLabel() {
-        const selected = document.querySelector('input[name="payment"]:checked').value;
-        if (selected === 'nds5') return "НДС 5%";
-        if (selected === 'nds22') return "НДС 22%";
-        return "Безнал";
-    }
+    // Счётчики для банкетных карточек
+    const banquetMinus = document.getElementById('banquetMinus');
+    const banquetPlus = document.getElementById('banquetPlus');
+    const banquetCountSpan = document.getElementById('banquetCount');
+    let banquetCount = 10;
+    banquetMinus.addEventListener('click', () => { if (banquetCount > 1) { banquetCount--; banquetCountSpan.innerText = banquetCount; } });
+    banquetPlus.addEventListener('click', () => { banquetCount++; banquetCountSpan.innerText = banquetCount; });
 
-    function calcCity(truckId, hours) {
-        const t = cityTariffs[truckId];
-        if (!t) return null;
-        let totalHours = Math.max(2, hours);
-        let extra = Math.max(0, totalHours - 2);
-        let totalCost = t.base2h + extra * t.nextHour;
-        return { baseTotal: Math.round(totalCost) };
-    }
+    // Счётчики для номерков
+    const tnMinus = document.getElementById('tnMinus');
+    const tnPlus = document.getElementById('tnPlus');
+    const tnCountSpan = document.getElementById('tnCount');
+    let tnCount = 5;
+    tnMinus.addEventListener('click', () => { if (tnCount > 1) { tnCount--; tnCountSpan.innerText = tnCount; } });
+    tnPlus.addEventListener('click', () => { tnCount++; tnCountSpan.innerText = tnCount; });
 
-    function calcSuburb(truckId, destIndex) {
-        const dest = suburbPrices[destIndex];
-        if (!dest) return null;
-        const fixedPrice = dest.prices[truckId];
-        if (fixedPrice === undefined) return { error: `Нет цены для этого авто в данном направлении` };
-        return { baseTotal: fixedPrice, routeName: dest.name, distance: dest.dist };
-    }
+    // Обработчики событий
+    productRadios.forEach(r => r.addEventListener('change', (e) => {
+        if (e.target.checked) switchProduct(e.target.value);
+    }));
+    planMainTypeRadios.forEach(r => r.addEventListener('change', togglePlanType));
+    planAddonRadios.forEach(r => r.addEventListener('change', toggleAddonDetails));
 
-    function update() {
-        const selectedOption = cargoSelect.options[cargoSelect.selectedIndex];
-        const allowedStr = selectedOption.getAttribute('data-allowed');
-        if (allowedStr && allowedStr.includes('traktor')) {
-            finalPriceSpan.innerHTML = "— ₽";
-            priceDetailsDiv.innerHTML = "⚠️ Для выбранного груза требуется тягач. Уточните стоимость у менеджера.";
-            warningDiv.style.display = 'block';
-            warningDiv.innerHTML = "Тягач — стоимость отдельно.";
-            return;
-        }
-        warningDiv.style.display = 'none';
-
-        const truckId = truckSelect.value;
-        if (!truckId) return;
-        let result = null;
-        if (currentMode === 'city') {
-            let hrs = parseInt(hoursCity.value, 10);
-            if (isNaN(hrs) || hrs < 2) hrs = 2;
-            result = calcCity(truckId, hrs);
-            if (!result) { finalPriceSpan.innerHTML = "Ошибка"; return; }
-        } else {
-            let idx = parseInt(destSelect.value, 10);
-            if (isNaN(idx)) idx = 0;
-            result = calcSuburb(truckId, idx);
-            if (result.error) { finalPriceSpan.innerHTML = "Нет цены"; priceDetailsDiv.innerHTML = result.error; return; }
-        }
-
-        const multiplier = getPaymentMultiplier();
-        const paymentLabel = getPaymentLabel();
-        let finalTotal = result.baseTotal * multiplier;
-        finalTotal = Math.round(finalTotal);
-        const markup = finalTotal - result.baseTotal;
-        const markupPercent = multiplier === 1 ? 0 : (multiplier-1)*100;
-
-        finalPriceSpan.innerHTML = `${finalTotal.toLocaleString('ru-RU')} ₽`;
-
-        const pickup = document.getElementById('pickupAddress').value.trim();
-        const delivery = document.getElementById('deliveryAddress').value.trim();
-        let addressText = '';
-        if (pickup || delivery) addressText = `<p>📍 Погрузка: ${pickup || 'не указано'} | Выгрузка: ${delivery || 'не указано'}</p>`;
-
-        let detailsHtml = `<p>🚚 Техника: ${cityTariffs[truckId].name}</p>`;
-        const cargoName = cargoSelect.selectedOptions[0]?.text;
-        if (cargoName) detailsHtml += `<p>📦 Везем: ${cargoName}</p>`;
-
-        const name = clientName.value.trim();
-        const phone = clientPhone.value.trim();
-        if (name) detailsHtml += `<p>👤 Имя: ${name}</p>`;
-        if (phone) detailsHtml += `<p>📞 Телефон: ${phone}</p>`;
-
-        if (isCarCargo()) {
-            const brand = carBrandInput.value.trim();
-            if (brand) detailsHtml += `<p>🚘 Марка: ${brand}</p>`;
-            detailsHtml += `<p>🔧 Колеса крутятся? ${wheelsSpin.value}</p>`;
-            detailsHtml += `<p>🛣️ Подъездной путь: ${accessRoad.value}</p>`;
-            detailsHtml += `<p>🌳 Наличие деревьев, проводов над автомобилем: ${obstaclesPresence.value}</p>`;
-            detailsHtml += `<p>📄 Документы на автомобиль: ${documents.value}</p>`;
-            detailsHtml += `<p>⚡ Электрокар: ${electricCar.value}</p>`;
-        }
-
-        if (addressText) detailsHtml += addressText;
-
-        if (currentMode === 'city') {
-            detailsHtml += `<p>🏙️ <strong>По городу</strong> · ${result.baseTotal.toLocaleString('ru-RU')} ₽</p>`;
-        } else {
-            detailsHtml += `<p>🌲 <strong>Загород</strong> · ${result.routeName} (${result.distance} км)<br>📋 ${result.baseTotal.toLocaleString('ru-RU')} ₽</p>`;
-        }
-
-        if (markupPercent > 0) {
-            detailsHtml += `<p>💳 Способ оплаты: ${paymentLabel} (+${markupPercent}%) = ${markup.toLocaleString('ru-RU')} ₽ наценка</p>`;
-        } else {
-            detailsHtml += `<p>💳 Способ оплаты: ${paymentLabel}</p>`;
-        }
-        detailsHtml += `<p>✨ <strong>Итого: ${finalTotal.toLocaleString('ru-RU')} ₽</strong></p>`;
-
-        priceDetailsDiv.innerHTML = detailsHtml;
-
-        const clientInfoDiv = document.getElementById('clientInfoDisplay');
-        if (name || phone) clientInfoDiv.innerHTML = `👤 ${name} ${phone ? `📞 ${phone}` : ''}`;
-        else clientInfoDiv.innerHTML = '';
-    }
-
-    function setMode(mode) {
-        currentMode = mode;
-        cityPanel.style.display = mode === 'city' ? 'block' : 'none';
-        suburbPanel.style.display = mode === 'suburb' ? 'block' : 'none';
-        update();
-    }
-
-    modeTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            modeTabs.forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            setMode(tab.getAttribute('data-mode'));
-        });
-    });
-
-    cargoSelect.addEventListener('change', () => { filterTrucksByCargo(); toggleCarDetails(); update(); });
-    truckSelect.addEventListener('change', update);
-    hoursCity.addEventListener('input', () => { if (currentMode === 'city') update(); });
-    hoursCity.addEventListener('change', () => { let v = parseInt(hoursCity.value,10); if (isNaN(v)||v<2) hoursCity.value=2; if (currentMode==='city') update(); });
-    destSelect.addEventListener('change', () => { if (currentMode === 'suburb') update(); });
-    paymentRadios.forEach(r => r.addEventListener('change', update));
-    document.getElementById('pickupAddress').addEventListener('input', update);
-    document.getElementById('deliveryAddress').addEventListener('input', update);
-    carBrandInput.addEventListener('input', update);
-    wheelsSpin.addEventListener('change', update);
-    accessRoad.addEventListener('change', update);
-    obstaclesPresence.addEventListener('change', update);
-    documents.addEventListener('change', update);
-    electricCar.addEventListener('change', update);
-    clientName.addEventListener('input', update);
-    clientPhone.addEventListener('input', update);
-
-    const RECIPIENT_EMAIL = "manager@example.com"; // ЗАМЕНИТЕ НА РЕАЛЬНЫЙ EMAIL
-
-    orderBtn.addEventListener('click', () => {
-        const name = clientName.value.trim();
-        const phone = clientPhone.value.trim();
-        if (!name || !phone) {
-            alert("Пожалуйста, заполните имя и номер телефона!");
-            return;
-        }
-
-        const truckName = cityTariffs[truckSelect.value]?.name || "Не выбран";
-        const cargoName = cargoSelect.selectedOptions[0]?.text || "Не выбран";
-        const pickup = document.getElementById('pickupAddress').value.trim() || "не указан";
-        const delivery = document.getElementById('deliveryAddress').value.trim() || "не указан";
-        const payment = getPaymentLabel();
-        const total = finalPriceSpan.innerText;
-        const modeText = currentMode === 'city' ? "По городу" : "Загород";
-        let routeInfo = "";
-        if (currentMode === 'city') {
-            const hours = hoursCity.value;
-            routeInfo = `Время работы: ${hours} ч`;
-        } else {
-            const selectedIdx = destSelect.value;
-            if (selectedIdx) {
-                const dest = suburbPrices[parseInt(selectedIdx)];
-                routeInfo = `Маршрут: ${dest.name} (${dest.dist} км)`;
+    // Кнопка отправки заявки (сбор данных)
+    document.getElementById('orderBtn').addEventListener('click', () => {
+        let product = document.querySelector('input[name="product"]:checked').value;
+        let message = `Продукт: ${product === 'plan' ? 'План рассадки' : (product === 'banquet' ? 'Банкетные карточки' : 'Номерки на стол')}\n`;
+        
+        if (product === 'plan') {
+            let mainType = document.querySelector('input[name="planMainType"]:checked').value;
+            message += `Тип: ${mainType === 'poster' ? 'Плакат' : 'Набор карточек'}\n`;
+            
+            if (mainType === 'poster') {
+                let material = document.querySelector('input[name="planPosterMaterial"]:checked').value;
+                let materialName = material === 'canvas' ? 'Холст на подрамнике' : (material === 'pvc' ? 'ПВХ пластик' : (material === 'paper' ? 'Бумага' : 'Пенокартон'));
+                let format = document.getElementById('planFormat').value;
+                message += `Материал: ${materialName}\nФормат: ${format}\n`;
             } else {
-                routeInfo = "Маршрут не выбран";
+                let cardSize = document.querySelector('input[name="planCardSize"]:checked').value;
+                message += `Размер карточек: ${cardSize}\nКоличество: ${planCardsetCount}\n`;
             }
+            
+            // Дополнительно
+            let addon = document.querySelector('input[name="planAddon"]:checked').value;
+            let addonText = '';
+            switch(addon) {
+                case 'none': addonText = 'Без дополнений'; break;
+                case 'frame': addonText = 'Рамка'; break;
+                case 'easel': addonText = 'Мольберт'; break;
+                case 'frame_easel': addonText = 'Рамка и мольберт'; break;
+                case 'corkboard': addonText = 'Пробковая доска'; break;
+                case 'string_frame': addonText = 'Шпагат, прищепки, рамка'; break;
+                case 'string_only': addonText = 'Шпагат, прищепки'; break;
+            }
+            message += `Дополнительно: ${addonText}\n`;
+            
+            if (addon === 'frame' || addon === 'frame_easel' || addon === 'string_frame') {
+                let frameType = document.querySelector('input[name="planFrameType"]:checked')?.value === 'frame1' ? 'Рамка №1' : 'Рамка №2';
+                message += `Тип рамки: ${frameType}\n`;
+            }
+            if (addon === 'string_frame' || addon === 'string_only') {
+                let stringType = document.querySelector('input[name="planStringType"]:checked')?.value === 'string1' ? 'Шпагат 1' : 'Шпагат 2';
+                message += `Тип шпагата: ${stringType}\n`;
+            }
+        } else if (product === 'banquet') {
+            let fold = document.querySelector('input[name="banquetFold"]:checked').value === 'fold' ? 'со сгибом' : 'без сгиба';
+            let paper = document.querySelector('input[name="banquetPaper"]:checked').parentElement.innerText.split(' ')[0];
+            let density = document.querySelector('input[name="banquetDensity"]:checked').value;
+            let size = document.querySelector('input[name="banquetSize"]:checked').value;
+            let extra = document.querySelector('input[name="banquetExtra"]:checked').value === 'extra1' ? 'Дополнительно 1' : 'Дополнительно 2';
+            message += `Сгиб: ${fold}\nБумага: ${paper}\nПлотность: ${density} г/м²\nРазмер: ${size}\nКоличество: ${banquetCount}\nДополнительно: ${extra}`;
+        } else if (product === 'tablenumber') {
+            let fold = document.querySelector('input[name="tnFold"]:checked').value === 'fold' ? 'со сгибом' : 'без сгиба';
+            let paper = document.querySelector('input[name="tnPaper"]:checked').parentElement.innerText.split(' ')[0];
+            let density = document.querySelector('input[name="tnDensity"]:checked').value;
+            let size = document.querySelector('input[name="tnSize"]:checked').value;
+            let extra = document.querySelector('input[name="tnExtra"]:checked').value === 'extra1' ? 'Дополнительно 1' : 'Дополнительно 2';
+            message += `Сгиб: ${fold}\nБумага: ${paper}\nПлотность: ${density} г/м²\nРазмер: ${size}\nКоличество: ${tnCount}\nДополнительно: ${extra}`;
         }
-
-        let body = `ЗАКАЗ НА ПЕРЕВОЗКУ
-
-Клиент: ${name}
-Телефон: ${phone}
-
-Режим: ${modeText}
-${routeInfo}
-
-Техника: ${truckName}
-Груз: ${cargoName}
-Погрузка: ${pickup}
-Выгрузка: ${delivery}
-Способ оплаты: ${payment}
-Сумма: ${total}`;
-
-        if (isCarCargo()) {
-            const brand = carBrandInput.value.trim();
-            if (brand) body += `\nМарка авто: ${brand}`;
-            body += `\nКолеса крутятся? ${wheelsSpin.value}
-Подъездной путь: ${accessRoad.value}
-Деревья/провода: ${obstaclesPresence.value}
-Документы: ${documents.value}
-Электрокар: ${electricCar.value}`;
-        }
-
-        const subject = encodeURIComponent("Новый заказ на перевозку");
-        const mailBody = encodeURIComponent(body);
-        window.location.href = `mailto:${RECIPIENT_EMAIL}?subject=${subject}&body=${mailBody}`;
+        alert(`✅ Заявка отправлена! Менеджер свяжется с вами.\n\n${message}`);
     });
 
-    filterTrucksByCargo();
-    toggleCarDetails();
-    setMode('city');
+    // Инициализация
+    switchProduct('plan');
+    togglePlanType();
+    toggleAddonDetails();
 </script>
 </body>
 </html>
