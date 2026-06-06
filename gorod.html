@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Калькулятор перевозок | Техно ДВ — городские перевозки</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}body{background:#fff;font-family:'Inter',sans-serif;color:#1f2937}.container{max-width:1280px;margin:0 auto;padding:0 24px}.header{background:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.03);border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:100}.header-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:20px 0;gap:16px}.logo h1{font-size:1.7rem;font-weight:800;color:#d97706}.logo p{font-size:0.75rem;color:#4b5563}.nav a{text-decoration:none;font-weight:600;color:#1f2937}.back-home-link{display:inline-flex;align-items:center;gap:8px;background:#fef3c7;padding:8px 20px;border-radius:40px;font-weight:600;color:#b45309;text-decoration:none}.back-home-link:hover{background:#d97706;color:white}.header-phones{display:flex;gap:16px}.header-phone{font-weight:700;background:#fef3c7;padding:8px 16px;border-radius:40px}.header-phone a{text-decoration:none;color:#b45309}.calc-card{max-width:1280px;margin:40px auto;background:#fff;border-radius:48px;box-shadow:0 25px 45px -12px rgba(0,0,0,0.12)}.calc-header{padding:32px 40px 16px}.calc-header h1{font-size:1.8rem;font-weight:700}.calc-body{padding:0 40px 36px}.two-columns{display:flex;flex-wrap:wrap;gap:28px;margin-bottom:28px}.col{flex:1;min-width:260px}.field-card{background:white;border-radius:28px;padding:20px;margin-bottom:24px;border:1px solid #eef2f6;transition:0.2s}.field-card:hover{border-color:#fde68a;box-shadow:0 10px 20px rgba(0,0,0,0.04)}.field-label{font-weight:600;font-size:0.85rem;margin-bottom:10px;color:#1e4663;display:flex;align-items:center;gap:8px}select,input,textarea{width:100%;padding:12px 16px;border-radius:24px;border:1px solid #e2e8f0;font-family:inherit;font-size:0.9rem}.double-row{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:28px}.double-row .field-card{flex:1;margin-bottom:0}.payment-options{display:flex;flex-wrap:wrap;gap:24px;background:#fef3c7;padding:16px 24px;border-radius:60px;margin-bottom:28px}.result-block{background:#fef3c7;border-radius:32px;padding:24px;margin-top:24px;border-left:6px solid #d97706}.big-price{font-size:2.8rem;font-weight:800;color:#b45309}.client-chip{background:white;border-radius:40px;padding:8px 20px;display:inline-block;margin:12px 0 8px}.detail-text{margin-top:16px;border-top:1px solid #fde68a;padding-top:14px;font-size:0.85rem}.warning-box{background:#fff3e3;border-radius:24px;padding:12px 16px;margin-top:16px;display:none}.order-button{background:#d97706;color:white;width:100%;padding:16px;border:none;border-radius:60px;font-weight:700;font-size:1.2rem;margin-top:28px;cursor:pointer;transition:0.2s}.order-button:hover{background:#b45309;transform:translateY(-2px)}.cargo-params{background:#fef9e6;border-radius:28px;padding:20px;margin-bottom:24px;border:1px solid #fde68a;display:none}.cargo-params.visible{display:block}.param-title{font-weight:700;font-size:1rem;margin-bottom:12px;color:#b45309}.param-row{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:16px}.param-item{flex:1;min-width:160px}.param-item label{font-weight:500;font-size:0.8rem;display:block;margin-bottom:4px}footer{background:#0f172a;color:#cbd5e1;padding:48px 0 32px;margin-top:60px}.footer-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:32px}.footer-grid i{margin-right:8px;color:#d97706}.copy{text-align:center;margin-top:48px;border-top:1px solid #334155;padding-top:24px}@media (max-width:860px){.calc-body{padding:0 24px 24px}.calc-header{padding:24px 24px 12px}.big-price{font-size:2rem}}
+  </style>
+</head>
+<body>
+<header class="header"><div class="container header-inner"><div class="logo"><h1>Техно ДВ</h1><p>Транспортная компания | Спецтехника</p></div><div class="nav"><a href="#" class="back-home-link"><i class="fas fa-arrow-left"></i> Вернуться на главную</a></div><div class="header-phones"><div class="header-phone"><a href="tel:+79147312000"><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</a></div><div class="header-phone"><a href="tel:+79147076090"><i class="fas fa-phone-alt"></i> +7 (914) 707-60-90</a></div></div></div></header>
+
+<div class="calc-card"><div class="calc-header"><h1>🚛 Расчёт стоимости перевозки по городу.</h1><div class="subhead">Почасовая оплата: первые 2 часа — базовый тариф, далее почасовая ставка</div></div><div class="calc-body"><div class="two-columns"><div class="col"><div class="field-card"><div class="field-label">📦 Что везем</div><select id="cargoSelect"></select></div><div class="field-card"><div class="field-label">🚚 Автомобиль (доступные под груз)</div><select id="truckSelect"></select><div style="font-size:0.7rem; margin-top:6px;">Автоматически фильтруется по грузу и необходимости крана</div></div></div><div class="col" id="paramsContainer"></div></div>
+
+<div class="field-card"><div class="field-label">⏱️ Время работы (часы)</div><input type="number" id="hoursCity" value="2" step="1" min="2"><div style="font-size:0.7rem;">Первые 2 часа — базовый тариф, далее почасовая ставка</div></div>
+
+<div class="double-row"><div class="field-card"><div class="field-label">📍 Адрес погрузки</div><input type="text" id="pickupAddress" placeholder="Например: ул. Ленинская, 10"></div><div class="field-card"><div class="field-label">📍 Адрес выгрузки</div><input type="text" id="deliveryAddress" placeholder="Например: ул. Находкинская, 5"></div></div>
+<div class="double-row"><div class="field-card"><div class="field-label">📍 Ориентир для водителя (погрузка)</div><input type="text" id="pickupLandmark" placeholder="Например: заезд со стороны гаража"></div><div class="field-card"><div class="field-label">📍 Ориентир для водителя (выгрузка)</div><input type="text" id="deliveryLandmark" placeholder="Например: домофон 123"></div></div>
+<div class="field-card"><div class="field-label">📎 Прикрепить фотографии места погрузки, выгрузки</div><input type="file" id="photoUpload" multiple accept="image/jpeg,image/png,image/jpg"><div class="photo-hint">Сложный рельеф, подъездные пути, низкие провода могут увеличить стоимость. Фото помогут избежать незапланированного повышения цены.</div></div>
+<div class="double-row"><div class="field-card"><div class="field-label">👤 Имя</div><input type="text" id="clientName" placeholder="Иван Иванов"></div><div class="field-card"><div class="field-label">📞 Номер телефона</div><input type="tel" id="clientPhone" placeholder="+7 999 123-45-67"></div></div>
+<div class="payment-options"><span>💳 Способ оплаты:</span><label class="payment-option"><input type="radio" name="payment" value="cash" checked> Безнал</label><label class="payment-option"><input type="radio" name="payment" value="nds5"> НДС 5%</label><label class="payment-option"><input type="radio" name="payment" value="nds22"> НДС 22%</label></div>
+<div class="result-block"><div style="font-weight:600;">💰 Итоговая стоимость</div><div class="big-price" id="finalPrice">— ₽</div><div id="clientInfoDisplay" class="client-chip"></div><div class="detail-text" id="priceDetails"></div><div id="warningMsg" class="warning-box"></div></div>
+<button class="order-button" id="orderBtn">📞 Заказать</button>
+<div style="font-size:0.7rem; text-align:center; margin-top:20px;">⚡ Городские тарифы: 5т (7000₽/2ч → 3500₽/ч) · 7т (10000→4000/ч) · 10т (13000→4500/ч) · 12т (15000→5000/ч)</div>
+</div></div>
+
+<footer><div class="container footer-grid"><div><h4>Контакты</h4><p><i class="fas fa-map-marker-alt"></i> г. Владивосток, СДПК Дальзавод, 69</p><p><i class="fas fa-phone-alt"></i> <a href="tel:+79147312000">+7 (914) 731-20-00</a></p></div><div><h4>Режим работы</h4><p>Офис: Пн-Пт 9:00–19:00</p><p>Водители: 24/7</p></div><div><h4>Соцсети</h4><div style="display:flex; gap:20px;"><a href="#"><i class="fab fa-vk"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-telegram"></i></a></div></div></div><div class="copy"><p>© 2017 Транспортная компания «Техно ДВ»</p></div></footer>
+
+<script>
+// ======================== ДАННЫЕ ТЕХНИКИ ========================
+const VEHICLES = [
+  { id:"evac4t_075", name:"Эвакуатор 4т, КМУ 3т", tier:"5t", type:"evacuator", hasCrane:true, capacityTon:4, fullBarrels:20, emptyBarrels:78 },
+  { id:"evac5t_285", name:"Эвакуатор 5т, КМУ 3т", tier:"5t", type:"evacuator", hasCrane:true, capacityTon:5, fullBarrels:25, emptyBarrels:66 },
+  { id:"evac15t_157", name:"Эвакуатор 15т, КМУ 5т", tier:"12t", type:"evacuator", hasCrane:true, capacityTon:15, fullBarrels:53, emptyBarrels:106 },
+  { id:"evac10t_287", name:"Эвакуатор 10т, КМУ 5т", tier:"10t", type:"evacuator", hasCrane:true, capacityTon:10, fullBarrels:50, emptyBarrels:100 },
+  { id:"evac15t_464", name:"Эвакуатор 15т, КМУ 5т", tier:"12t", type:"evacuator", hasCrane:true, capacityTon:15, fullBarrels:53, emptyBarrels:106 },
+  { id:"tractor_bor", name:"Тягач 25т, с бортовой телегой", tier:"traktor", type:"tractor", hasCrane:false, capacityTon:25, fullBarrels:90, emptyBarrels:180 },
+  { id:"tractor_tral", name:"Тягач 25т, с тральной телегой", tier:"traktor", type:"tractor", hasCrane:false, capacityTon:25, fullBarrels:90, emptyBarrels:180 },
+  { id:"truck1t_817", name:"Грузовик 1т, 817", tier:"5t", type:"truck", hasCrane:false, capacityTon:1, fullBarrels:5, emptyBarrels:3 },
+  { id:"dumper1_3t_933", name:"Самосвал 1,3т, 933", tier:"5t", type:"dumper", hasCrane:false, capacityTon:1.3, fullBarrels:6, emptyBarrels:3 }
+];
+const cityTariffs = { '5t':{ base2h:7000, nextHour:3500 }, '7t':{ base2h:10000, nextHour:4000 }, '10t':{ base2h:13000, nextHour:4500 }, '12t':{ base2h:15000, nextHour:5000 } };
+
+// ======================== ПОЛНЫЙ СПИСОК ГРУЗОВ С ПАРАМЕТРАМИ ========================
+// Определяем метки для полей на русском языке
+const fieldLabels = {
+  carBrand: "Марка автомобиля",
+  wheelsSpin: "Колеса крутятся?",
+  carType: "Тип авто",
+  carLoadingType: "Тип погрузки",
+  accessRoad: "Подъездной путь",
+  obstaclesPresence: "Деревья/провода",
+  documents: "Документы",
+  truckCargoWeight: "Вес (тонн)",
+  truckCraneLoad: "Погрузка стрелой эвакуатора?",
+  truckCraneUnload: "Выгрузка стрелой эвакуатора?",
+  truckCargoDimensions: "Габариты (Д×Ш×В, м)",
+  liftType: "Тип оборудования",
+  liftWeight: "Вес (тонн)",
+  liftCraneLoad: "Погрузка стрелой эвакуатора?",
+  liftCraneUnload: "Выгрузка стрелой эвакуатора?",
+  liftDimensions: "Габариты (Д×Ш×В, м)",
+  liftHeight: "Рабочая высота (м)",
+  liftOutriggers: "Выносные опоры",
+  liftStraps: "Крепление растяжками",
+  rebarWeight: "Вес (тонн)",
+  rebarCraneLoad: "Погрузка стрелой эвакуатора?",
+  rebarCraneUnload: "Выгрузка стрелой эвакуатора?",
+  rebarDimensions: "Габариты (Д×Ш×В, м)",
+  autopartsWeight: "Вес (кг)",
+  autopartsDimensions: "Габариты (Д×Ш×В, м)",
+  bigbagCount: "Количество (шт)",
+  bigbagUnitWeight: "Вес одного (кг)",
+  barrelType: "Тип бочек",
+  barrelCount: "Количество (шт)",
+  drillingWeight: "Вес (тонн)",
+  drillingCraneLoad: "Погрузка стрелой эвакуатора?",
+  drillingCraneUnload: "Выгрузка стрелой эвакуатора?",
+  drillingDimensions: "Габариты (Д×Ш×В, м)",
+  bulldozerWeight: "Вес (тонн)",
+  bulldozerCraneLoad: "Погрузка стрелой эвакуатора?",
+  bulldozerCraneUnload: "Выгрузка стрелой эвакуатора?",
+  bulldozerDimensions: "Габариты (Д×Ш×В, м)",
+  gabionWeight: "Вес (тонн)",
+  gabionCount: "Количество рулонов/пачек",
+  gabionDimensions: "Габариты упаковки (м)",
+  garageTypeSelect: "Тип гаража",
+  garageWeight: "Вес (тонн)",
+  garageCraneLoad: "Погрузка стрелой эвакуатора?",
+  garageCraneUnload: "Выгрузка стрелой эвакуатора?",
+  garageDimensions: "Габариты (Д×Ш×В, м)",
+  genWeight: "Вес (кг)",
+  genCraneLoad: "Погрузка стрелой эвакуатора?",
+  genCraneUnload: "Выгрузка стрелой эвакуатора?",
+  genDimensions: "Габариты (Д×Ш×В, м)",
+  geotextileWeight: "Вес (тонн)",
+  geotextileRollSize: "Размеры рулонов (м)",
+  geotextileCount: "Количество рулонов",
+  lumberWeight: "Вес (тонн)",
+  lumberVolume: "Объём (м³)",
+  lumberDimensions: "Габариты пачки/листа (м)",
+  eurocubeCount: "Количество (шт)",
+  eurocubeUnitWeight: "Вес одного (тонн)",
+  eurocubeLiquid: "Наличие остатков жидкости",
+  watercraftLength: "Длина",
+  watercraftWeight: "Вес (кг)",
+  watercraftCraneLoad: "Погрузка стрелой эвакуатора?",
+  watercraftCraneUnload: "Выгрузка стрелой эвакуатора?",
+  watercraftDimensions: "Габариты (Д×Ш×В, м)",
+  coilWeight: "Вес (кг)",
+  coilCraneLoad: "Погрузка стрелой эвакуатора?",
+  coilCraneUnload: "Выгрузка стрелой эвакуатора?",
+  coilDimensions: "Диаметр / габариты",
+  tileWeight: "Вес (тонн)",
+  tilePalletCount: "Количество поддонов",
+  tilePalletDimensions: "Габариты поддона (м)",
+  brickWeight: "Вес (тонн)",
+  brickCount: "Количество штук",
+  brickCraneLoad: "Погрузка стрелой эвакуатора?",
+  brickCraneUnload: "Выгрузка стрелой эвакуатора?",
+  compressorWeight: "Вес (кг)",
+  compressorCraneLoad: "Погрузка стрелой эвакуатора?",
+  compressorCraneUnload: "Выгрузка стрелой эвакуатора?",
+  compressorDimensions: "Габариты (Д×Ш×В, м)",
+  containerType: "Тип контейнера",
+  containerWeight: "Вес (тонн)",
+  containerCraneLoad: "Погрузка стрелой эвакуатора?",
+  containerCraneUnload: "Выгрузка стрелой эвакуатора?",
+  containerDimensions: "Габариты (Д×Ш×В, м)",
+  kungWeight: "Вес (тонн)",
+  kungDimensions: "Габариты (Д×Ш×В, м)",
+  linoleumWeight: "Вес (кг)",
+  linoleumRollLength: "Длина рулона (м)",
+  linoleumRollCount: "Количество рулонов",
+  linoleumDimensions: "Габариты рулона (Д×Ш×В, м)",
+  elevatorWeight: "Вес (тонн)",
+  elevatorCraneLoad: "Погрузка стрелой эвакуатора?",
+  elevatorCraneUnload: "Выгрузка стрелой эвакуатора?",
+  elevatorDimensions: "Габариты (Д×Ш×В, м)",
+  elevatorSectionLength: "Длина секции (м)",
+  furnitureWeight: "Вес (тонн)",
+  furnitureVolume: "Объём (м³)",
+  furnitureItems: "Количество мест (коробок/ед.)",
+  furnitureFragile: "Осторожная погрузка (хрупкое)?",
+  moduleWeight: "Вес (тонн)",
+  moduleCraneLoad: "Погрузка стрелой эвакуатора?",
+  moduleCraneUnload: "Выгрузка стрелой эвакуатора?",
+  moduleDimensions: "Габариты",
+  scooterBrand: "Марка / модель",
+  scooterCondition: "Состояние",
+  scooterLoading: "Тип погрузки",
+  scooterStraps: "Крепление растяжками",
+  scooterWeight: "Вес (кг)",
+  scooterDimensions: "Габариты (Д×Ш×В, м)",
+  scooterCraneLoad: "Погрузка стрелой эвакуатора?",
+  scooterCraneUnload: "Выгрузка стрелой эвакуатора?",
+  formworkWeight: "Вес (тонн)",
+  formworkShields: "Количество щитов (шт)",
+  formworkPosts: "Количество стоек (шт)",
+  formworkBeams: "Количество балок (шт)",
+  formworkTelescopic: "Количество телескопических стоек (шт)",
+  formworkCraneLoad: "Погрузка стрелой эвакуатора?",
+  formworkCraneUnload: "Выгрузка стрелой эвакуатора?",
+  formworkDimensions: "Габариты самой крупной детали (Д×Ш×В, м)",
+  powerLineWeight: "Вес (тонн)",
+  powerLineLength: "Длина опоры (м)",
+  powerLineSections: "Количество секций",
+  powerLineCraneLoad: "Погрузка стрелой эвакуатора?",
+  powerLineCraneUnload: "Выгрузка стрелой эвакуатора?",
+  powerLineDimensions: "Габариты (Д×Ш×В, м)",
+  officeWeight: "Вес (кг)",
+  officeBoxes: "Количество коробок / единиц",
+  officeFragile: "Осторожная погрузка",
+  officeDimensions: "Габариты крупной единицы (Д×Ш×В, м)",
+  kioskWeight: "Вес (тонн)",
+  kioskAssembled: "Габариты в собранном виде (Д×Ш×В, м)",
+  kioskCollapsible: "Возможность разборки",
+  kioskDisassembled: "Габариты в разобранном виде (Д×Ш×В, м)",
+  kioskCraneLoad: "Погрузка стрелой эвакуатора?",
+  kioskCraneUnload: "Выгрузка стрелой эвакуатора?",
+  sandWeightOrVolume: "Вес (тонн) или объём (м³)",
+  sandLoadingType: "Тип погрузки",
+  sandMoisture: "Влажность",
+  sandTarp: "Укрытие тентом",
+  loaderBrand: "Марка / модель",
+  loaderType: "Тип погрузчика",
+  loaderWeight: "Вес (тонн)",
+  loaderDimensions: "Габариты (Д×Ш×В, м)",
+  loaderCraneLoad: "Погрузка стрелой эвакуатора?",
+  loaderCraneUnload: "Выгрузка стрелой эвакуатора?",
+  loaderDismantle: "Демонтаж ковша/вил",
+  counterweightWeight: "Вес (тонн)",
+  counterweightDimensions: "Габариты (Д×Ш×В, м)",
+  counterweightQty: "Количество (шт)",
+  counterweightCraneLoad: "Погрузка стрелой эвакуатора?",
+  counterweightCraneUnload: "Выгрузка стрелой эвакуатора?",
+  counterweightLugs: "Наличие проушин для строповки",
+  profiledWeight: "Вес (тонн)",
+  profiledLength: "Длина листа (м)",
+  profiledCount: "Количество листов",
+  profiledPackDimensions: "Габариты пачки (Д×Ш×В, м)",
+  profiledPackaging: "Упаковка в плёнку / защита от царапин",
+  tankWeight: "Вес (тонн)",
+  tankVolume: "Объём (м³)",
+  tankDiameter: "Диаметр (м)",
+  tankLength: "Длина (м)",
+  tankMaterial: "Материал",
+  tankCraneLoad: "Погрузка стрелой эвакуатора?",
+  tankCraneUnload: "Выгрузка стрелой эвакуатора?",
+  tankLiquidRemains: "Наличие остатков жидкости",
+  weldingWeight: "Вес (кг)",
+  weldingQty: "Количество единиц (шт)",
+  weldingFragile: "Осторожная погрузка (хрупкое)?",
+  weldingDimensions: "Габариты крупной единицы (Д×Ш×В, м)",
+  septicFullType: "Тип септика",
+  septicFullVolume: "Объём (м³)",
+  septicFullWeight: "Вес (тонн)",
+  septicFullHatches: "Наличие люков/горловин",
+  septicFullPumpout: "Выкачка перед перевозкой",
+  septicFullStraps: "Крепление растяжками",
+  septicFullCraneLoad: "Погрузка стрелой эвакуатора?",
+  septicFullCraneUnload: "Выгрузка стрелой эвакуатора?",
+  septicFullDimensions: "Габариты (Д×Ш×В, м)",
+  machineType: "Тип станка",
+  machineModel: "Марка / модель",
+  machineWeight: "Вес (тонн)",
+  machineDimensions: "Габариты (Д×Ш×В, м)",
+  machineCraneLoad: "Погрузка стрелой эвакуатора?",
+  machineCraneUnload: "Выгрузка стрелой эвакуатора?",
+  machineDismantle: "Необходимость демонтажа частей",
+  glassWeight: "Вес (кг)",
+  glassSize: "Размеры одного пакета/листа (Д×Ш, м)",
+  glassQty: "Количество (шт)",
+  glassFragile: "Хрупкость",
+  glassPackaging: "Специальная упаковка",
+  glassPackDimensions: "Габариты пачки (Д×Ш×В, м)",
+  wasteWeightOrVolume: "Вес (тонн) или объём (м³)",
+  wasteType: "Тип",
+  wasteDensity: "Фракция / плотность",
+  wasteDumper: "Необходимость самосвала",
+  wasteMechanical: "Механическая погрузка",
+  excavatorWeight: "Вес (тонн)",
+  excavatorCraneLoad: "Погрузка стрелой эвакуатора?",
+  excavatorCraneUnload: "Выгрузка стрелой эвакуатора?",
+  excavatorDimensions: "Габариты (Д×Ш×В, м)",
+  excavatorBrand: "Марка / модель",
+  excavatorType: "Тип хода",
+  excavatorBucket: "Наличие ковша",
+  excavatorDismantle: "Демонтаж перед погрузкой",
+  excavatorStraps: "Крепление растяжками"
+};
+
+// Список грузов (те же, что и в предыдущей версии, но с полями)
+const cargoDataRaw = [
+  { name:"Автомобиль", allowedTiers:["5t","7t","10t","12t"], forbidTypes:["truck","dumper"], fields:["carBrand","wheelsSpin","carType","carLoadingType","accessRoad","obstaclesPresence","documents"] },
+  { name:"Автомобиль грузовой", allowedTiers:["7t","10t","12t","traktor"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["truckCargoWeight","truckCraneLoad","truckCraneUnload","truckCargoDimensions"] },
+  { name:"Автовышки, подъёмники, люльки", allowedTiers:["7t","10t","12t","traktor"], needCraneConsider:true, fields:["liftType","liftWeight","liftCraneLoad","liftCraneUnload","liftDimensions","liftHeight","liftOutriggers","liftStraps"] },
+  { name:"Арматура, металлопрокат", allowedTiers:["5t","7t","10t","12t","traktor"], needCraneConsider:true, fields:["rebarWeight","rebarCraneLoad","rebarCraneUnload","rebarDimensions"] },
+  { name:"Автозапчасти", allowedTiers:["5t","7t","10t"], fields:["autopartsWeight","autopartsDimensions"] },
+  { name:"Биг-бэги", allowedTiers:["5t","7t","10t","12t","traktor"], fields:["bigbagCount","bigbagUnitWeight"] },
+  { name:"Бочки", allowedTiers:["5t","7t","10t","12t","traktor"], fields:["barrelType","barrelCount"] },
+  { name:"Буровые установки, мачты, шнеки", allowedTiers:["10t","12t","traktor"], needCraneConsider:true, fields:["drillingWeight","drillingCraneLoad","drillingCraneUnload","drillingDimensions"] },
+  { name:"Бульдозеры, катки, автогрейдеры", allowedTiers:["10t","12t","traktor"], needCraneConsider:true, fields:["bulldozerWeight","bulldozerCraneLoad","bulldozerCraneUnload","bulldozerDimensions"] },
+  { name:"Габионы, сетка рабица", allowedTiers:["5t","7t","10t"], fields:["gabionWeight","gabionCount","gabionDimensions"] },
+  { name:"Гараж", allowedTiers:["10t","12t"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["garageTypeSelect","garageWeight","garageCraneLoad","garageCraneUnload","garageDimensions"] },
+  { name:"Генератор", allowedTiers:["5t","7t","10t"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["genWeight","genCraneLoad","genCraneUnload","genDimensions"] },
+  { name:"Геотекстиль, мембрана, георешётка", allowedTiers:["5t","7t","10t"], fields:["geotextileWeight","geotextileRollSize","geotextileCount"] },
+  { name:"Доски, брус, фанера, ОСП", allowedTiers:["5t","7t","10t","12t","traktor"], fields:["lumberWeight","lumberVolume","lumberDimensions"] },
+  { name:"Еврокубы", allowedTiers:["5t","7t","10t","12t"], fields:["eurocubeCount","eurocubeUnitWeight","eurocubeLiquid"] },
+  { name:"Катера, яхты, лодки, гидроциклы", allowedTiers:["5t"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["watercraftLength","watercraftWeight","watercraftCraneLoad","watercraftCraneUnload","watercraftDimensions"] },
+  { name:"Катушка", allowedTiers:["5t","7t","10t"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["coilWeight","coilCraneLoad","coilCraneUnload","coilDimensions"] },
+  { name:"Керамогранит, плитка, брусчатка", allowedTiers:["5t","7t","10t","12t"], fields:["tileWeight","tilePalletCount","tilePalletDimensions"] },
+  { name:"Кирпич, блоки ФБС, кольца ЖБИ", allowedTiers:["7t","10t","12t","traktor"], needCraneConsider:true, fields:["brickWeight","brickCount","brickCraneLoad","brickCraneUnload"] },
+  { name:"Компрессоры, насосы, гидромолоты", allowedTiers:["5t","7t","10t"], needCraneConsider:true, fields:["compressorWeight","compressorCraneLoad","compressorCraneUnload","compressorDimensions"] },
+  { name:"Контейнер", allowedTiers:["5t","7t","10t","12t","traktor"], needCraneConsider:true, fields:["containerType","containerWeight","containerCraneLoad","containerCraneUnload","containerDimensions"] },
+  { name:"Кунг", allowedTiers:["7t","10t"], fields:["kungWeight","kungDimensions"] },
+  { name:"Линолеум, рулонные материалы", allowedTiers:["5t","7t","10t"], fields:["linoleumWeight","linoleumRollLength","linoleumRollCount","linoleumDimensions"] },
+  { name:"Лифтовое оборудование, эскалаторы", allowedTiers:["10t","12t","traktor"], needCraneConsider:true, fields:["elevatorWeight","elevatorCraneLoad","elevatorCraneUnload","elevatorDimensions","elevatorSectionLength"] },
+  { name:"Мебель, бытовая техника, коробки", allowedTiers:["5t","7t","10t"], fields:["furnitureWeight","furnitureVolume","furnitureItems","furnitureFragile"] },
+  { name:"Модуль", allowedTiers:["7t","10t","traktor"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["moduleWeight","moduleCraneLoad","moduleCraneUnload","moduleDimensions"] },
+  { name:"Мотоциклы, квадроциклы, скутеры", allowedTiers:["5t"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["scooterBrand","scooterCondition","scooterLoading","scooterStraps","scooterWeight","scooterDimensions","scooterCraneLoad","scooterCraneUnload"] },
+  { name:"Опалубка (щиты, стойки, балки, телескопические стойки)", allowedTiers:["5t","7t","10t","12t","traktor"], needCraneConsider:true, fields:["formworkWeight","formworkShields","formworkPosts","formworkBeams","formworkTelescopic","formworkCraneLoad","formworkCraneUnload","formworkDimensions"] },
+  { name:"Опоры ЛЭП", allowedTiers:["10t","12t","traktor"], needCraneConsider:true, fields:["powerLineWeight","powerLineLength","powerLineSections","powerLineCraneLoad","powerLineCraneUnload","powerLineDimensions"] },
+  { name:"Офисное оборудование, архивы", allowedTiers:["5t","7t","10t"], fields:["officeWeight","officeBoxes","officeFragile","officeDimensions"] },
+  { name:"Павильоны, киоски, быстровозводимые сооружения", allowedTiers:["7t","10t","12t","traktor"], needCraneConsider:true, fields:["kioskWeight","kioskAssembled","kioskCollapsible","kioskDisassembled","kioskCraneLoad","kioskCraneUnload"] },
+  { name:"Песок", allowedTiers:["5t","7t","10t","12t","traktor"], fields:["sandWeightOrVolume","sandLoadingType","sandMoisture","sandTarp"] },
+  { name:"Погрузчики (вилочные, фронтальные, Bobcat)", allowedTiers:["7t","10t","12t"], needCraneConsider:true, fields:["loaderBrand","loaderType","loaderWeight","loaderDimensions","loaderCraneLoad","loaderCraneUnload","loaderDismantle"] },
+  { name:"Противовесы, траверсы, станины", allowedTiers:["5t","7t","10t","12t","traktor"], needCraneConsider:true, fields:["counterweightWeight","counterweightDimensions","counterweightQty","counterweightCraneLoad","counterweightCraneUnload","counterweightLugs"] },
+  { name:"Профнастил, сайдинг, сэндвич-панели", allowedTiers:["5t","7t","10t","12t"], fields:["profiledWeight","profiledLength","profiledCount","profiledPackDimensions","profiledPackaging"] },
+  { name:"Резервуары", allowedTiers:["10t","12t","traktor"], needCraneConsider:true, fields:["tankWeight","tankVolume","tankDiameter","tankLength","tankMaterial","tankCraneLoad","tankCraneUnload","tankLiquidRemains"] },
+  { name:"Сварочное оборудование, электроинструмент", allowedTiers:["5t","7t","10t"], fields:["weldingWeight","weldingQty","weldingFragile","weldingDimensions"] },
+  { name:"Септик", allowedTiers:["5t","7t","10t","traktor"], forbidTypes:["truck","dumper"], needCraneConsider:true, fields:["septicFullType","septicFullVolume","septicFullWeight","septicFullHatches","septicFullPumpout","septicFullStraps","septicFullCraneLoad","septicFullCraneUnload","septicFullDimensions"] },
+  { name:"Станки (фрезерные, токарные, лазерные)", allowedTiers:["7t","10t","12t","traktor"], needCraneConsider:true, fields:["machineType","machineModel","machineWeight","machineDimensions","machineCraneLoad","machineCraneUnload","machineDismantle"] },
+  { name:"Стеклопакеты, стекло", allowedTiers:["5t","7t","10t"], fields:["glassWeight","glassSize","glassQty","glassFragile","glassPackaging","glassPackDimensions"] },
+  { name:"Строительный мусор, грунт, снег", allowedTiers:["5t","7t","10t","12t","traktor"], fields:["wasteWeightOrVolume","wasteType","wasteDensity","wasteDumper","wasteMechanical"] },
+  { name:"Экскаваторы", allowedTiers:["7t","10t","12t"], forbidTypes:["truck","dumper","tractor"], needCraneConsider:true, fields:["excavatorWeight","excavatorCraneLoad","excavatorCraneUnload","excavatorDimensions","excavatorBrand","excavatorType","excavatorBucket","excavatorDismantle","excavatorStraps"] }
+];
+const cargoData = [...new Map(cargoDataRaw.map(item=>[item.name, item])).values()].sort((a,b)=>a.name.localeCompare(b.name,'ru'));
+
+// DOM элементы
+const cargoSelect = document.getElementById('cargoSelect');
+const truckSelect = document.getElementById('truckSelect');
+const paramsContainer = document.getElementById('paramsContainer');
+const hoursCity = document.getElementById('hoursCity');
+const finalPriceSpan = document.getElementById('finalPrice');
+const priceDetailsDiv = document.getElementById('priceDetails');
+const warningMsg = document.getElementById('warningMsg');
+const paymentRadios = document.querySelectorAll('input[name="payment"]');
+const clientName = document.getElementById('clientName');
+const clientPhone = document.getElementById('clientPhone');
+const pickupLandmark = document.getElementById('pickupLandmark');
+const deliveryLandmark = document.getElementById('deliveryLandmark');
+const orderBtn = document.getElementById('orderBtn');
+const pickupAddress = document.getElementById('pickupAddress');
+const deliveryAddress = document.getElementById('deliveryAddress');
+
+// Заполнение выпадающего списка грузов
+cargoData.forEach(c => {
+  let opt = document.createElement('option');
+  opt.value = c.name;
+  opt.textContent = c.name;
+  opt.setAttribute('data-allowed-tiers', c.allowedTiers.join(','));
+  if(c.forbidTypes) opt.setAttribute('data-forbid-types', c.forbidTypes.join(','));
+  if(c.needCraneConsider) opt.setAttribute('data-need-crane', 'true');
+  cargoSelect.appendChild(opt);
+});
+
+// Функция генерации HTML-блока параметров с красивыми метками
+function generateParamsBlock(cargo) {
+  if (!cargo || !cargo.fields) return '<div class="cargo-params visible">Выберите груз</div>';
+  let html = `<div class="cargo-params visible"><div class="param-title">📋 Дополнительные параметры</div><div class="param-row">`;
+  for (let field of cargo.fields) {
+    let label = fieldLabels[field] || field;
+    let inputHtml = '';
+    // Определяем тип поля по имени или по специальным правилам
+    if (field === 'barrelType') inputHtml = `<select id="barrelType"><option value="full">Полные (200 кг)</option><option value="empty">Пустые (20 кг)</option></select>`;
+    else if (field === 'containerType') inputHtml = `<select id="containerType"><option value="5ft">5 футов</option><option value="10ft">10 футов</option><option value="20ft">20 футов</option><option value="40ft">40 футов</option></select>`;
+    else if (field === 'garageTypeSelect') inputHtml = `<select id="garageTypeSelect"><option value="dalzavod">Дальзаводской</option><option value="safe">Сейф</option><option value="solid">Цельносборный</option></select>`;
+    else if (field === 'liftType') inputHtml = `<select id="liftType"><option value="aerial">Автовышка</option><option value="scissor">Ножничный подъёмник</option><option value="boom">Телескопическая люлька</option></select>`;
+    else if (field === 'watercraftLength') inputHtml = `<select id="watercraftLength"><option value="small">до 5 м</option><option value="medium">5-7 м</option><option value="large">7-12 м</option></select>`;
+    else if (field === 'scooterCondition') inputHtml = `<select id="scooterCondition"><option value="running">На ходу</option><option value="not_running">Не на ходу</option></select>`;
+    else if (field === 'scooterLoading') inputHtml = `<select id="scooterLoading"><option value="ramp">Аппарель</option><option value="crane">Кран</option><option value="winch">Лебедка</option></select>`;
+    else if (field === 'scooterStraps') inputHtml = `<select id="scooterStraps"><option value="yes">Да</option><option value="no">Нет</option></select>`;
+    else if (field === 'eurocubeLiquid') inputHtml = `<select id="eurocubeLiquid"><option value="no">Нет</option><option value="yes">Есть</option></select>`;
+    else if (field === 'sandLoadingType') inputHtml = `<select id="sandLoadingType"><option value="mechanical">Механическая</option><option value="manual">Ручная</option></select>`;
+    else if (field === 'sandMoisture') inputHtml = `<select id="sandMoisture"><option value="dry">Сухой</option><option value="wet">Влажный</option></select>`;
+    else if (field === 'sandTarp') inputHtml = `<select id="sandTarp"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'loaderType') inputHtml = `<select id="loaderType"><option value="forklift">Вилочный</option><option value="front">Фронтальный</option><option value="bobcat">Bobcat / мини-погрузчик</option></select>`;
+    else if (field === 'counterweightLugs') inputHtml = `<select id="counterweightLugs"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'profiledPackaging') inputHtml = `<select id="profiledPackaging"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'tankMaterial') inputHtml = `<select id="tankMaterial"><option value="metal">Металл</option><option value="plastic">Пластик</option><option value="composite">Композит</option></select>`;
+    else if (field === 'weldingFragile') inputHtml = `<select id="weldingFragile"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'septicFullType') inputHtml = `<select id="septicFullType"><option value="plastic">Пластиковый</option><option value="concrete">Бетонный</option><option value="fiberglass">Стеклопластик</option></select>`;
+    else if (field === 'septicFullHatches') inputHtml = `<select id="septicFullHatches"><option value="yes">Есть</option><option value="no">Нет</option></select>`;
+    else if (field === 'septicFullPumpout') inputHtml = `<select id="septicFullPumpout"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'septicFullStraps') inputHtml = `<select id="septicFullStraps"><option value="yes">Да</option><option value="no">Нет</option></select>`;
+    else if (field === 'machineType') inputHtml = `<select id="machineType"><option value="milling">Фрезерный</option><option value="lathe">Токарный</option><option value="laser">Лазерный</option></select>`;
+    else if (field === 'machineDismantle') inputHtml = `<select id="machineDismantle"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'glassFragile') inputHtml = `<select id="glassFragile"><option value="yes">Да</option><option value="no">Нет</option></select>`;
+    else if (field === 'glassPackaging') inputHtml = `<select id="glassPackaging"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'wasteType') inputHtml = `<select id="wasteType"><option value="mixed">Мусор</option><option value="soil">Грунт</option><option value="snow">Снег</option></select>`;
+    else if (field === 'wasteDensity') inputHtml = `<select id="wasteDensity"><option value="light">Лёгкий</option><option value="medium">Средний</option><option value="heavy">Тяжёлый</option></select>`;
+    else if (field === 'wasteDumper') inputHtml = `<select id="wasteDumper"><option value="yes">Да</option><option value="no">Нет</option></select>`;
+    else if (field === 'wasteMechanical') inputHtml = `<select id="wasteMechanical"><option value="yes">Да</option><option value="no">Нет</option></select>`;
+    else if (field === 'kioskCollapsible') inputHtml = `<select id="kioskCollapsible"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'officeFragile') inputHtml = `<select id="officeFragile"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'furnitureFragile') inputHtml = `<select id="furnitureFragile"><option value="no">Нет</option><option value="yes">Да</option></select>`;
+    else if (field === 'wheelsSpin') inputHtml = `<select id="wheelsSpin"><option>да</option><option>нет</option></select>`;
+    else if (field === 'carType') inputHtml = `<select id="carType"><option>легковой</option><option>внедорожник</option><option>микроавтобус</option></select>`;
+    else if (field === 'carLoadingType') inputHtml = `<select id="carLoadingType"><option>аппарель</option><option>кран</option><option>лебёдка</option></select>`;
+    else if (field === 'accessRoad') inputHtml = `<select id="accessRoad"><option>без проблем</option><option>могут быть сложности</option></select>`;
+    else if (field === 'obstaclesPresence') inputHtml = `<select id="obstaclesPresence"><option>нет</option><option>есть</option><option>есть, но не помешают крану</option></select>`;
+    else if (field === 'documents') inputHtml = `<select id="documents"><option>предоставлю</option><option>отсутствуют</option></select>`;
+    else if (field === 'excavatorType') inputHtml = `<select id="excavatorType"><option value="wheel">Колёсный</option><option value="crawler">Гусеничный</option></select>`;
+    else if (field === 'excavatorBucket') inputHtml = `<select id="excavatorBucket"><option value="yes">Есть</option><option value="no">Нет</option></select>`;
+    else if (field === 'excavatorDismantle') inputHtml = `<select id="excavatorDismantle"><option value="no">Нет</option><option value="partial">Частичный</option><option value="full">Полный</option></select>`;
+    else if (field === 'excavatorStraps') inputHtml = `<select id="excavatorStraps"><option value="yes">Да</option><option value="no">Нет</option></select>`;
+    else if (field === 'truckCargoDimensions') inputHtml = `<select id="truckCargoDimensions"><option>6×2.5×2.5</option><option>7×2.5×2.8</option><option>8×2.5×3.0</option></select>`;
+    else if (field === 'moduleDimensions') inputHtml = `<select id="moduleDimensions"><option>6×2.4×2.6</option><option>12×2.4×2.6</option><option>3×2.4×2.4</option></select>`;
+    else if (field.endsWith('CraneLoad') || field.endsWith('CraneUnload')) inputHtml = `<select id="${field}"><option value="yes">Да</option><option value="no">Нет</option></select>`;
+    else if (field.includes('Weight') && !field.includes('Crane')) inputHtml = `<input type="number" id="${field}" step="0.5" value="1">`;
+    else if (field.includes('Count') || field.includes('Qty') || field.includes('Items') || field.includes('Boxes')) inputHtml = `<input type="number" id="${field}" step="1" value="1">`;
+    else if (field.includes('Length') || field.includes('Height') || field.includes('Diameter') || field.includes('Volume')) inputHtml = `<input type="number" id="${field}" step="0.5" value="1">`;
+    else inputHtml = `<input type="text" id="${field}" placeholder="например, значение">`;
+    html += `<div class="param-item"><label>${label}</label>${inputHtml}</div>`;
+  }
+  html += `</div><div id="recommendation" style="margin-top:16px; font-size:0.8rem;"></div></div>`;
+  return html;
+}
+
+// Фильтрация техники по выбранному грузу
+function filterTrucksByCargo() {
+  const opt = cargoSelect.options[cargoSelect.selectedIndex];
+  if (!opt) return;
+  let allowedTiers = opt.getAttribute('data-allowed-tiers')?.split(',') || [];
+  let forbidTypes = opt.getAttribute('data-forbid-types')?.split(',') || [];
+  let needCrane = false;
+  // Проверяем флаги крана в полях параметров
+  const craneLoadField = document.querySelector('[id$="CraneLoad"]');
+  const craneUnloadField = document.querySelector('[id$="CraneUnload"]');
+  if (craneLoadField && craneLoadField.value === 'yes') needCrane = true;
+  if (craneUnloadField && craneUnloadField.value === 'yes') needCrane = true;
+  if (opt.getAttribute('data-need-crane') === 'true') needCrane = true;
+  let filtered = VEHICLES.filter(v => allowedTiers.includes(v.tier));
+  if (forbidTypes.length) filtered = filtered.filter(v => !forbidTypes.includes(v.type));
+  if (needCrane) filtered = filtered.filter(v => v.hasCrane === true);
+  truckSelect.innerHTML = '';
+  if (filtered.length === 0) {
+    let o = document.createElement('option');
+    o.textContent = 'Нет подходящей техники, свяжитесь с менеджером';
+    o.disabled = true;
+    truckSelect.appendChild(o);
+  } else {
+    filtered.forEach(v => {
+      let o = document.createElement('option');
+      o.value = v.tier;
+      o.textContent = v.name;
+      o.setAttribute('data-vehicle-id', v.id);
+      o.setAttribute('data-capacity', v.capacityTon);
+      truckSelect.appendChild(o);
+    });
+  }
+  if (truckSelect.options.length) truckSelect.selectedIndex = 0;
+  updatePrice();
+}
+
+// Расчёт стоимости по городу
+function updatePrice() {
+  const sel = truckSelect.options[truckSelect.selectedIndex];
+  if (!sel) return;
+  const tier = sel.value;
+  if (tier === 'traktor') {
+    finalPriceSpan.innerHTML = '— ₽';
+    priceDetailsDiv.innerHTML = '⚠️ Тягач: точная стоимость у менеджера.';
+    warningMsg.style.display = 'block';
+    warningMsg.innerHTML = 'Индивидуальный расчёт.';
+    return;
+  }
+  warningMsg.style.display = 'none';
+  let hours = parseInt(hoursCity.value, 10);
+  if (isNaN(hours) || hours < 2) hours = 2;
+  let tariff = cityTariffs[tier];
+  if (!tariff) {
+    finalPriceSpan.innerHTML = 'Ошибка';
+    return;
+  }
+  let extra = hours - 2;
+  let baseTotal = tariff.base2h + extra * tariff.nextHour;
+  let mult = getPaymentMultiplier();
+  let finalTotal = Math.round(baseTotal * mult);
+  let markup = finalTotal - baseTotal;
+  finalPriceSpan.innerHTML = `${finalTotal.toLocaleString('ru-RU')} ₽`;
+  let details = `<p>🚚 Техника: ${sel.text}</p><p>📦 Груз: ${cargoSelect.value}</p>`;
+  let name = clientName.value.trim(), phone = clientPhone.value.trim();
+  if (name) details += `<p>👤 Имя: ${name}</p>`;
+  if (phone) details += `<p>📞 Телефон: ${phone}</p>`;
+  let addrPick = pickupAddress.value.trim(), addrDel = deliveryAddress.value.trim();
+  if (addrPick || addrDel) details += `<p>📍 Погрузка: ${addrPick || 'не указано'} | Выгрузка: ${addrDel || 'не указано'}</p>`;
+  let landmarkPick = pickupLandmark.value.trim(), landmarkDel = deliveryLandmark.value.trim();
+  if (landmarkPick) details += `<p>📍 Ориентир погрузки: ${landmarkPick}</p>`;
+  if (landmarkDel) details += `<p>📍 Ориентир выгрузки: ${landmarkDel}</p>`;
+  details += `<p>🏙️ Город: ${baseTotal.toLocaleString('ru-RU')} ₽ (${hours} ч)</p>`;
+  if (markup > 0) details += `<p>💳 ${getPaymentLabel()} (+${Math.round((mult-1)*100)}%) = +${markup.toLocaleString('ru-RU')} ₽</p>`;
+  priceDetailsDiv.innerHTML = details;
+  document.getElementById('clientInfoDisplay').innerHTML = (name || phone) ? `👤 ${name} ${phone ? `📞 ${phone}` : ''}` : '';
+}
+
+function getPaymentMultiplier() {
+  let s = document.querySelector('input[name="payment"]:checked').value;
+  if (s === 'nds5') return 1.05;
+  if (s === 'nds22') return 1.22;
+  return 1.0;
+}
+function getPaymentLabel() {
+  let s = document.querySelector('input[name="payment"]:checked').value;
+  if (s === 'nds5') return "НДС 5%";
+  if (s === 'nds22') return "НДС 22%";
+  return "Безнал";
+}
+
+// Обработчики событий
+cargoSelect.addEventListener('change', () => {
+  const cargoName = cargoSelect.value;
+  const cargo = cargoData.find(c => c.name === cargoName);
+  if (cargo) {
+    paramsContainer.innerHTML = generateParamsBlock(cargo);
+    // Привязываем обработчики для полей, влияющих на кран
+    document.querySelectorAll('[id$="CraneLoad"], [id$="CraneUnload"]').forEach(f => f.addEventListener('change', () => filterTrucksByCargo()));
+    filterTrucksByCargo();
+  } else {
+    paramsContainer.innerHTML = '<div>Выберите груз</div>';
+  }
+});
+truckSelect.addEventListener('change', updatePrice);
+hoursCity.addEventListener('input', () => updatePrice());
+paymentRadios.forEach(r => r.addEventListener('change', updatePrice));
+pickupAddress.addEventListener('input', updatePrice);
+deliveryAddress.addEventListener('input', updatePrice);
+pickupLandmark.addEventListener('input', updatePrice);
+deliveryLandmark.addEventListener('input', updatePrice);
+clientName.addEventListener('input', updatePrice);
+clientPhone.addEventListener('input', updatePrice);
+
+// Кнопка заказа
+orderBtn.addEventListener('click', () => {
+  let name = clientName.value.trim(), phone = clientPhone.value.trim();
+  if (!name || !phone) {
+    alert("Заполните имя и телефон!");
+    return;
+  }
+  alert(`Заявка отправлена! С вами свяжется менеджер.\n${name}, ${phone}`);
+});
+
+// Инициализация
+filterTrucksByCargo();
+</script>
+</body>
+</html>
