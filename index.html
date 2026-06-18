@@ -10,7 +10,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; color: #1f2937; scroll-behavior: smooth; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-    .header { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(4px); }
+    .header { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-bottom: 1px solid #e5e7eb; }
     .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 20px 0; gap: 16px; }
     .logo h1 { font-size: 1.7rem; font-weight: 800; color: #d97706; }
     .logo p { font-size: 0.75rem; color: #4b5563; }
@@ -38,6 +38,12 @@
     .calc-button-wrapper { display: flex; justify-content: center; gap: 16px; margin-top: 30px; flex-wrap: wrap; }
     .calc-button-wrapper .btn { flex: 1; min-width: 160px; text-align: center; }
     
+    /* Десктоп: все поля в одну строку */
+    @media (min-width: 861px) {
+      .calc-form { flex-wrap: nowrap; }
+      .calc-field { flex: 1 1 0; min-width: 0; }
+    }
+    
     .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 40px; }
     .tab-btn { background: #f3f4f6; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; }
     .tab-btn.active { background: #d97706; color: white; }
@@ -62,9 +68,6 @@
     .stars { color: #fbbf24; font-size: 1rem; letter-spacing: 2px; }
     .reviews-footer { text-align: center; margin-top: 32px; padding-top: 32px; border-top: 1px solid #e5e7eb; }
     .reviews-footer p { margin-bottom: 12px; font-weight: 500; margin-top: 0; }
-    .review-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
-    .review-links a { display: inline-flex; align-items: center; gap: 8px; background: #f3f4f6; padding: 8px 20px; border-radius: 40px; text-decoration: none; color: #1f2937; font-weight: 500; transition: 0.2s; }
-    .review-links a:hover { background: #d97706; color: white; transform: translateY(-2px); }
     .cases-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 24px; }
     .case-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .case-card img { width: 100%; height: 200px; object-fit: cover; }
@@ -77,10 +80,25 @@
     .footer-grid a { color: #cbd5e1; text-decoration: none; }
     .footer-grid a:hover { color: #d97706; }
     .social-links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap; }
-    .social-links a { color: #cbd5e1; font-size: 1.6rem; transition: 0.2s; }
-    .social-links a:hover { color: #d97706; }
+    .social-links a { 
+      color: #cbd5e1; 
+      font-size: 1.6rem; 
+      transition: 0.3s ease; 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center;
+      text-decoration: none;
+    }
+    .social-links a:hover { 
+      color: #d97706; 
+      transform: scale(1.15); 
+      text-shadow: 0 0 15px #d97706, 0 0 30px rgba(217, 119, 6, 0.4);
+    }
     .messenger-links { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
     .messenger-links a { color: #cbd5e1; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+    .review-links { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap; }
+    .review-links a { display: inline-flex; align-items: center; gap: 8px; background: #1e293b; padding: 8px 16px; border-radius: 40px; text-decoration: none; color: #cbd5e1; font-weight: 500; transition: 0.2s; }
+    .review-links a:hover { background: #d97706; color: white; }
     .copy { text-align: center; margin-top: 48px; border-top: 1px solid #334155; padding-top: 24px; }
     .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
     .modal-content { background: white; padding: 32px; border-radius: 32px; width: 90%; max-width: 450px; }
@@ -112,7 +130,7 @@
       <a href="#autopark">Автопарк</a>
       <a href="#services">Услуги</a>
       <a href="#contacts">Контакты</a>
-      <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zakaz.html" target="_blank">Заказы</a>
+      <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zakaz.html">Заказы</a>
     </div>
     <div class="header-phones">
       <div class="header-phone"><a href="tel:+79147312000"><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</a></div>
@@ -121,11 +139,11 @@
   </div>
 </header>
 <main>
-  <!-- Калькулятор эвакуатора -->
+  <!-- Калькулятор -->
   <section id="home">
     <div class="container">
       <div class="calculator-block">
-        <div class="calc-title" style="text-align:center; margin-bottom:24px; font-size:1.8rem;">🚛 Рассчитать стоимость эвакуатора</div>
+        <div class="calc-title" style="text-align:center; margin-bottom:24px; font-size:1.8rem;">🚛 Рассчитать стоимость перевозки</div>
         <div class="calc-form">
           <div class="calc-field">
             <label><i class="fas fa-weight-hanging"></i> Техника</label>
@@ -141,39 +159,6 @@
             <label><i class="fas fa-map-marker-alt"></i> Откуда</label>
             <select id="fromCity">
               <option value="vladivostok">Владивосток</option>
-              <option value="Артем">Артем</option>
-              <option value="Артем Грэс">Артем Грэс</option>
-              <option value="Арсеньев">Арсеньев</option>
-              <option value="Б.Камень">Б.Камень</option>
-              <option value="Барабаш">Барабаш</option>
-              <option value="Ботанический сад">Ботанический сад</option>
-              <option value="Врангель">Врангель</option>
-              <option value="Двойка">Двойка</option>
-              <option value="Де Фриз">Де Фриз</option>
-              <option value="Камень рыболов">Камень рыболов</option>
-              <option value="Кипарисово">Кипарисово</option>
-              <option value="Надеждинск, Соловей Ключ">Надеждинск, Соловей Ключ</option>
-              <option value="Находка">Находка</option>
-              <option value="о. Русский ДВФУ">о. Русский ДВФУ</option>
-              <option value="Океанская">Океанская</option>
-              <option value="Партизанск">Партизанск</option>
-              <option value="Раздольное">Раздольное</option>
-              <option value="Садгород">Садгород</option>
-              <option value="Сахарный ключ">Сахарный ключ</option>
-              <option value="Седанка">Седанка</option>
-              <option value="Славянка">Славянка</option>
-              <option value="Спасск">Спасск</option>
-              <option value="Спутник">Спутник</option>
-              <option value="ст. Весенняя">ст. Весенняя</option>
-              <option value="Суражевка">Суражевка</option>
-              <option value="Угловая">Угловая</option>
-              <option value="Угловое">Угловое</option>
-              <option value="Уссурийск">Уссурийск</option>
-              <option value="Фанзавод">Фанзавод</option>
-              <option value="Фокино">Фокино</option>
-              <option value="Хабаровск">Хабаровск</option>
-              <option value="Шамора">Шамора</option>
-              <option value="Шкотово">Шкотово</option>
             </select>
           </div>
           <div class="calc-field">
@@ -191,7 +176,8 @@
               <option value="Де Фриз">Де Фриз</option>
               <option value="Камень рыболов">Камень рыболов</option>
               <option value="Кипарисово">Кипарисово</option>
-              <option value="Надеждинск, Соловей Ключ">Надеждинск, Соловей Ключ</option>
+              <option value="Надеждинск">Надеждинск</option>
+              <option value="Соловей Ключ">Соловей Ключ</option>
               <option value="Находка">Находка</option>
               <option value="о. Русский ДВФУ">о. Русский ДВФУ</option>
               <option value="Океанская">Океанская</option>
@@ -216,14 +202,14 @@
             </select>
           </div>
           <div class="calc-field" id="hoursField" style="display:none;">
-            <label><i class="fas fa-clock"></i> Количество часов (первые 2ч уже включены)</label>
+            <label><i class="fas fa-clock"></i> Погрузка и разгрузка</label>
             <input type="number" id="hoursCount" value="2" step="1" min="2">
           </div>
           <div class="calc-field">
             <span class="result-price" id="calcResult">≈ 7 000 ₽</span>
           </div>
         </div>
-        <div class="price-note">*Точную стоимость уточняйте у менеджера по телефону или заполните заявку на перевозку:</div>
+        <div class="price-note">Время в пути и первые час на погрузку, час на выгрузку включены в стоимость. Цена примерная. Точную стоимость уточняйте у менеджера по телефону или заполните заявку на перевозку:</div>
         <div class="calc-button-wrapper">
           <a href="https://tehnodv25rus-hash.github.io/tehnodv25/calc.html" target="_blank" class="btn">🏙️ По городу</a>
           <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zagorod.html" target="_blank" class="btn">🚚 За город</a>
@@ -267,7 +253,7 @@
         <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18005133/2a0000019bb5f6f194242ef7f143d9932f9f/XL?referer=lkb" alt="Перевозка катера"><p><strong>Подъём и транспортировка катера эвакуатором 10т с кму</strong></p></div>
       </div>
       <div style="text-align: center; margin-top: 32px;">
-        <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zakaz.html" target="_blank" class="btn">Все заказы</a>
+        <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zakaz.html" class="btn">Все заказы</a>
       </div>
     </div>
   </section>
@@ -327,7 +313,7 @@
   </section>
 
   <!-- Отзывы -->
-  <section>
+  <section style="padding-bottom: 0; border-bottom: none;">
     <div class="container">
       <div class="section-title">Отзывы</div>
       <div class="swiper reviewsSwiper">
@@ -340,19 +326,12 @@
         </div>
         <div class="swiper-pagination"></div>
       </div>
-      <div class="reviews-footer">
-        <p>📢 Поделитесь своим опытом работы с нами</p>
-        <div class="review-links">
-          <a href="https://2gis.ru/vladivostok/search/%D1%82%D0%B5%D1%85%D0%BD%D0%BE%20%D0%B4%D0%B2/firm/70000001046528669/131.952176%2C43.150606?m=131.93867%2C43.138576%2F13.36" target="_blank"><i class="fas fa-map-marker-alt"></i> 2ГИС</a>
-          <a href="https://yandex.ru/maps/-/CPDgFBZn" target="_blank"><i class="fas fa-map-marker-alt"></i> Яндекс Карты</a>
-          <a href="https://maps.app.goo.gl/kc3chfqmS6xvtc7q9" target="_blank"><i class="fab fa-google"></i> Google Карты</a>
-        </div>
-      </div>
+      <div class="reviews-footer"></div>
     </div>
   </section>
 
-  <!-- Команда: обновлённые имена и описания -->
-  <section>
+  <!-- Команда -->
+  <section style="padding-top: 0; border-bottom: none;">
     <div class="container">
       <div class="section-title">Работаем как часы благодаря</div>
       <div class="team-grid" id="teamContainer"></div>
@@ -370,27 +349,53 @@
   </section>
 </main>
 
-<footer id="contacts"><div class="container footer-grid">
-  <div><h4>Контакты</h4><p><i class="fas fa-map-marker-alt"></i> г. Владивосток, СДПК Дальзавод, 69</p><p><i class="fas fa-envelope"></i> 690002, г. Владивосток, Океанский пр-т, 110, а/я 23</p><p><i class="fas fa-phone-alt"></i> <a href="tel:+79147312000">+7 (914) 731-20-00</a></p><p><i class="fas fa-phone-alt"></i> <a href="tel:+79147076090">+7 (914) 707-60-90</a></p><p><i class="fas fa-briefcase"></i> Корп. отдел: <a href="tel:+79147076010">+7 (914) 707-60-10</a></p><p><i class="fas fa-at"></i> <a href="mailto:2779010@mail.ru">2779010@mail.ru</a></p><p><i class="fas fa-globe"></i> спецтехдв.рф</p></div>
-  <div><h4>Режим работы</h4><p>Офис: Пн-Пт 9:00–19:00</p><p>Водители: 24/7</p><div class="messenger-links">
-    <a href="https://wa.me/79147312000" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-    <a href="https://t.me/+79147312000" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
-    <a href="https://max.ru/u/f9LHodD0cOKK3KaezC_A2zWrtnN3wqEbSGjSUaDtWJ9jmXJSRlQVt0dFz5s" target="_blank"><i class="fas fa-user"></i> Max</a>
-  </div></div>
-  <div><h4>Социальные сети</h4><div class="social-links">
-    <a href="https://www.youtube.com/@tehnodv25rus" target="_blank"><i class="fab fa-youtube"></i></a>
-    <a href="https://www.instagram.com/tehnodv25.ru" target="_blank"><i class="fab fa-instagram"></i></a>
-    <a href="https://vk.com/tehnodv25ru" target="_blank"><i class="fab fa-vk"></i></a>
-    <a href="https://t.me/evak_vl125" target="_blank"><i class="fab fa-telegram"></i></a>
-    <a href="https://rutube.ru/channel/76106040" target="_blank"><i class="fas fa-video"></i></a>
-  </div></div>
-</div><div class="copy"><p>© 2017 Транспортная компания «Техно ДВ».</p></div></footer>
+<footer id="contacts">
+  <div class="container footer-grid">
+    <div>
+      <h4>Контакты</h4>
+      <p><i class="fas fa-map-marker-alt"></i> г. Владивосток, СДПК Дальзавод, 69</p>
+      <p><i class="fas fa-envelope"></i> 690002, г. Владивосток, Океанский пр-т, 110, а/я 23</p>
+      <p><i class="fas fa-phone-alt"></i> <a href="tel:+79147312000">+7 (914) 731-20-00</a></p>
+      <p><i class="fas fa-phone-alt"></i> <a href="tel:+79147076090">+7 (914) 707-60-90</a></p>
+      <p><i class="fas fa-briefcase"></i> Корп. отдел: <a href="tel:+79147076010">+7 (914) 707-60-10</a></p>
+      <p><i class="fas fa-at"></i> <a href="mailto:2779010@mail.ru">2779010@mail.ru</a></p>
+      <p><i class="fas fa-globe"></i> спецтехдв.рф</p>
+    </div>
+    <div>
+      <h4>Режим работы</h4>
+      <p>Офис: Пн-Пт 9:00–19:00</p>
+      <p>Водители: 24/7</p>
+      <div class="messenger-links">
+        <a href="https://wa.me/79147312000" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        <a href="https://t.me/+79147312000" target="_blank"><i class="fab fa-telegram"></i> Telegram</a>
+        <a href="https://max.ru/u/f9LHodD0cOKK3KaezC_A2zWrtnN3wqEbSGjSUaDtWJ9jmXJSRlQVt0dFz5s" target="_blank"><i class="fas fa-user"></i> Max</a>
+      </div>
+    </div>
+    <div>
+      <h4>Социальные сети</h4>
+      <div class="social-links">
+        <a href="https://www.youtube.com/@tehnodv25rus" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.instagram.com/tehnodv25.ru" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://vk.com/tehnodv25ru" target="_blank"><i class="fab fa-vk"></i></a>
+        <a href="https://t.me/evak_vl125" target="_blank"><i class="fab fa-telegram"></i></a>
+        <a href="https://rutube.ru/channel/76106040" target="_blank"><i class="fas fa-video"></i></a>
+      </div>
+      <h4 style="margin-top: 24px;">Оставить отзыв на картах</h4>
+      <div class="review-links">
+        <a href="https://2gis.ru/vladivostok/search/%D1%82%D0%B5%D1%85%D0%BD%D0%BE%20%D0%B4%D0%B2/firm/70000001046528669/131.952176%2C43.150606?m=131.93867%2C43.138576%2F13.36" target="_blank"><i class="fas fa-map-marker-alt"></i> 2ГИС</a>
+        <a href="https://yandex.ru/maps/-/CPDgFBZn" target="_blank"><i class="fas fa-map-marker-alt"></i> Яндекс Карты</a>
+        <a href="https://maps.app.goo.gl/kc3chfqmS6xvtc7q9" target="_blank"><i class="fab fa-google"></i> Google Карты</a>
+      </div>
+    </div>
+  </div>
+  <div class="copy"><p>© 2017 Транспортная компания «Техно ДВ».</p></div>
+</footer>
 
 <div id="orderModal" class="modal"><div class="modal-content"><span style="float:right; cursor:pointer; font-size:28px;" id="closeModal">&times;</span><h3>Заказать технику</h3><form id="orderForm"><input type="text" placeholder="Ваше имя" style="width:100%; margin:10px 0;" required><input type="tel" placeholder="Телефон" style="width:100%; margin:10px 0;" required><input type="text" placeholder="Какая техника / груз" style="width:100%; margin:10px 0;" required><button type="submit" class="btn">Отправить заявку</button></form></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Автопарк (без изменений)
+  // Данные автопарка и команды (без изменений)
   const techData = {
     evacuators: [
       { name: "Эвакуатор манипулятор Mitsubishi\nБорт 5т, кму 2т", desc: "Стандартная воровайка, манипулятор для повседневных задач", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
@@ -413,7 +418,6 @@
     ]
   };
 
-  // Обновлённая команда: изменены имена и описания
   const teamMembers = [
     { name: "Руководитель отдела логистики Диана", desc: "Знает все логистические схемы от А до Я.", icon: "fas fa-chart-line" },
     { name: "Логист Виктория", desc: "Держит руку на пульсе каждого заказа 24/7.", icon: "fas fa-user" },
@@ -465,7 +469,7 @@
   renderTech('all');
   renderTeam();
 
-  // Калькулятор (без изменений)
+  // Калькулятор (с обновлёнными ценами для новых городов)
   const cityRatesOld = {
     "Артем": {5:13000,10:21000,12:24000},
     "Артем Грэс": {5:15000,10:24000,12:27000},
@@ -478,7 +482,8 @@
     "Де Фриз": {5:11000,10:19000,12:22000},
     "Камень рыболов": {5:34000,10:64000,12:67000},
     "Кипарисово": {5:19000,10:29000,12:32000},
-    "Надеждинск, Соловей Ключ": {5:15000,10:24000,12:27000},
+    "Надеждинск": {5:15000,10:24000,12:27000},
+    "Соловей Ключ": {5:15000,10:24000,12:27000},
     "Находка": {5:31000,10:59000,12:62000},
     "о. Русский ДВФУ": {5:9000,10:17000,12:20000},
     "Океанская": {5:10000,10:19000,12:22000},
@@ -508,7 +513,8 @@
     "Океанская": 15000, "Фанзавод": 15000, "Сахарный ключ": 15000, "Спутник": 15000,
     "Садгород": 16000, "ст. Весенняя": 16000, "Угловая": 16000, "Шамора": 16000, "Де Фриз": 16000, "Угловое": 16000,
     "Артем": 18000, "Двойка": 18000,
-    "Надеждинск, Соловей Ключ": 21000, "Артем Грэс": 21000,
+    "Надеждинск": 21000, "Соловей Ключ": 21000,
+    "Артем Грэс": 21000,
     "Суражевка": 25000, "Шкотово": 25000, "Кипарисово": 25000, "Раздольное": 25000,
     "Уссурийск": 28000, "Б.Камень": 28000, "Барабаш": 28000,
     "Фокино": 28000, "Партизанск": 36000, "Находка": 41000, "Славянка": 41000,
@@ -519,7 +525,8 @@
     "Океанская": 23000, "Фанзавод": 23000, "Сахарный ключ": 23000, "Спутник": 23000,
     "Садгород": 23000, "ст. Весенняя": 23000, "Угловая": 23000, "Шамора": 23000, "Де Фриз": 23000, "Угловое": 23000,
     "Артем": 25000, "Двойка": 25000,
-    "Надеждинск, Соловей Ключ": 28000, "Артем Грэс": 28000,
+    "Надеждинск": 28000, "Соловей Ключ": 28000,
+    "Артем Грэс": 28000,
     "Суражевка": 33000, "Шкотово": 33000, "Кипарисово": 33000, "Раздольное": 33000,
     "Уссурийск": 38000, "Б.Камень": 38000, "Барабаш": 38000,
     "Фокино": 45000, "Партизанск": 58000, "Находка": 63000, "Славянка": 63000,
