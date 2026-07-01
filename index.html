@@ -18,7 +18,12 @@
     .nav a { text-decoration: none; font-weight: 600; color: #1f2937; transition: 0.2s; white-space: nowrap; }
     .nav a:hover { color: #d97706; }
     .header-phones { display: flex; gap: 16px; align-items: center; }
-    .header-phone { font-weight: 700; background: #fef3c7; padding: 8px 16px; border-radius: 40px; }
+    .header-phone {
+      font-weight: 700;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 40px;
+    }
     .header-phone a { text-decoration: none; color: #b45309; }
     .btn { display: inline-block; background-color: #d97706; color: white; padding: 10px 20px; border-radius: 40px; font-weight: 600; text-decoration: none; transition: 0.2s; border: none; cursor: pointer; }
     .btn:hover { background-color: #b45309; transform: translateY(-2px); }
@@ -33,7 +38,61 @@
     .calc-field label { font-weight: 500; margin-bottom: 8px; font-size: 0.85rem; color: #fcd34d; display: block; }
     .calc-field select, .calc-field input { width: 100%; padding: 12px 16px; border-radius: 28px; border: none; background: #2d3a4b; color: white; cursor: pointer; }
     .calc-field input { cursor: text; background: #1e2a3a; }
-    .result-price { font-size: 1.8rem; font-weight: 800; background: #d97706; padding: 8px 24px; border-radius: 48px; display: inline-block; text-align: center; }
+    
+    /* Кастомный контрол для часов */
+    .hours-control {
+      display: flex;
+      align-items: center;
+      background: #1e2a3a;
+      border-radius: 28px;
+      overflow: hidden;
+    }
+    .hours-control input[type="number"] {
+      width: 60px;
+      text-align: center;
+      border: none;
+      background: transparent;
+      color: white;
+      font-size: 1rem;
+      padding: 12px 0;
+      -moz-appearance: textfield;
+      flex-shrink: 0;
+    }
+    .hours-control input[type="number"]::-webkit-outer-spin-button,
+    .hours-control input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .hours-control button {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+      border-radius: 50%;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .hours-control button:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .hours-control button:active {
+      background: rgba(255,255,255,0.2);
+      color: #d97706;
+    }
+
+    .result-price {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-align: center;
+    }
     .price-note { font-size: 0.7rem; margin-top: 12px; text-align: center; color: #fcd34d; }
     .calc-button-wrapper { display: flex; justify-content: center; gap: 16px; margin-top: 30px; flex-wrap: wrap; }
     .calc-button-wrapper .btn { flex: 1; min-width: 160px; text-align: center; }
@@ -102,6 +161,35 @@
     .copy { text-align: center; margin-top: 48px; border-top: 1px solid #334155; padding-top: 24px; }
     .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
     .modal-content { background: white; padding: 32px; border-radius: 32px; width: 90%; max-width: 450px; }
+    
+    /* Кнопка "Наверх" */
+    #scrollTopBtn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #d97706;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 2rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transition: 0.3s;
+      z-index: 999;
+    }
+    #scrollTopBtn:hover {
+      background: #b45309;
+      transform: scale(1.05);
+    }
+    #scrollTopBtn.show {
+      display: flex;
+    }
+
     @media (max-width: 860px) {
       .header-inner { flex-direction: column; text-align: center; }
       .nav { justify-content: center; gap: 16px; flex-wrap: wrap; }
@@ -111,6 +199,15 @@
       .calculator-block { padding: 24px; }
       .calc-button-wrapper { flex-direction: column; align-items: stretch; }
       .calc-button-wrapper .btn { width: 100%; }
+      #scrollTopBtn {
+        bottom: 20px;
+        right: 20px;
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+      }
+      .hours-control input[type="number"] { width: 50px; }
+      .hours-control button { width: 36px; height: 36px; font-size: 1rem; }
     }
     @media (max-width: 600px) {
       .nav { gap: 8px; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; }
@@ -126,11 +223,12 @@
   <div class="container header-inner">
     <div class="logo"><h1>Техно ДВ</h1><p>Транспортная компания | Спецтехника</p></div>
     <div class="nav">
-      <a href="#home">Главная</a>
       <a href="#autopark">Автопарк</a>
       <a href="#services">Услуги</a>
+      <a href="#blog">Блог</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#team">Команда</a>
       <a href="#contacts">Контакты</a>
-      <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zakaz.html">Заказы</a>
     </div>
     <div class="header-phones">
       <div class="header-phone"><a href="tel:+79147312000"><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</a></div>
@@ -143,7 +241,6 @@
   <section id="home">
     <div class="container">
       <div class="calculator-block">
-        <div class="calc-title" style="text-align:center; margin-bottom:24px; font-size:1.8rem;">🚛 Рассчитать стоимость перевозки</div>
         <div class="calc-form">
           <div class="calc-field">
             <label><i class="fas fa-weight-hanging"></i> Техника</label>
@@ -201,18 +298,22 @@
               <option value="Шкотово">Шкотово</option>
             </select>
           </div>
-          <div class="calc-field" id="hoursField" style="display:none;">
-            <label><i class="fas fa-clock"></i> Погрузка и разгрузка</label>
-            <input type="number" id="hoursCount" value="2" step="1" min="2">
+          <div class="calc-field" id="hoursField">
+            <label><i class="fas fa-clock"></i> Погрузка и разгрузка (часы)</label>
+            <div class="hours-control">
+              <button type="button" id="hoursMinus">−</button>
+              <input type="number" id="hoursCount" value="2" step="1" min="2">
+              <button type="button" id="hoursPlus">+</button>
+            </div>
           </div>
           <div class="calc-field">
             <span class="result-price" id="calcResult">≈ 7 000 ₽</span>
           </div>
         </div>
-        <div class="price-note">Время в пути и первые час на погрузку, час на выгрузку включены в стоимость. Цена примерная. Точную стоимость уточняйте у менеджера по телефону или заполните заявку на перевозку:</div>
+        <div class="price-note">Время в пути и первые 2 часа на погрузку/выгрузку включены в стоимость. Заполните заявку на перевозку что бы получить точную стоимость:</div>
         <div class="calc-button-wrapper">
           <a href="https://tehnodv25rus-hash.github.io/tehnodv25/calc.html" target="_blank" class="btn">🏙️ По городу</a>
-          <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zagorod.html" target="_blank" class="btn">🚚 За город</a>
+          <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zagorod.html" target="_blank" class="btn">🚚 Межгород</a>
         </div>
       </div>
     </div>
@@ -235,17 +336,20 @@
       <div class="tabs" id="techTabs">
         <button class="tab-btn active" data-tab="all">Все</button>
         <button class="tab-btn" data-tab="evacuators">Эвакуаторы</button>
-        <button class="tab-btn" data-tab="excavators">Экскаваторы/Спецтехника</button>
-        <button class="tab-btn" data-tab="trucks_dump">Самосвалы/Грузовики</button>
+        <button class="tab-btn" data-tab="excavators">Экскаваторы</button>
+        <button class="tab-btn" data-tab="special">Спецтехника</button>
+        <button class="tab-btn" data-tab="dump">Самосвалы</button>
+        <button class="tab-btn" data-tab="trucks">Грузовики</button>
+        <button class="tab-btn" data-tab="trailers">Тягачи</button>
       </div>
       <div id="techContainer" class="tech-grid"></div>
     </div>
   </section>
 
-  <!-- Заказы -->
-  <section>
+  <!-- Блог -->
+  <section id="blog">
     <div class="container">
-      <div class="section-title">Заказы</div>
+      <div class="section-title">Блог</div>
       <div class="cases-grid">
         <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/14763372/2a0000019448914f7f9b573430f728f41fec/XL?referer=lkb" alt="Перевозка вертолета"><p><strong>Перевозка вертолёта эвакуатором</strong> — 10т с кму</p></div>
         <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18769949/2a0000019c26195185094cc6f9bf6a3b47cb/XL?referer=lkb" alt="Перевозка экскаватора"><p><strong>Перевозка гусеничного экскаватора тралом</strong> 25т</p></div>
@@ -253,12 +357,12 @@
         <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18005133/2a0000019bb5f6f194242ef7f143d9932f9f/XL?referer=lkb" alt="Перевозка катера"><p><strong>Подъём и транспортировка катера эвакуатором 10т с кму</strong></p></div>
       </div>
       <div style="text-align: center; margin-top: 32px;">
-        <a href="https://tehnodv25rus-hash.github.io/tehnodv25/zakaz.html" class="btn">Все заказы</a>
+        <a href="http://tehnodv25.ru/blog.html" target="_blank" class="btn">Подробнее</a>
       </div>
     </div>
   </section>
 
-  <!-- Услуги -->
+  <!-- Услуги (обновлённый список) -->
   <section id="services">
     <div class="container">
       <div class="section-title">Услуги</div>
@@ -272,7 +376,7 @@
           <li><i class="fas fa-truck-moving"></i> Перевозка грузовика</li>
           <li><i class="fas fa-warehouse"></i> Перевозка гаража</li>
           <li><i class="fas fa-bolt"></i> Перевозка генератора</li>
-          <li><i class="fas fa-couch"></i> Перевозка жилого модуля</li>
+          <li><i class="fas fa-couch"></i> Перевозка модуля</li> <!-- изменено -->
           <li><i class="fas fa-ship"></i> Перевозка катера</li>
           <li><i class="fas fa-motorcycle"></i> Перевозка квадроцикла</li>
           <li><i class="fas fa-box"></i> Перевозка кунга</li>
@@ -290,8 +394,13 @@
           <li><i class="fas fa-glass-cheers"></i> Перевозка стекол</li>
           <li><i class="fas fa-trailer"></i> Перевозка вагончика</li>
           <li><i class="fas fa-car"></i> Перевозка кроссовера</li>
-          <li><i class="fas fa-snowplow"></i> Уборка снега</li>
-          <li><i class="fas fa-broom"></i> Чистка от снега</li>
+          <li><i class="fas fa-snowplow"></i> Уборка, вывоз снега</li> <!-- изменено -->
+          <!-- Новые услуги -->
+          <li><i class="fas fa-tractor"></i> Услуги экскаватора</li>
+          <li><i class="fas fa-arrow-up"></i> Услуги автовышки</li>
+          <li><i class="fas fa-truck"></i> Услуги эвакуатора</li>
+          <li><i class="fas fa-warehouse"></i> Услуги погрузчика</li>
+          <li><i class="fas fa-archive"></i> Перевозка контейнера</li>
         </ul>
       </div>
     </div>
@@ -313,7 +422,7 @@
   </section>
 
   <!-- Отзывы -->
-  <section style="padding-bottom: 0; border-bottom: none;">
+  <section id="reviews" style="padding-bottom: 0; border-bottom: none;">
     <div class="container">
       <div class="section-title">Отзывы</div>
       <div class="swiper reviewsSwiper">
@@ -331,7 +440,7 @@
   </section>
 
   <!-- Команда -->
-  <section style="padding-top: 0; border-bottom: none;">
+  <section id="team" style="padding-top: 0; border-bottom: none;">
     <div class="container">
       <div class="section-title">Работаем как часы благодаря</div>
       <div class="team-grid" id="teamContainer"></div>
@@ -359,7 +468,7 @@
       <p><i class="fas fa-phone-alt"></i> <a href="tel:+79147076090">+7 (914) 707-60-90</a></p>
       <p><i class="fas fa-briefcase"></i> Корп. отдел: <a href="tel:+79147076010">+7 (914) 707-60-10</a></p>
       <p><i class="fas fa-at"></i> <a href="mailto:2779010@mail.ru">2779010@mail.ru</a></p>
-      <p><i class="fas fa-globe"></i> спецтехдв.рф</p>
+      <p><i class="fas fa-globe"></i> tehnodv25.ru</p>
     </div>
     <div>
       <h4>Режим работы</h4>
@@ -391,11 +500,14 @@
   <div class="copy"><p>© 2017 Транспортная компания «Техно ДВ».</p></div>
 </footer>
 
+<!-- Кнопка возврата наверх -->
+<button id="scrollTopBtn" aria-label="Наверх"><i class="fas fa-arrow-up"></i></button>
+
 <div id="orderModal" class="modal"><div class="modal-content"><span style="float:right; cursor:pointer; font-size:28px;" id="closeModal">&times;</span><h3>Заказать технику</h3><form id="orderForm"><input type="text" placeholder="Ваше имя" style="width:100%; margin:10px 0;" required><input type="tel" placeholder="Телефон" style="width:100%; margin:10px 0;" required><input type="text" placeholder="Какая техника / груз" style="width:100%; margin:10px 0;" required><button type="submit" class="btn">Отправить заявку</button></form></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Данные автопарка и команды (без изменений)
+  // Данные автопарка
   const techData = {
     evacuators: [
       { name: "Эвакуатор манипулятор Mitsubishi\nБорт 5т, кму 2т", desc: "Стандартная воровайка, манипулятор для повседневных задач", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
@@ -406,15 +518,22 @@
     excavators: [
       { name: "Экскаватор гусеничный 7,5т с гидромолотом", desc: "Демонтаж бетона, вскрытие асфальта, корчевание", image: "https://avatars.mds.yandex.net/get-altay/15352901/2a0000019448910594b726be2b483d33c56d/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
       { name: "Экскаватор гусеничный 7,5т с ковшом", desc: "Ковш 0.8м³, планировка участка, обратная лопата", image: "https://avatars.mds.yandex.net/get-altay/18748727/2a0000019c26195a31c73b69078196ba0e76/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" },
+      { name: "Фронтальный погрузчик Komatsu (петушок)", desc: "Высокая маневренность, ковш 2.5м³, для погрузки сыпучих материалов", image: "https://avatars.mds.yandex.net/get-altay/19555209/2a0000019c4a6a12e5236974f69d732d2b02/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+    ],
+    special: [
       { name: "Автовышка 15 метров", desc: "Подъем на высоту до 20 метров для монтажных работ", image: "https://avatars.mds.yandex.net/get-altay/19579876/2a0000019b7225ac01a7f77154ecc0942180/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
       { name: "Фронтальный погрузчик Komatsu (петушок)", desc: "Высокая маневренность, ковш 2.5м³, для погрузки сыпучих материалов", image: "https://avatars.mds.yandex.net/get-altay/19555209/2a0000019c4a6a12e5236974f69d732d2b02/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
       { name: "Погрузчик с вилами", desc: "Грузоподъемность 1т, вилы длиной 1.2м, идеален для складских работ и погрузки поддонов", image: "https://avatars.mds.yandex.net/get-altay/18184740/2a0000019b2ad8f21c737f49db5497ca21eb/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
-    trucks_dump: [
-      { name: "Трал", desc: "Универсальный трал для перевозки тяжелых грузов до 25 тонн, низкий угол заезда, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019c79d69d3256578c96acfa00d6f3/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Бортовой полуприцеп", desc: "Перевозка длинномеров до 13 метров, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019b2fd5072a3cccca4543c5b18490/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Самосвал борт 5т", desc: "Оптимален для малых строек, вывоз грунта до 5 тонн", image: "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019b33d7d5d3cc22f6bda53c6af0fc/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+    dump: [
+      { name: "Самосвал борт 5т", desc: "Оптимален для малых строек, вывоз грунта до 5 тонн", image: "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019b33d7d5d3cc22f6bda53c6af0fc/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+    ],
+    trucks: [
       { name: "Грузовик борт 1т", desc: "Компактный грузовик для перевозки малых партий грузов, маневренный, удобен для доставки по городу", image: "https://avatars.mds.yandex.net/get-altay/18133168/2a0000019e86b67c9b2ee88033a151fef0a0/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+    ],
+    trailers: [
+      { name: "Трал", desc: "Универсальный трал для перевозки тяжелых грузов до 25 тонн, низкий угол заезда, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019c79d69d3256578c96acfa00d6f3/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Бортовой полуприцеп", desc: "Перевозка длинномеров до 13 метров, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019b2fd5072a3cccca4543c5b18490/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ]
   };
 
@@ -431,10 +550,29 @@
 
   function renderTech(activeTab) {
     let items = [];
-    if (activeTab === 'all') items = [...techData.evacuators, ...techData.excavators, ...techData.trucks_dump];
-    else if (activeTab === 'evacuators') items = techData.evacuators;
+    if (activeTab === 'all') {
+      const allItems = [
+        ...techData.evacuators,
+        ...techData.excavators,
+        ...techData.special,
+        ...techData.dump,
+        ...techData.trucks,
+        ...techData.trailers
+      ];
+      const uniqueMap = new Map();
+      allItems.forEach(item => {
+        if (!uniqueMap.has(item.name)) {
+          uniqueMap.set(item.name, item);
+        }
+      });
+      items = Array.from(uniqueMap.values());
+    } else if (activeTab === 'evacuators') items = techData.evacuators;
     else if (activeTab === 'excavators') items = techData.excavators;
-    else if (activeTab === 'trucks_dump') items = techData.trucks_dump;
+    else if (activeTab === 'special') items = techData.special;
+    else if (activeTab === 'dump') items = techData.dump;
+    else if (activeTab === 'trucks') items = techData.trucks;
+    else if (activeTab === 'trailers') items = techData.trailers;
+    
     const container = document.getElementById('techContainer');
     container.innerHTML = items.map(item => {
       if (item.hasImage && item.image) {
@@ -469,7 +607,10 @@
   renderTech('all');
   renderTeam();
 
-  // Калькулятор (с обновлёнными ценами для новых городов)
+  // ========== КАЛЬКУЛЯТОР ==========
+  const hourlyRatesOld = {5: {first:7000, next:3500}, 10: {first:13000, next:4500}, 15: {first:15000, next:5000}};
+  const hourlyRatesNew = {7: { first: 10000, next: 4000 }, 12: { first: 15000, next: 5000 }};
+
   const cityRatesOld = {
     "Артем": {5:13000,10:21000,12:24000},
     "Артем Грэс": {5:15000,10:24000,12:27000},
@@ -506,8 +647,6 @@
     "Шамора": {5:11000,10:19000,12:22000},
     "Шкотово": {5:19000,10:29000,12:32000}
   };
-  const hourlyRatesOld = {5: {first:7000, next:3500}, 10: {first:13000, next:4500}, 15: {first:15000, next:5000}};
-  const hourlyRatesNew = {7: { first: 10000, next: 4000 }, 12: { first: 15000, next: 5000 }};
   const cityRates7 = {
     "Седанка": 14000, "Ботанический сад": 14000, "о. Русский ДВФУ": 14000,
     "Океанская": 15000, "Фанзавод": 15000, "Сахарный ключ": 15000, "Спутник": 15000,
@@ -536,63 +675,84 @@
   const techType = document.getElementById('techType');
   const fromCitySel = document.getElementById('fromCity');
   const toCitySel = document.getElementById('toCity');
-  const hoursField = document.getElementById('hoursField');
-  const hoursCount = document.getElementById('hoursCount');
+  const hoursInput = document.getElementById('hoursCount');
   const calcResultSpan = document.getElementById('calcResult');
+
+  const minusBtn = document.getElementById('hoursMinus');
+  const plusBtn = document.getElementById('hoursPlus');
 
   function updatePrice() {
     const tonnage = parseInt(techType.value);
     const from = fromCitySel.value;
     const to = toCitySel.value;
+    let hours = parseInt(hoursInput.value);
+    if (isNaN(hours) || hours < 2) hours = 2;
+    hoursInput.value = hours;
+
+    let basePrice = null;
+    let hourlyRate = null;
+
     if (from === to) {
-      let hours = parseInt(hoursCount.value);
-      if (isNaN(hours) || hours < 2) hours = 2;
-      let total = null;
+      let rates;
       if (tonnage === 5 || tonnage === 10 || tonnage === 15) {
-        const rate = hourlyRatesOld[tonnage];
-        if (!rate) { calcResultSpan.innerText = 'Ошибка'; return; }
-        total = rate.first;
-        if (hours > 2) total += (hours - 2) * rate.next;
+        rates = hourlyRatesOld[tonnage];
       } else if (tonnage === 7 || tonnage === 12) {
-        const rate = hourlyRatesNew[tonnage];
-        if (!rate) { calcResultSpan.innerText = 'Ошибка'; return; }
-        total = rate.first;
-        if (hours > 2) total += (hours - 2) * rate.next;
-      } else { calcResultSpan.innerText = 'Тип не поддерживается'; return; }
-      calcResultSpan.innerText = `≈ ${total.toLocaleString()} ₽`;
+        rates = hourlyRatesNew[tonnage];
+      } else {
+        calcResultSpan.innerText = 'Ошибка';
+        return;
+      }
+      if (!rates) { calcResultSpan.innerText = 'Ошибка'; return; }
+      basePrice = rates.first;
+      hourlyRate = rates.next;
     } else {
       let targetCity = to;
       if (to === 'vladivostok') targetCity = from;
-      let price = null;
+      
       if (tonnage === 5 || tonnage === 10 || tonnage === 15) {
         const rates = cityRatesOld[targetCity];
         if (!rates) { calcResultSpan.innerText = 'Цена не найдена'; return; }
-        if (tonnage === 5) price = rates[5];
-        else if (tonnage === 10) price = rates[10];
-        else if (tonnage === 15) price = rates[12] ? rates[12] + 5000 : null;
-      } else if (tonnage === 7) price = cityRates7[targetCity];
-      else if (tonnage === 12) price = cityRates12[targetCity];
-      if (price) calcResultSpan.innerText = `≈ ${price.toLocaleString()} ₽`;
-      else calcResultSpan.innerText = 'Уточните у менеджера';
+        if (tonnage === 5) basePrice = rates[5];
+        else if (tonnage === 10) basePrice = rates[10];
+        else if (tonnage === 15) basePrice = rates[12] ? rates[12] + 5000 : null;
+        hourlyRate = hourlyRatesOld[tonnage]?.next || null;
+      } else if (tonnage === 7) {
+        basePrice = cityRates7[targetCity];
+        hourlyRate = hourlyRatesNew[7]?.next;
+      } else if (tonnage === 12) {
+        basePrice = cityRates12[targetCity];
+        hourlyRate = hourlyRatesNew[12]?.next;
+      } else {
+        calcResultSpan.innerText = 'Ошибка';
+        return;
+      }
+      if (basePrice == null) { calcResultSpan.innerText = 'Уточните у менеджера'; return; }
+      if (hourlyRate == null) { calcResultSpan.innerText = 'Ошибка'; return; }
     }
+
+    const total = basePrice + (hours - 2) * hourlyRate;
+    calcResultSpan.innerText = `≈ ${total.toLocaleString()} ₽`;
   }
-  function toggleHoursField() {
-    const isSameCity = (fromCitySel.value === toCitySel.value);
-    hoursField.style.display = isSameCity ? 'block' : 'none';
-    if (!isSameCity) { if (hoursCount) hoursCount.value = 2; }
-    else { if (parseInt(hoursCount.value) < 2) hoursCount.value = 2; }
-    updatePrice();
-  }
-  techType.addEventListener('change', updatePrice);
-  fromCitySel.addEventListener('change', toggleHoursField);
-  toCitySel.addEventListener('change', toggleHoursField);
-  hoursCount.addEventListener('input', () => {
-    if (fromCitySel.value === toCitySel.value) {
-      if (parseInt(hoursCount.value) < 2) hoursCount.value = 2;
+
+  minusBtn.addEventListener('click', () => {
+    let val = parseInt(hoursInput.value) || 2;
+    if (val > 2) {
+      hoursInput.value = val - 1;
       updatePrice();
     }
   });
-  toggleHoursField();
+  plusBtn.addEventListener('click', () => {
+    let val = parseInt(hoursInput.value) || 2;
+    hoursInput.value = val + 1;
+    updatePrice();
+  });
+
+  techType.addEventListener('change', updatePrice);
+  fromCitySel.addEventListener('change', updatePrice);
+  toCitySel.addEventListener('change', updatePrice);
+  hoursInput.addEventListener('input', updatePrice);
+
+  updatePrice();
 
   new Swiper('.reviewsSwiper', { slidesPerView:1, spaceBetween:24, pagination:{el:'.swiper-pagination', clickable:true}, breakpoints:{768:{slidesPerView:2}} });
 
@@ -603,6 +763,18 @@
   document.getElementById('callbackForm1')?.addEventListener('submit', handleCallbackSubmit);
   document.getElementById('callbackForm2')?.addEventListener('submit', handleCallbackSubmit);
   document.getElementById('orderForm').addEventListener('submit', (e) => { e.preventDefault(); alert('Заявка отправлена!'); modal.style.display = 'none'; e.target.reset(); });
+
+  const scrollBtn = document.getElementById('scrollTopBtn');
+  window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 200) {
+      scrollBtn.classList.add('show');
+    } else {
+      scrollBtn.classList.remove('show');
+    }
+  });
+  scrollBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 </script>
 </body>
 </html>
