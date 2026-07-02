@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
-    /* Все стили без изменений (такие же как в предыдущей версии) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; color: #1f2937; scroll-behavior: smooth; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
@@ -419,14 +418,15 @@
 <!-- Кнопка "Наверх" -->
 <button id="scrollTopBtn" aria-label="Наверх"><i class="fas fa-arrow-up"></i></button>
 
-<!-- Модальная форма с FormSubmit -->
+<!-- Модальная форма с SplitForms (обновлённая) -->
 <div id="orderModal" class="modal">
   <div class="modal-content">
     <button class="close" id="closeModal">&times;</button>
     <h3><i class="fas fa-tools"></i> Заказать технику</h3>
-    <form id="orderForm" class="modal-form" action="https://formsubmit.co/tehnodv25rus@yandex.ru" method="POST">
-      <input type="hidden" name="_subject" value="Новая заявка с сайта Техно ДВ">
-      <input type="hidden" name="_captcha" value="false">
+    <form id="orderForm" class="modal-form" action="https://splitforms.com/api/v1/submit/94ce7719e6284ebb97e1895af792ef29" method="POST">
+      <!-- Скрытые поля для SplitForms -->
+      <input type="hidden" name="_email" value="tehnodv25rus@yandex.ru">
+      <input type="hidden" name="_redirect" value="http://tehnodv25.ru/thanks.html">
       <div class="field">
         <i class="fas fa-user"></i>
         <input type="text" name="name" placeholder="Ваше имя" required>
@@ -446,7 +446,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Данные автопарка
+  // Данные автопарка и команды (полные, как в предыдущей версии)
   const techData = {
     evacuators: [
       { name: "Эвакуатор манипулятор Mitsubishi\nБорт 5т, кму 2т", desc: "Стандартная воровайка, манипулятор для повседневных задач", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
@@ -683,12 +683,11 @@
     document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
     window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 
-    // ===== ОБРАБОТЧИК ФОРМЫ ЗАКАЗА С АЛЕРТОМ =====
+    // ===== ОБРАБОТЧИК ФОРМЫ ЗАКАЗА =====
     const orderForm = document.getElementById('orderForm');
     orderForm.addEventListener('submit', function(e) {
       e.preventDefault();
       alert('Ваша заявка принята, мы вам перезвоним в ближайшее время');
-      // Небольшая задержка, чтобы алерт успел показаться, затем отправка
       setTimeout(() => {
         this.submit();
       }, 400);
