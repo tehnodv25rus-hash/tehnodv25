@@ -909,6 +909,34 @@
             gap: 4px;
         }
 
+        /* Блок деталей груза */
+        .modal-cargo-details {
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            color: #0f172a;
+        }
+        .modal-cargo-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .modal-cargo-details .detail-row:last-child {
+            border-bottom: none;
+        }
+        .modal-cargo-details .detail-label {
+            font-weight: 500;
+            color: #475569;
+        }
+        .modal-cargo-details .detail-value {
+            font-weight: 500;
+            text-align: right;
+        }
+
         .modal-form .form-group {
             margin-bottom: 16px;
         }
@@ -1029,6 +1057,14 @@
             }
             .modal-form .submit-row .btn-secondary {
                 width: 100%;
+            }
+            .modal-cargo-details .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+            }
+            .modal-cargo-details .detail-value {
+                text-align: left;
             }
         }
 
@@ -1913,11 +1949,16 @@
                 Стоимость: <strong id="modalVehiclePrice">—</strong> ₽ &nbsp;|&nbsp; Доп. часы: <strong id="modalVehicleExtra">0</strong> ч
             </div>
 
-            <!-- Блок с параметрами груза -->
+            <!-- Блок с основными параметрами груза -->
             <div class="modal-cargo-params" id="modalCargoParams">
                 <span class="param-item"><strong>Груз:</strong> <span id="modalCargoType">—</span></span>
                 <span class="param-item"><strong>Вес:</strong> <span id="modalCargoWeight">—</span> т</span>
                 <span class="param-item"><strong>Габариты:</strong> <span id="modalCargoDimensions">—</span></span>
+            </div>
+
+            <!-- Блок с детальными параметрами груза -->
+            <div class="modal-cargo-details" id="modalCargoDetails">
+                <!-- сюда будем вставлять строки через JS -->
             </div>
 
             <form class="modal-form" id="orderForm" action="https://formsubmit.co/tehnodv25rus@yandex.ru" method="POST">
@@ -1927,12 +1968,15 @@
                 <input type="hidden" id="formVehiclePrice" name="vehicle_price" value="">
                 <input type="hidden" id="formVehicleExtra" name="vehicle_extra" value="">
 
-                <!-- Скрытые поля с параметрами груза -->
+                <!-- Скрытые поля с основными параметрами груза -->
                 <input type="hidden" id="formCargoType" name="cargo_type" value="">
                 <input type="hidden" id="formCargoWeight" name="cargo_weight" value="">
                 <input type="hidden" id="formCargoLength" name="cargo_length" value="">
                 <input type="hidden" id="formCargoWidth" name="cargo_width" value="">
                 <input type="hidden" id="formCargoHeight" name="cargo_height" value="">
+
+                <!-- Скрытые поля для деталей груза (отправляются как JSON, чтобы не плодить десятки полей) -->
+                <input type="hidden" id="formCargoDetails" name="cargo_details_json" value="">
 
                 <!-- Скрытые поля для FormSubmit -->
                 <input type="hidden" name="_subject" value="Новая заявка на перевозку">
@@ -2082,6 +2126,8 @@
             const formCargoLength = document.getElementById('formCargoLength');
             const formCargoWidth = document.getElementById('formCargoWidth');
             const formCargoHeight = document.getElementById('formCargoHeight');
+            const formCargoDetails = document.getElementById('formCargoDetails');
+            const modalCargoDetails = document.getElementById('modalCargoDetails');
 
             // Поля формы
             const dateTimeInput = document.getElementById('orderDateTime');
@@ -2092,6 +2138,65 @@
             const photosInput = document.getElementById('orderPhotos');
             const nameInput = document.getElementById('orderName');
             const phoneInput = document.getElementById('orderPhone');
+
+            // Функция для формирования деталей груза в виде массива строк {label, value}
+            function buildCargoDetails(cargoData) {
+                const type = cargoData.type || 'строительные материалы';
+                const details = [];
+
+                // Всегда добавляем основные параметры (они уже есть в отдельном блоке, но для полноты можно дублировать)
+                // Но мы будем добавлять только специфические, чтобы не повторяться
+                // Основные уже показаны в modal-cargo-params
+
+                // Добавляем специфические для каждого типа
+                if (type === 'автомобиль') {
+                    details.push({ label: 'Тип авто', value: cargoData.autoType || '—' });
+                    details.push({ label: 'Марка автомобиля', value: cargoData.autoMake || '—' });
+                    details.push({ label: 'Состояние', value: cargoData.autoCondition || '—' });
+                    details.push({ label: 'Колёса крутятся?', value: cargoData.autoWheelsTurn || '—' });
+                    details.push({ label: 'Тип погрузки', value: cargoData.autoLoadingType || '—' });
+                    details.push({ label: 'Подъездные пути', value: cargoData.autoAccessRoad || '—' });
+                    details.push({ label: 'Деревья/провода над авто', value: cargoData.autoObstacles || '—' });
+                    details.push({ label: 'Документы на авто', value: cargoData.autoDocuments || '—' });
+                } else if (type === 'грузовик') {
+                    details.push({ label: 'Тип кузова', value: cargoData.truckBodyType || '—' });
+                    details.push({ label: 'Груз в кузове', value: cargoData.truckLoad || '—' });
+                    details.push({ label: 'Марка грузовика', value: cargoData.truckMake || '—' });
+                    details.push({ label: 'Колёса крутятся?', value: cargoData.truckWheelsTurn || '—' });
+                    details.push({ label: 'Тип погрузки', value: cargoData.truckLoadingType || '—' });
+                    details.push({ label: 'Подъездные пути', value: cargoData.truckAccessRoad || '—' });
+                    details.push({ label: 'Деревья/провода над авто', value: cargoData.truckObstacles || '—' });
+                    details.push({ label: 'Документы на авто', value: cargoData.truckDocuments || '—' });
+                } else if (type === 'контейнер') {
+                    details.push({ label: 'Тип контейнера', value: cargoData.containerType || '—' });
+                    if (cargoData.containerType === '5ft' || cargoData.containerType === '10ft') {
+                        details.push({ label: 'Количество', value: cargoData.containerCount || '1' });
+                    }
+                    details.push({ label: 'Груз внутри', value: cargoData.containerLoad || '—' });
+                    details.push({ label: 'Выступающие элементы', value: cargoData.containerProtrusions || '—' });
+                    if (cargoData.containerProtrusions === 'Другое') {
+                        details.push({ label: 'Уточнение', value: cargoData.containerProtrusionsOther || '—' });
+                    }
+                } else if (type === 'спецтехника') {
+                    details.push({ label: 'Тип спецтехники', value: cargoData.specialType || '—' });
+                    details.push({ label: 'Марка/модель', value: cargoData.specialMake || '—' });
+                    details.push({ label: 'Колёса крутятся?', value: cargoData.specialWheelsTurn || '—' });
+                    details.push({ label: 'Тип погрузки', value: cargoData.specialLoadingType || '—' });
+                    details.push({ label: 'Подъездные пути', value: cargoData.specialAccessRoad || '—' });
+                    details.push({ label: 'Деревья/провода над техникой', value: cargoData.specialObstacles || '—' });
+                    details.push({ label: 'Документы на технику', value: cargoData.specialDocuments || '—' });
+                } else if (type === 'сыпучие' || type === 'строительный мусор') {
+                    const label = type === 'сыпучие' ? 'Тип сыпучего материала' : 'Тип строительного мусора';
+                    details.push({ label: label, value: cargoData.bulkMaterialType || '—' });
+                } else if (type === 'прочее') {
+                    details.push({ label: 'Наименование груза', value: cargoData.otherName || '—' });
+                    details.push({ label: 'Описание груза', value: cargoData.otherDescription || '—' });
+                    details.push({ label: 'Особые условия', value: cargoData.otherConditions || '—' });
+                }
+                // Для "строительные материалы" никаких дополнительных полей нет
+
+                return details;
+            }
 
             // Открыть модалку с данными карточки и параметрами груза
             window.openOrderModal = function(id, name, price, extra, cargoData) {
@@ -2105,7 +2210,7 @@
                 formVehiclePrice.value = price;
                 formVehicleExtra.value = extra;
 
-                // Заполняем параметры груза
+                // Заполняем основные параметры груза
                 const cargoType = cargoData.type || '—';
                 const weight = cargoData.weight || 0;
                 const length = cargoData.length || 0;
@@ -2123,6 +2228,24 @@
                 formCargoLength.value = length;
                 formCargoWidth.value = width;
                 formCargoHeight.value = height;
+
+                // Формируем детальные параметры
+                const details = buildCargoDetails(cargoData);
+                let detailsHtml = '';
+                details.forEach(d => {
+                    detailsHtml += `<div class="detail-row">
+                        <span class="detail-label">${d.label}</span>
+                        <span class="detail-value">${d.value}</span>
+                    </div>`;
+                });
+                if (details.length === 0) {
+                    detailsHtml = '<div class="detail-row"><span class="detail-label">Дополнительные параметры отсутствуют</span></div>';
+                }
+                modalCargoDetails.innerHTML = detailsHtml;
+
+                // Сохраняем JSON всех деталей для отправки
+                const detailsJson = JSON.stringify(details);
+                formCargoDetails.value = detailsJson;
 
                 // Сбрасываем поля формы (кроме скрытых)
                 dateTimeInput.value = '';
@@ -3091,7 +3214,45 @@
                 weight: state.weight,
                 length: state.length,
                 width: state.width,
-                height: state.height
+                height: state.height,
+                // Auto
+                autoType: state.autoType,
+                autoMake: state.autoMake,
+                autoCondition: state.autoCondition,
+                autoWheelsTurn: state.autoWheelsTurn,
+                autoLoadingType: state.autoLoadingType,
+                autoAccessRoad: state.autoAccessRoad,
+                autoObstacles: state.autoObstacles,
+                autoDocuments: state.autoDocuments,
+                // Truck
+                truckBodyType: state.truckBodyType,
+                truckLoad: state.truckLoad,
+                truckMake: state.truckMake,
+                truckWheelsTurn: state.truckWheelsTurn,
+                truckLoadingType: state.truckLoadingType,
+                truckAccessRoad: state.truckAccessRoad,
+                truckObstacles: state.truckObstacles,
+                truckDocuments: state.truckDocuments,
+                // Container
+                containerType: state.containerType,
+                containerCount: state.containerCount,
+                containerLoad: state.containerLoad,
+                containerProtrusions: state.containerProtrusions,
+                containerProtrusionsOther: state.containerProtrusionsOther,
+                // Special
+                specialType: state.specialType,
+                specialMake: state.specialMake,
+                specialWheelsTurn: state.specialWheelsTurn,
+                specialLoadingType: state.specialLoadingType,
+                specialAccessRoad: state.specialAccessRoad,
+                specialObstacles: state.specialObstacles,
+                specialDocuments: state.specialDocuments,
+                // Bulk
+                bulkMaterialType: state.bulkMaterialType,
+                // Other
+                otherName: state.otherName,
+                otherDescription: state.otherDescription,
+                otherConditions: state.otherConditions
             };
 
             // Открываем модалку с подстановкой данных
