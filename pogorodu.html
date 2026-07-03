@@ -224,16 +224,14 @@
             margin-bottom: 32px;
             box-shadow: 0 8px 32px rgba(37, 99, 235, 0.25);
         }
-        /* Убираем ограничение ширины для подзаголовка */
         .calc-header p {
-            font-size: 1.5rem;          /* увеличен для заметности */
+            font-size: 1.5rem;
             font-weight: 700;
             margin: 0;
-            max-width: none;            /* убираем ограничение */
+            max-width: none;
             width: 100%;
             line-height: 1.3;
         }
-        /* h1 удалён, поэтому стилей для него нет */
 
         .calculator-grid {
             display: grid;
@@ -817,6 +815,204 @@
             color: #0f172a;
         }
 
+        /* ===== Модальное окно заказа ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-window {
+            background: #fff;
+            border-radius: 24px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 98vh;
+            overflow-y: auto;
+            padding: 32px 28px 28px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: modalSlide 0.3s ease;
+        }
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            line-height: 1;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s;
+            padding: 4px 8px;
+        }
+        .modal-close:hover {
+            color: #0f172a;
+            transform: rotate(90deg);
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .modal-subtitle {
+            font-size: 0.95rem;
+            color: #475569;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-subtitle strong {
+            color: #0f172a;
+        }
+
+        .modal-form .form-group {
+            margin-bottom: 16px;
+        }
+        .modal-form .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        .modal-form .form-group label .required {
+            color: #dc2626;
+        }
+        .modal-form .form-group input,
+        .modal-form .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: #f8fafc;
+            transition: border 0.2s;
+        }
+        .modal-form .form-group input:focus,
+        .modal-form .form-group textarea:focus {
+            border-color: #2563eb;
+            outline: none;
+            box-shadow: 0 0 0 3px #dbeafe;
+        }
+        .modal-form .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .modal-form .form-group input[type="file"] {
+            padding: 8px 12px;
+            background: #fff;
+        }
+        .modal-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .modal-form .form-hint {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .modal-form .form-hint.warning {
+            color: #b45309;
+            background: #fffbeb;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border-left: 4px solid #d97706;
+            margin-top: 8px;
+        }
+        .modal-form .form-hint.warning i {
+            margin-right: 6px;
+        }
+
+        .modal-form .submit-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .modal-form .submit-row .btn-primary {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+            min-width: 160px;
+        }
+        .modal-form .submit-row .btn-primary:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+        }
+        .modal-form .submit-row .btn-secondary {
+            background: #e2e8f0;
+            color: #1f2937;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .modal-form .submit-row .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* Адаптация модалки */
+        @media (max-width: 600px) {
+            .modal-window {
+                padding: 24px 16px 20px;
+                border-radius: 16px;
+            }
+            .modal-title {
+                font-size: 1.2rem;
+            }
+            .modal-form .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .modal-form .submit-row {
+                flex-direction: column;
+            }
+            .modal-form .submit-row .btn-primary {
+                width: 100%;
+            }
+            .modal-form .submit-row .btn-secondary {
+                width: 100%;
+            }
+        }
+
         /* ===== Улучшенная мобильная адаптация ===== */
         @media (max-width: 820px) {
             .calc-container {
@@ -1116,7 +1312,6 @@
     <main>
         <div class="calc-container">
 
-            <!-- Заголовок калькулятора – только подзаголовок на всю ширину -->
             <header class="calc-header">
                 <p>Укажите параметры груза — калькулятор автоматически рассчитает актуальную стоимость, подберет транспорт.</p>
             </header>
@@ -1683,6 +1878,86 @@
         </div>
     </main>
 
+    <!-- ===== МОДАЛЬНОЕ ОКНО ЗАКАЗА ===== -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-window">
+            <button class="modal-close" id="modalClose" aria-label="Закрыть">&times;</button>
+            <div class="modal-title">Оформление заказа</div>
+            <div class="modal-subtitle">
+                Вы выбрали: <strong id="modalVehicleName">—</strong><br>
+                Стоимость: <strong id="modalVehiclePrice">—</strong> ₽ &nbsp;|&nbsp; Доп. часы: <strong id="modalVehicleExtra">0</strong> ч
+            </div>
+
+            <form class="modal-form" id="orderForm">
+                <!-- Скрытые поля с данными транспорта -->
+                <input type="hidden" id="formVehicleId" name="vehicle_id" value="">
+                <input type="hidden" id="formVehicleName" name="vehicle_name" value="">
+                <input type="hidden" id="formVehiclePrice" name="vehicle_price" value="">
+                <input type="hidden" id="formVehicleExtra" name="vehicle_extra" value="">
+
+                <!-- Скрытые поля для FormSubmit -->
+                <input type="hidden" name="_subject" value="Новая заявка на перевозку">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+
+                <div class="form-group">
+                    <label for="orderDateTime">Время и дата подачи машины <span class="required">*</span></label>
+                    <input type="datetime-local" id="orderDateTime" name="datetime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderPickupAddress">Адрес погрузки <span class="required">*</span></label>
+                    <input type="text" id="orderPickupAddress" name="pickup_address" placeholder="Город, улица, дом" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderDeliveryAddress">Адрес выгрузки <span class="required">*</span></label>
+                    <input type="text" id="orderDeliveryAddress" name="delivery_address" placeholder="Город, улица, дом" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderPickupLandmark">Ориентир для водителя на погрузке</label>
+                        <input type="text" id="orderPickupLandmark" name="pickup_landmark" placeholder="Ориентир">
+                    </div>
+                    <div class="form-group">
+                        <label for="orderDeliveryLandmark">Ориентир для водителя на выгрузке</label>
+                        <input type="text" id="orderDeliveryLandmark" name="delivery_landmark" placeholder="Ориентир">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderPhotos">Прикрепить фотографии места погрузки, выгрузки</label>
+                    <input type="file" id="orderPhotos" name="photos" accept="image/*" multiple>
+                    <div class="form-hint">Можно выбрать несколько фото (до 5 МБ каждое)</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-hint warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Сложный рельеф, подъездные пути, низкие провода могут увеличить стоимость. Фото помогут избежать незапланированного повышения цены.
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="orderName">Имя <span class="required">*</span></label>
+                        <input type="text" id="orderName" name="name" placeholder="Ваше имя" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderPhone">Номер телефона <span class="required">*</span></label>
+                        <input type="tel" id="orderPhone" name="phone" placeholder="+7 (___) ___-__-__" required>
+                    </div>
+                </div>
+
+                <div class="submit-row">
+                    <button type="submit" class="btn-primary">Отправить заявку</button>
+                    <button type="button" class="btn-secondary" id="modalCancel">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- ===== ПОДВАЛ САЙТА ===== -->
     <footer id="contacts">
         <div class="container footer-grid">
@@ -1731,7 +2006,7 @@
 
     <!-- ===== СКРИПТЫ ===== -->
     <script>
-        // Кнопка "Наверх"
+        // ===== Кнопка "Наверх" =====
         (function() {
             const scrollBtn = document.getElementById('scrollTopBtn');
             window.addEventListener('scroll', function() {
@@ -1740,6 +2015,128 @@
             });
             scrollBtn.addEventListener('click', function() {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        })();
+
+        // ===== Модальное окно =====
+        (function() {
+            const modal = document.getElementById('orderModal');
+            const closeBtn = document.getElementById('modalClose');
+            const cancelBtn = document.getElementById('modalCancel');
+            const form = document.getElementById('orderForm');
+
+            // Элементы для заполнения данными
+            const vehicleName = document.getElementById('modalVehicleName');
+            const vehiclePrice = document.getElementById('modalVehiclePrice');
+            const vehicleExtra = document.getElementById('modalVehicleExtra');
+            const formVehicleId = document.getElementById('formVehicleId');
+            const formVehicleName = document.getElementById('formVehicleName');
+            const formVehiclePrice = document.getElementById('formVehiclePrice');
+            const formVehicleExtra = document.getElementById('formVehicleExtra');
+
+            // Поля формы
+            const dateTimeInput = document.getElementById('orderDateTime');
+            const pickupAddr = document.getElementById('orderPickupAddress');
+            const deliveryAddr = document.getElementById('orderDeliveryAddress');
+            const pickupLandmark = document.getElementById('orderPickupLandmark');
+            const deliveryLandmark = document.getElementById('orderDeliveryLandmark');
+            const photosInput = document.getElementById('orderPhotos');
+            const nameInput = document.getElementById('orderName');
+            const phoneInput = document.getElementById('orderPhone');
+
+            // Открыть модалку с данными карточки
+            window.openOrderModal = function(id, name, price, extra) {
+                // Заполняем информацию о транспорте
+                vehicleName.textContent = name;
+                vehiclePrice.textContent = price.toLocaleString('ru-RU');
+                vehicleExtra.textContent = extra;
+
+                formVehicleId.value = id;
+                formVehicleName.value = name;
+                formVehiclePrice.value = price;
+                formVehicleExtra.value = extra;
+
+                // Сбрасываем поля формы (кроме скрытых)
+                dateTimeInput.value = '';
+                pickupAddr.value = '';
+                deliveryAddr.value = '';
+                pickupLandmark.value = '';
+                deliveryLandmark.value = '';
+                photosInput.value = '';
+                nameInput.value = '';
+                phoneInput.value = '';
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            };
+
+            // Закрыть модалку
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+
+            // Закрытие по клику на фон
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) closeModal();
+            });
+
+            // Закрытие по Escape
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+            });
+
+            // Отправка формы на FormSubmit
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Простая валидация
+                const requiredFields = [
+                    { el: dateTimeInput, name: 'Время и дата' },
+                    { el: pickupAddr, name: 'Адрес погрузки' },
+                    { el: deliveryAddr, name: 'Адрес выгрузки' },
+                    { el: nameInput, name: 'Имя' },
+                    { el: phoneInput, name: 'Телефон' }
+                ];
+
+                let valid = true;
+                requiredFields.forEach(field => {
+                    if (!field.el.value.trim()) {
+                        field.el.style.borderColor = '#dc2626';
+                        valid = false;
+                    } else {
+                        field.el.style.borderColor = '';
+                    }
+                });
+
+                if (!valid) {
+                    alert('Пожалуйста, заполните все обязательные поля.');
+                    return;
+                }
+
+                // Собираем FormData
+                const formData = new FormData(form);
+
+                // Отправляем на formsubmit.co
+                fetch('https://formsubmit.co/tehnodv25rus@yandex.ru', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('✅ Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.');
+                            closeModal();
+                        } else {
+                            alert('❌ Произошла ошибка при отправке. Пожалуйста, попробуйте позже или свяжитесь с нами по телефону.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка:', error);
+                        alert('❌ Ошибка сети. Проверьте подключение и попробуйте снова.');
+                    });
             });
         })();
     </script>
@@ -2588,7 +2985,9 @@
             });
         });
 
+        // ===== Обработчик клика на кнопку "Заказать" =====
         vehicleList.addEventListener('click', (e) => {
+            // Кнопки +/- для доп. часов
             const target = e.target;
             if (target.classList.contains('extra-minus') || target.classList.contains('extra-plus')) {
                 const card = target.closest('.vehicle-card');
@@ -2603,47 +3002,28 @@
                 }
                 extraHoursMap[id] = current;
                 render();
+                return;
             }
-        });
 
-        vehicleList.addEventListener('click', (e) => {
+            // Кнопка "Заказать"
             const btn = e.target.closest('.order-btn');
             if (!btn) return;
             const card = btn.closest('.vehicle-card');
             if (!card) return;
 
+            // Получаем данные из карточки
+            const id = parseInt(card.dataset.id);
             const name = card.dataset.name || 'Транспорт';
-            const total = card.dataset.total || '0';
-            const extra = card.dataset.extra || '0';
-            const cargo = state.cargoType;
+            const price = parseInt(card.dataset.price) || 0;
+            const extra = parseInt(card.dataset.extra) || 0;
 
-            let message = `🚛 Заказ транспорта\n\nТип: ${name}\nГруз: ${cargo}\nЦена: ${total} ₽\nДоп. часы: ${extra} ч`;
-
-            if (cargo === 'автомобиль') {
-                message += `\n\nДетали автомобиля:\nТип авто: ${state.autoType}\nМарка: ${state.autoMake || 'не указана'}\nЧто с авто? ${state.autoCondition}\nКолёса крутятся: ${state.autoWheelsTurn}\nТип погрузки: ${state.autoLoadingType}\nПодъездные пути: ${state.autoAccessRoad}\nДеревья/провода над авто: ${state.autoObstacles}\nДокументы на авто: ${state.autoDocuments}`;
-            } else if (cargo === 'грузовик') {
-                message += `\n\nДетали грузовика:\nТип кузова: ${state.truckBodyType}\nГруз в кузове: ${state.truckLoad}\nМарка: ${state.truckMake || 'не указана'}\nКолёса крутятся: ${state.truckWheelsTurn}\nТип погрузки: ${state.truckLoadingType}\nПодъездные пути: ${state.truckAccessRoad}\nДеревья/провода: ${state.truckObstacles}\nДокументы: ${state.truckDocuments}`;
-            } else if (cargo === 'контейнер') {
-                let protrStr = state.containerProtrusions;
-                if (protrStr === 'Другое') {
-                    protrStr += ` (${state.containerProtrusionsOther || 'не указано'})`;
-                }
-                let countStr = '';
-                if (state.containerType === '5ft' || state.containerType === '10ft') {
-                    countStr = `, Количество: ${state.containerCount}`;
-                }
-                message += `\n\nДетали контейнера/бытовки/модуля:\nТип: ${state.containerType}${countStr}\nГруз внутри: ${state.containerLoad}\nВыступающие элементы: ${protrStr}\nВес: ${state.containerWeight} т\nГабариты: ${state.containerLength}×${state.containerWidth}×${state.containerHeight} м`;
-            } else if (cargo === 'спецтехника') {
-                message += `\n\nДетали спецтехники:\nТип: ${state.specialType}\nМарка/модель: ${state.specialMake || 'не указана'}\nВес: ${state.specialWeight} т\nГабариты: ${state.specialLength}×${state.specialWidth}×${state.specialHeight} м\nКолёса крутятся: ${state.specialWheelsTurn}\nТип погрузки: ${state.specialLoadingType}\nПодъездные пути: ${state.specialAccessRoad}\nДеревья/провода: ${state.specialObstacles}\nДокументы: ${state.specialDocuments}`;
-            } else if (cargo === 'сыпучие') {
-                message += `\n\nДетали сыпучего груза:\nТип материала: ${state.bulkMaterialType}\nВес: ${state.bulkWeight} т`;
-            } else if (cargo === 'строительный мусор') {
-                message += `\n\nДетали строительного мусора:\nТип мусора: ${state.bulkMaterialType}\nВес: ${state.bulkWeight} т`;
-            } else if (cargo === 'прочее') {
-                message += `\n\nДетали груза:\nНаименование: ${state.otherName || 'не указано'}\nВес: ${state.otherWeight} т\nГабариты: ${state.otherLength}×${state.otherWidth}×${state.otherHeight} м\nОписание: ${state.otherDescription || 'не указано'}\nОсобые условия: ${state.otherConditions || 'нет'}`;
+            // Открываем модалку с подстановкой данных
+            if (typeof window.openOrderModal === 'function') {
+                window.openOrderModal(id, name, price, extra);
+            } else {
+                // fallback, если что-то пошло не так
+                alert('🚛 Заказ транспорта\n\nТип: ' + name + '\nЦена: ' + price + ' ₽\nДоп. часы: ' + extra + ' ч');
             }
-
-            alert(message);
         });
 
         // ============================================================
