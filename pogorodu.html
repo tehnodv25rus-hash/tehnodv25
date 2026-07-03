@@ -882,12 +882,31 @@
         .modal-subtitle {
             font-size: 0.95rem;
             color: #475569;
-            margin-bottom: 20px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 8px;
         }
         .modal-subtitle strong {
             color: #0f172a;
+        }
+
+        .modal-cargo-params {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+            color: #0f172a;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 16px;
+        }
+        .modal-cargo-params span {
+            font-weight: 600;
+        }
+        .modal-cargo-params .param-item {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 4px;
         }
 
         .modal-form .form-group {
@@ -1111,8 +1130,14 @@
                 padding: 0 12px;
             }
             .header-inner {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
                 padding: 12px 0;
                 gap: 10px;
+            }
+            .logo {
+                text-align: center;
             }
             .logo h1 {
                 font-size: 1.3rem;
@@ -1888,12 +1913,26 @@
                 Стоимость: <strong id="modalVehiclePrice">—</strong> ₽ &nbsp;|&nbsp; Доп. часы: <strong id="modalVehicleExtra">0</strong> ч
             </div>
 
-            <form class="modal-form" id="orderForm">
+            <!-- Блок с параметрами груза -->
+            <div class="modal-cargo-params" id="modalCargoParams">
+                <span class="param-item"><strong>Груз:</strong> <span id="modalCargoType">—</span></span>
+                <span class="param-item"><strong>Вес:</strong> <span id="modalCargoWeight">—</span> т</span>
+                <span class="param-item"><strong>Габариты:</strong> <span id="modalCargoDimensions">—</span></span>
+            </div>
+
+            <form class="modal-form" id="orderForm" action="https://formsubmit.co/tehnodv25rus@yandex.ru" method="POST">
                 <!-- Скрытые поля с данными транспорта -->
                 <input type="hidden" id="formVehicleId" name="vehicle_id" value="">
                 <input type="hidden" id="formVehicleName" name="vehicle_name" value="">
                 <input type="hidden" id="formVehiclePrice" name="vehicle_price" value="">
                 <input type="hidden" id="formVehicleExtra" name="vehicle_extra" value="">
+
+                <!-- Скрытые поля с параметрами груза -->
+                <input type="hidden" id="formCargoType" name="cargo_type" value="">
+                <input type="hidden" id="formCargoWeight" name="cargo_weight" value="">
+                <input type="hidden" id="formCargoLength" name="cargo_length" value="">
+                <input type="hidden" id="formCargoWidth" name="cargo_width" value="">
+                <input type="hidden" id="formCargoHeight" name="cargo_height" value="">
 
                 <!-- Скрытые поля для FormSubmit -->
                 <input type="hidden" name="_subject" value="Новая заявка на перевозку">
@@ -2034,6 +2073,16 @@
             const formVehiclePrice = document.getElementById('formVehiclePrice');
             const formVehicleExtra = document.getElementById('formVehicleExtra');
 
+            // Элементы параметров груза
+            const modalCargoType = document.getElementById('modalCargoType');
+            const modalCargoWeight = document.getElementById('modalCargoWeight');
+            const modalCargoDimensions = document.getElementById('modalCargoDimensions');
+            const formCargoType = document.getElementById('formCargoType');
+            const formCargoWeight = document.getElementById('formCargoWeight');
+            const formCargoLength = document.getElementById('formCargoLength');
+            const formCargoWidth = document.getElementById('formCargoWidth');
+            const formCargoHeight = document.getElementById('formCargoHeight');
+
             // Поля формы
             const dateTimeInput = document.getElementById('orderDateTime');
             const pickupAddr = document.getElementById('orderPickupAddress');
@@ -2044,8 +2093,8 @@
             const nameInput = document.getElementById('orderName');
             const phoneInput = document.getElementById('orderPhone');
 
-            // Открыть модалку с данными карточки
-            window.openOrderModal = function(id, name, price, extra) {
+            // Открыть модалку с данными карточки и параметрами груза
+            window.openOrderModal = function(id, name, price, extra, cargoData) {
                 // Заполняем информацию о транспорте
                 vehicleName.textContent = name;
                 vehiclePrice.textContent = price.toLocaleString('ru-RU');
@@ -2055,6 +2104,25 @@
                 formVehicleName.value = name;
                 formVehiclePrice.value = price;
                 formVehicleExtra.value = extra;
+
+                // Заполняем параметры груза
+                const cargoType = cargoData.type || '—';
+                const weight = cargoData.weight || 0;
+                const length = cargoData.length || 0;
+                const width = cargoData.width || 0;
+                const height = cargoData.height || 0;
+
+                modalCargoType.textContent = cargoType;
+                modalCargoWeight.textContent = weight.toFixed(1);
+                modalCargoDimensions.textContent = length > 0 && width > 0 && height > 0 ?
+                    `${length.toFixed(1)}×${width.toFixed(1)}×${height.toFixed(1)} м` :
+                    '—';
+
+                formCargoType.value = cargoType;
+                formCargoWeight.value = weight;
+                formCargoLength.value = length;
+                formCargoWidth.value = width;
+                formCargoHeight.value = height;
 
                 // Сбрасываем поля формы (кроме скрытых)
                 dateTimeInput.value = '';
@@ -2089,7 +2157,7 @@
                 if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
             });
 
-            // Отправка формы на FormSubmit
+            // Отправка формы (через fetch, но можно и через action)
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
 
@@ -3017,9 +3085,18 @@
             const price = parseInt(card.dataset.price) || 0;
             const extra = parseInt(card.dataset.extra) || 0;
 
+            // Формируем объект с параметрами груза из текущего state
+            const cargoData = {
+                type: state.cargoType,
+                weight: state.weight,
+                length: state.length,
+                width: state.width,
+                height: state.height
+            };
+
             // Открываем модалку с подстановкой данных
             if (typeof window.openOrderModal === 'function') {
-                window.openOrderModal(id, name, price, extra);
+                window.openOrderModal(id, name, price, extra, cargoData);
             } else {
                 // fallback, если что-то пошло не так
                 alert('🚛 Заказ транспорта\n\nТип: ' + name + '\nЦена: ' + price + ' ₽\nДоп. часы: ' + extra + ' ч');
