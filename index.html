@@ -7,12 +7,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <style>
-    /* Все стили без изменений, кроме добавленных в медиа-запросы */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; color: #1f2937; scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; color: #1f2937; scroll-behavior: smooth; padding-top: 0; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-    .header { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-bottom: 1px solid #e5e7eb; }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 20px 0; gap: 16px; }
+    .header { background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border-bottom: 1px solid #e5e7eb; z-index: 1000; background: #fff; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 16px 0; gap: 12px; }
     .logo a { text-decoration: none; color: inherit; display: inline-block; }
     .logo h1 { font-size: 1.7rem; font-weight: 800; color: #d97706; }
     .logo p { font-size: 0.75rem; color: #4b5563; }
@@ -20,8 +19,20 @@
     .nav a { text-decoration: none; font-weight: 600; color: #1f2937; transition: 0.2s; white-space: nowrap; }
     .nav a:hover { color: #d97706; }
     .header-phones { display: flex; gap: 16px; align-items: center; }
-    .header-phone { font-weight: 700; background: transparent; padding: 8px 16px; border-radius: 40px; }
-    .header-phone a { text-decoration: none; color: #b45309; }
+    .header-phone {
+      font-weight: 700;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 40px;
+    }
+    .header-phone a {
+      text-decoration: none;
+      color: #d97706; /* цвет как у кнопок */
+      transition: color 0.2s;
+    }
+    .header-phone a:hover {
+      color: #b45309; /* ховер как у кнопок */
+    }
     .btn { display: inline-block; background-color: #d97706; color: white; padding: 10px 20px; border-radius: 40px; font-weight: 600; text-decoration: none; transition: 0.2s; border: none; cursor: pointer; }
     .btn:hover { background-color: #b45309; transform: translateY(-2px); }
     section { padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
@@ -73,26 +84,117 @@
     .case-card { background: white; border-radius: 24px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .case-card img { width: 100%; height: 200px; object-fit: cover; }
     .case-card p { padding: 16px; font-weight: 500; }
-    .callback-form { background: #fff7ed; border-radius: 32px; padding: 40px; text-align: center; }
-    .callback-form h3 { margin-bottom: 16px; }
-    .callback-form form { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; }
-    .callback-form input { padding: 14px 20px; border-radius: 60px; border: 1px solid #e5e7eb; flex: 1 1 200px; min-width: 160px; max-width: 280px; }
-    .callback-form .btn { flex: 0 0 auto; white-space: nowrap; }
-    @media (max-width: 600px) { 
-      .callback-form form { flex-direction: column; align-items: center; }
-      .callback-form input { 
-        max-width: 220px;   /* ← теперь поля узкие и центрируются */
-        width: 100%;
-        flex: 0 0 auto;
-        padding: 12px 16px;
-      }
-      .callback-form .btn { width: auto; }
-    }
-    @media (max-width: 860px) { .header-inner { flex-direction: column; text-align: center; } .nav { justify-content: center; gap: 16px; flex-wrap: wrap; } .header-phones { justify-content: center; flex-wrap: nowrap; gap: 10px; } .calc-form { flex-direction: column; align-items: stretch; } .why-grid { grid-template-columns: repeat(2, 1fr); } .calculator-block { padding: 24px; } .calc-button-wrapper { flex-direction: column; align-items: stretch; } .calc-button-wrapper .btn { width: 100%; } #scrollTopBtn { bottom: 20px; right: 20px; width: 48px; height: 48px; font-size: 1.5rem; } .hours-control input[type="number"] { width: 50px; } .hours-control button { width: 36px; height: 36px; font-size: 1rem; } .callback-form { padding: 24px; } }
-    @media (max-width: 600px) { .nav { gap: 8px; flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; } .nav a { font-size: 0.8rem; white-space: nowrap; } .header-phone { padding: 4px 10px; font-size: 0.7rem; } .section-title { font-size: 1.6rem; } }
-    @media (max-width: 480px) { .why-grid { grid-template-columns: 1fr; } }
 
-    /* Остальные стили (модалка, кнопка наверх) без изменений */
+    /* ===== ФОРМА ОБРАТНОЙ СВЯЗИ ===== */
+    .callback-form {
+      background: #fff7ed;
+      border-radius: 32px;
+      padding: 40px;
+      text-align: center;
+    }
+    .callback-form h3 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      color: #1f2937;
+    }
+    .callback-form h3 i {
+      color: #d97706;
+      margin-right: 8px;
+    }
+    .callback-form form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+    }
+    .callback-form input {
+      padding: 14px 20px;
+      border-radius: 60px;
+      border: 1px solid #e5e7eb;
+      flex: 1 1 200px;
+      min-width: 160px;
+      max-width: 280px;
+      font-size: 1rem;
+      background: #fff;
+      transition: 0.2s;
+    }
+    .callback-form input:focus {
+      border-color: #d97706;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(217,119,6,0.2);
+    }
+    .callback-form .btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      background-color: #d97706;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 1rem;
+    }
+    .callback-form .btn:hover {
+      background-color: #b45309;
+      transform: translateY(-2px);
+    }
+    .callback-form p {
+      font-size: 0.75rem;
+      color: #6b7280;
+      margin-top: 16px;
+    }
+
+    /* Мобильная адаптация – как у кнопок калькулятора */
+    @media (max-width: 600px) {
+      .callback-form {
+        padding: 16px 12px;
+      }
+      .callback-form h3 {
+        font-size: 1rem;
+        margin-bottom: 10px;
+      }
+      .callback-form form {
+        gap: 8px;
+        flex-direction: column;
+      }
+      .callback-form input,
+      .callback-form .btn {
+        width: 100% !important;
+        padding: 10px 16px !important;
+        font-size: 0.9rem !important;
+        height: auto !important;
+        min-height: auto !important;
+        border-radius: 60px !important;
+        box-sizing: border-box !important;
+        line-height: 1.4 !important;
+        flex: none !important;
+        max-width: 100% !important;
+      }
+      .callback-form input {
+        border: 1px solid #d1d5db !important;
+        background: #fff !important;
+      }
+      .callback-form .btn {
+        background-color: #d97706 !important;
+        color: white !important;
+        border: none !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        font-weight: 600 !important;
+        padding: 10px 16px !important;
+      }
+      .callback-form .btn:hover {
+        transform: none !important;
+      }
+      .callback-form p {
+        font-size: 0.6rem !important;
+        margin-top: 6px !important;
+      }
+    }
+
     footer { background: #0f172a; color: #cbd5e1; padding: 48px 0 32px; }
     .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 32px; }
     .footer-grid i { margin-right: 8px; color: #d97706; }
@@ -129,6 +231,77 @@
     #scrollTopBtn { position: fixed; bottom: 30px; right: 30px; background: #d97706; color: white; border: none; border-radius: 50%; width: 56px; height: 56px; font-size: 2rem; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,0.2); transition: 0.3s; z-index: 999; }
     #scrollTopBtn:hover { background: #b45309; transform: scale(1.05); }
     #scrollTopBtn.show { display: flex; }
+
+    /* ===== Мобильные стили для хедера ===== */
+    @media (max-width: 860px) {
+      .header-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        gap: 6px;
+      }
+      .logo {
+        order: 1;
+        flex: 0 1 auto;
+        text-align: left;
+        max-width: 55%;
+      }
+      .logo h1 { font-size: 1.3rem; }
+      .logo p { font-size: 0.55rem; }
+      .header-phones {
+        order: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+        flex: 0 1 auto;
+        max-width: 45%;
+      }
+      .header-phone {
+        padding: 2px 0;
+        font-size: 0.6rem;
+        white-space: nowrap;
+      }
+      .header-phone a { font-size: 0.6rem; }
+      .nav {
+        order: 3;
+        flex: 0 0 100%;
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 4px 16px;
+        margin: 0;
+      }
+      .nav a {
+        font-size: 0.8rem;
+        white-space: nowrap;
+      }
+      .calc-form { flex-direction: column; align-items: stretch; }
+      .why-grid { grid-template-columns: repeat(2, 1fr); }
+      .calculator-block { padding: 24px; }
+      .calc-button-wrapper { flex-direction: column; align-items: stretch; }
+      .calc-button-wrapper .btn { width: 100%; }
+      #scrollTopBtn { bottom: 20px; right: 20px; width: 48px; height: 48px; font-size: 1.5rem; }
+      .hours-control input[type="number"] { width: 50px; }
+      .hours-control button { width: 36px; height: 36px; font-size: 1rem; }
+    }
+    @media (max-width: 600px) {
+      .logo h1 { font-size: 1.1rem; }
+      .logo p { font-size: 0.5rem; }
+      .header-phone { font-size: 0.55rem; padding: 2px 0; }
+      .header-phone a { font-size: 0.5rem; }
+      .nav { gap: 4px; padding: 4px 12px; }
+      .nav a { font-size: 0.7rem; }
+      .section-title { font-size: 1.4rem; }
+    }
+    @media (max-width: 480px) {
+      .why-grid { grid-template-columns: 1fr; }
+      .header-phone { font-size: 0.5rem; }
+      .header-phone a { font-size: 0.45rem; }
+    }
   </style>
 </head>
 <body>
@@ -163,11 +336,18 @@
           <div class="calc-field">
             <label><i class="fas fa-weight-hanging"></i> Техника</label>
             <select id="techType">
-              <option value="5">5т (кму 3т)</option>
-              <option value="7">7т (кму 3т)</option>
-              <option value="10">10т (кму 3т)</option>
-              <option value="12">12т (кму 5т)</option>
-              <option value="15">15т (кму 5т)</option>
+              <option value="5">Эвакуатор 5т (кму 3т)</option>
+              <option value="7">Эвакуатор 7т (кму 3т)</option>
+              <option value="10">Эвакуатор 10т (кму 3т)</option>
+              <option value="12">Эвакуатор 12т (кму 5т)</option>
+              <option value="15">Эвакуатор 15т (кму 5т)</option>
+              <option value="trailer25">Тягач 25т с тралом</option>
+              <option value="trailer25_flatbed">Тягач 25т с бортом</option>
+              <option value="dump5">Самосвал 5т</option>
+              <option value="truck1">Грузовик 1т</option>
+              <option value="aerial15">Автовышка 15м</option>
+              <option value="loader">Фронтальный погрузчик</option>
+              <option value="excavator7">Экскаватор гусеничный 7т</option>
             </select>
           </div>
           <div class="calc-field">
@@ -230,8 +410,9 @@
         </div>
         <div class="price-note">Время в пути и первые 2 часа на погрузку/выгрузку включены в стоимость. Заполните заявку на перевозку что бы получить точную стоимость:</div>
         <div class="calc-button-wrapper">
-          <a href="http://tehnodv25.ru/pogorodu.html" target="_blank" class="btn">🏙️ По городу</a>
-          <a href="http://tehnodv25.ru/mejgorod.html" target="_blank" class="btn">🚚 Межгород</a>
+          <a href="http://tehnodv25.ru/pogorodu.html" target="_blank" class="btn">🏙️ Перевозка по городу</a>
+          <a href="http://tehnodv25.ru/mejgorod.html" target="_blank" class="btn">🚚 Перевозка по краю</a>
+          <a href="http://tehnodv25.ru/spectehnika" target="_blank" class="btn">Услуги спецтехники</a>
         </div>
       </div>
     </div>
@@ -249,7 +430,7 @@
           <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required>
           <button type="submit" class="btn">Перезвоните мне</button>
         </form>
-        <p style="margin-top:16px; font-size:12px;">Нажимая на кнопку, вы даете согласие на обработку данных</p>
+        <p>Нажимая на кнопку, вы даете согласие на обработку данных</p>
       </div>
     </div>
   </section>
@@ -268,22 +449,6 @@
         <button class="tab-btn" data-tab="trailers">Тягачи</button>
       </div>
       <div id="techContainer" class="tech-grid"></div>
-    </div>
-  </section>
-
-  <!-- Блог -->
-  <section id="blog">
-    <div class="container">
-      <div class="section-title">Блог</div>
-      <div class="cases-grid">
-        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/14763372/2a0000019448914f7f9b573430f728f41fec/XL?referer=lkb" alt="Перевозка вертолета"><p><strong>Перевозка вертолёта эвакуатором</strong> — 10т с кму</p></div>
-        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18769949/2a0000019c26195185094cc6f9bf6a3b47cb/XL?referer=lkb" alt="Перевозка экскаватора"><p><strong>Перевозка гусеничного экскаватора тралом</strong> 25т</p></div>
-        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/19720204/2a0000019b7225a6df4750dd65a4fd760442/XL?referer=lkb" alt="Вывоз снега"><p><strong>Вывоз снега</strong> с территории ТЦ, 12 самосвалов</p></div>
-        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18005133/2a0000019bb5f6f194242ef7f143d9932f9f/XL?referer=lkb" alt="Перевозка катера"><p><strong>Подъём и транспортировка катера эвакуатором 10т с кму</strong></p></div>
-      </div>
-      <div style="text-align: center; margin-top: 32px;">
-        <a href="http://tehnodv25.ru/blog.html" target="_blank" class="btn">Подробнее</a>
-      </div>
     </div>
   </section>
 
@@ -330,17 +495,18 @@
     </div>
   </section>
 
-  <!-- Преимущества -->
-  <section>
+  <!-- Блог -->
+  <section id="blog">
     <div class="container">
-      <div class="section-title">Транспортная компания Техно Дв.</div>
-      <div class="why-grid">
-        <div class="why-item"><i class="fas fa-building"></i><h4>Личный автопарк</h4><p>Свои эвакуаторы, экскаваторы, тралы</p></div>
-        <div class="why-item"><i class="fas fa-user-check"></i><h4>Опытные водители</h4><p>Опыт от 3 лет</p></div>
-        <div class="why-item"><i class="fas fa-camera"></i><h4>Фотофиксация</h4><p>Фиксируем каждый этап</p></div>
-        <div class="why-item"><i class="fas fa-map-marked-alt"></i><h4>Система отслеживания</h4><p>GPS онлайн</p></div>
-        <div class="why-item"><i class="fas fa-file-signature"></i><h4>Договор, отчётность</h4><p>Работаем с НДС и без</p></div>
-        <div class="why-item"><i class="fas fa-credit-card"></i><h4>Любая форма оплаты</h4><p>Наличные, безнал</p></div>
+      <div class="section-title">Блог</div>
+      <div class="cases-grid">
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/14763372/2a0000019448914f7f9b573430f728f41fec/XL?referer=lkb" alt="Перевозка вертолета"><p><strong>Перевозка вертолёта эвакуатором</strong> — 10т с кму</p></div>
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18769949/2a0000019c26195185094cc6f9bf6a3b47cb/XL?referer=lkb" alt="Перевозка экскаватора"><p><strong>Перевозка гусеничного экскаватора тралом</strong> 25т</p></div>
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/19720204/2a0000019b7225a6df4750dd65a4fd760442/XL?referer=lkb" alt="Вывоз снега"><p><strong>Вывоз снега</strong> с территории ТЦ, 12 самосвалов</p></div>
+        <div class="case-card"><img src="https://avatars.mds.yandex.net/get-altay/18005133/2a0000019bb5f6f194242ef7f143d9932f9f/XL?referer=lkb" alt="Перевозка катера"><p><strong>Подъём и транспортировка катера эвакуатором 10т с кму</strong></p></div>
+      </div>
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="http://tehnodv25.ru/blog.html" target="_blank" class="btn">Подробнее</a>
       </div>
     </div>
   </section>
@@ -366,8 +532,23 @@
   <!-- Команда -->
   <section id="team" style="padding-top: 0; border-bottom: none;">
     <div class="container">
-      <div class="section-title">Работаем как часы благодаря</div>
+      <div class="section-title">Команда</div>
       <div class="team-grid" id="teamContainer"></div>
+    </div>
+  </section>
+
+  <!-- Преимущества -->
+  <section>
+    <div class="container">
+      <div class="section-title">Транспортная компания Техно Дв.</div>
+      <div class="why-grid">
+        <div class="why-item"><i class="fas fa-building"></i><h4>Личный автопарк</h4><p>Свои эвакуаторы, экскаваторы, тралы</p></div>
+        <div class="why-item"><i class="fas fa-user-check"></i><h4>Опытные водители</h4><p>Опыт от 3 лет</p></div>
+        <div class="why-item"><i class="fas fa-camera"></i><h4>Фотофиксация</h4><p>Фиксируем каждый этап</p></div>
+        <div class="why-item"><i class="fas fa-map-marked-alt"></i><h4>Система отслеживания</h4><p>GPS онлайн</p></div>
+        <div class="why-item"><i class="fas fa-file-signature"></i><h4>Договор, отчётность</h4><p>Работаем с НДС и без</p></div>
+        <div class="why-item"><i class="fas fa-credit-card"></i><h4>Любая форма оплаты</h4><p>Наличные, безнал</p></div>
+      </div>
     </div>
   </section>
 
@@ -383,7 +564,7 @@
           <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required>
           <button type="submit" class="btn">Перезвоните мне</button>
         </form>
-        <p style="margin-top:16px; font-size:12px;">Нажимая на кнопку, вы даете согласие на обработку данных</p>
+        <p>Нажимая на кнопку, вы даете согласие на обработку данных</p>
       </div>
     </div>
   </section>
@@ -431,7 +612,6 @@
   <div class="copy"><p>© 2017 Транспортная компания «Техно ДВ».</p></div>
 </footer>
 
-<!-- Кнопка "Наверх" -->
 <button id="scrollTopBtn" aria-label="Наверх"><i class="fas fa-arrow-up"></i></button>
 
 <!-- Модальная форма -->
@@ -461,7 +641,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // Данные автопарка и команды (без изменений)
+  // ===== ДАННЫЕ АВТОПАРКА И КОМАНДЫ =====
   const techData = {
     evacuators: [
       { name: "Эвакуатор манипулятор Mitsubishi\nБорт 5т, кму 2т", desc: "Стандартная воровайка, манипулятор для повседневных задач", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
@@ -640,7 +820,7 @@
     const plusBtn = document.getElementById('hoursPlus');
 
     function updatePrice() {
-      const tonnage = parseInt(techType.value);
+      const tonnage = techType.value;
       const from = fromCitySel.value;
       const to = toCitySel.value;
       let hours = parseInt(hoursInput.value);
@@ -648,32 +828,37 @@
       hoursInput.value = hours;
 
       let basePrice = null, hourlyRate = null;
-      if (from === to) {
-        let rates = (tonnage === 5 || tonnage === 10 || tonnage === 15) ? hourlyRatesOld[tonnage] : hourlyRatesNew[tonnage];
-        if (!rates) { calcResultSpan.innerText = 'Ошибка'; return; }
-        basePrice = rates.first; hourlyRate = rates.next;
-      } else {
-        let targetCity = (to === 'vladivostok') ? from : to;
-        if (tonnage === 5 || tonnage === 10 || tonnage === 15) {
-          const rates = cityRatesOld[targetCity];
-          if (!rates) { calcResultSpan.innerText = 'Цена не найдена'; return; }
-          if (tonnage === 5) basePrice = rates[5];
-          else if (tonnage === 10) basePrice = rates[10];
-          else if (tonnage === 15) basePrice = rates[12] ? rates[12] + 5000 : null;
-          hourlyRate = hourlyRatesOld[tonnage]?.next || null;
-        } else if (tonnage === 7) {
-          basePrice = cityRates7[targetCity];
-          hourlyRate = hourlyRatesNew[7]?.next;
-        } else if (tonnage === 12) {
-          basePrice = cityRates12[targetCity];
-          hourlyRate = hourlyRatesNew[12]?.next;
+      const numericTon = parseInt(tonnage);
+      if (!isNaN(numericTon) && (numericTon === 5 || numericTon === 7 || numericTon === 10 || numericTon === 12 || numericTon === 15)) {
+        if (from === to) {
+          let rates = (numericTon === 5 || numericTon === 10 || numericTon === 15) ? hourlyRatesOld[numericTon] : hourlyRatesNew[numericTon];
+          if (!rates) { calcResultSpan.innerText = 'Ошибка'; return; }
+          basePrice = rates.first; hourlyRate = rates.next;
         } else {
-          calcResultSpan.innerText = 'Ошибка'; return;
+          let targetCity = (to === 'vladivostok') ? from : to;
+          if (numericTon === 5 || numericTon === 10 || numericTon === 15) {
+            const rates = cityRatesOld[targetCity];
+            if (!rates) { calcResultSpan.innerText = 'Цена не найдена'; return; }
+            if (numericTon === 5) basePrice = rates[5];
+            else if (numericTon === 10) basePrice = rates[10];
+            else if (numericTon === 15) basePrice = rates[12] ? rates[12] + 5000 : null;
+            hourlyRate = hourlyRatesOld[numericTon]?.next || null;
+          } else if (numericTon === 7) {
+            basePrice = cityRates7[targetCity];
+            hourlyRate = hourlyRatesNew[7]?.next;
+          } else if (numericTon === 12) {
+            basePrice = cityRates12[targetCity];
+            hourlyRate = hourlyRatesNew[12]?.next;
+          } else {
+            calcResultSpan.innerText = 'Ошибка'; return;
+          }
+          if (basePrice == null || hourlyRate == null) { calcResultSpan.innerText = 'Уточните у менеджера'; return; }
         }
-        if (basePrice == null || hourlyRate == null) { calcResultSpan.innerText = 'Уточните у менеджера'; return; }
+        const total = basePrice + (hours - 2) * hourlyRate;
+        calcResultSpan.innerText = `≈ ${total.toLocaleString()} ₽`;
+      } else {
+        calcResultSpan.innerText = 'Уточните у менеджера';
       }
-      const total = basePrice + (hours - 2) * hourlyRate;
-      calcResultSpan.innerText = `≈ ${total.toLocaleString()} ₽`;
     }
 
     minusBtn.addEventListener('click', () => { let v = parseInt(hoursInput.value) || 2; if (v > 2) { hoursInput.value = v - 1; updatePrice(); } });
@@ -697,7 +882,6 @@
     document.getElementById('closeModal').onclick = () => modal.style.display = 'none';
     window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 
-    // ===== ОБРАБОТЧИК ФОРМЫ ЗАКАЗА (задержка 2 секунды) =====
     const orderForm = document.getElementById('orderForm');
     orderForm.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -721,7 +905,6 @@
       });
     });
 
-    // ===== ОБРАБОТЧИКИ ДЛЯ ФОРМ ОБРАТНОЙ СВЯЗИ (задержка 2 секунды) =====
     function setupCallbackForm(formId) {
       const form = document.getElementById(formId);
       if (!form) return;
