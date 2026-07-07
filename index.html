@@ -27,11 +27,11 @@
     }
     .header-phone a {
       text-decoration: none;
-      color: #d97706; /* цвет как у кнопок */
-      transition: color 0.2s;
+      color: #d97706;
+      transition: 0.2s;
     }
     .header-phone a:hover {
-      color: #b45309; /* ховер как у кнопок */
+      color: #b45309;
     }
     .btn { display: inline-block; background-color: #d97706; color: white; padding: 10px 20px; border-radius: 40px; font-weight: 600; text-decoration: none; transition: 0.2s; border: none; cursor: pointer; }
     .btn:hover { background-color: #b45309; transform: translateY(-2px); }
@@ -53,8 +53,7 @@
     .hours-control button:active { background: rgba(255,255,255,0.2); color: #d97706; }
     .result-price { font-size: 1.8rem; font-weight: 800; color: #ffffff; text-align: center; }
     .price-note { font-size: 0.7rem; margin-top: 12px; text-align: center; color: #fcd34d; }
-    .calc-button-wrapper { display: flex; justify-content: center; gap: 16px; margin-top: 30px; flex-wrap: wrap; }
-    .calc-button-wrapper .btn { flex: 1; min-width: 160px; text-align: center; }
+    .calc-button-wrapper { display: none; } /* скрываем блок с кнопками */
     @media (min-width: 861px) { .calc-form { flex-wrap: nowrap; } .calc-field { flex: 1 1 0; min-width: 0; } }
     .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 40px; }
     .tab-btn { background: #f3f4f6; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; }
@@ -246,7 +245,7 @@
         order: 1;
         flex: 0 1 auto;
         text-align: left;
-        max-width: 55%;
+        max-width: 50%;
       }
       .logo h1 { font-size: 1.3rem; }
       .logo p { font-size: 0.55rem; }
@@ -255,35 +254,49 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
-        gap: 2px;
+        gap: 4px;
         flex: 0 1 auto;
         max-width: 45%;
       }
       .header-phone {
-        padding: 2px 0;
+        padding: 4px 10px;
         font-size: 0.6rem;
         white-space: nowrap;
+        background: transparent;
+        color: #d97706;
+        border-radius: 40px;
+        font-weight: 600;
       }
-      .header-phone a { font-size: 0.6rem; }
+      .header-phone a {
+        color: #d97706;
+        font-size: 0.6rem;
+      }
+      .header-phone a:hover {
+        color: #b45309;
+      }
       .nav {
         order: 3;
         flex: 0 0 100%;
         display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 6px;
-        padding: 4px 16px;
+        flex-wrap: nowrap;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 0;
+        padding: 4px 0;
         margin: 0;
+        width: 100%;
       }
       .nav a {
         font-size: 0.8rem;
         white-space: nowrap;
+        padding: 4px 2px;
+        flex: 1 1 0;
+        text-align: center;
       }
       .calc-form { flex-direction: column; align-items: stretch; }
       .why-grid { grid-template-columns: repeat(2, 1fr); }
       .calculator-block { padding: 24px; }
-      .calc-button-wrapper { flex-direction: column; align-items: stretch; }
-      .calc-button-wrapper .btn { width: 100%; }
+      .calc-button-wrapper { display: none; }
       #scrollTopBtn { bottom: 20px; right: 20px; width: 48px; height: 48px; font-size: 1.5rem; }
       .hours-control input[type="number"] { width: 50px; }
       .hours-control button { width: 36px; height: 36px; font-size: 1rem; }
@@ -291,15 +304,15 @@
     @media (max-width: 600px) {
       .logo h1 { font-size: 1.1rem; }
       .logo p { font-size: 0.5rem; }
-      .header-phone { font-size: 0.55rem; padding: 2px 0; }
+      .header-phone { padding: 3px 8px; font-size: 0.5rem; }
       .header-phone a { font-size: 0.5rem; }
-      .nav { gap: 4px; padding: 4px 12px; }
-      .nav a { font-size: 0.7rem; }
+      .nav a { font-size: 0.7rem; padding: 4px 1px; }
       .section-title { font-size: 1.4rem; }
     }
     @media (max-width: 480px) {
       .why-grid { grid-template-columns: 1fr; }
-      .header-phone { font-size: 0.5rem; }
+      .nav a { font-size: 0.6rem; padding: 4px 1px; }
+      .header-phone { font-size: 0.45rem; padding: 2px 6px; }
       .header-phone a { font-size: 0.45rem; }
     }
   </style>
@@ -409,11 +422,7 @@
           </div>
         </div>
         <div class="price-note">Время в пути и первые 2 часа на погрузку/выгрузку включены в стоимость. Заполните заявку на перевозку что бы получить точную стоимость:</div>
-        <div class="calc-button-wrapper">
-          <a href="http://tehnodv25.ru/pogorodu.html" target="_blank" class="btn">🏙️ Перевозка по городу</a>
-          <a href="http://tehnodv25.ru/mejgorod.html" target="_blank" class="btn">🚚 Перевозка по краю</a>
-          <a href="http://tehnodv25.ru/spectehnika" target="_blank" class="btn">Услуги спецтехники</a>
-        </div>
+        <!-- Кнопки скрыты: блок calc-button-wrapper удалён -->
       </div>
     </div>
   </section>
