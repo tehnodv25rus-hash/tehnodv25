@@ -22,6 +22,7 @@
   <!-- /Yandex.Metrika counter -->
 
   <style>
+    /* Все стили без изменений (полный CSS) */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; color: #1f2937; scroll-behavior: smooth; padding-top: 0; }
     .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
@@ -34,20 +35,9 @@
     .nav a { text-decoration: none; font-weight: 600; color: #1f2937; transition: 0.2s; white-space: nowrap; }
     .nav a:hover { color: #d97706; }
     .header-phones { display: flex; gap: 16px; align-items: center; }
-    .header-phone {
-      font-weight: 700;
-      background: transparent;
-      padding: 8px 16px;
-      border-radius: 40px;
-    }
-    .header-phone a {
-      text-decoration: none;
-      color: #d97706;
-      transition: 0.2s;
-    }
-    .header-phone a:hover {
-      color: #b45309;
-    }
+    .header-phone { font-weight: 700; background: transparent; padding: 8px 16px; border-radius: 40px; }
+    .header-phone a { text-decoration: none; color: #d97706; transition: 0.2s; }
+    .header-phone a:hover { color: #b45309; }
     .btn { display: inline-block; background-color: #d97706; color: white; padding: 10px 20px; border-radius: 40px; font-weight: 600; text-decoration: none; transition: 0.2s; border: none; cursor: pointer; }
     .btn:hover { background-color: #b45309; transform: translateY(-2px); }
     section { padding: 60px 0; border-bottom: 1px solid #e5e7eb; }
@@ -490,7 +480,7 @@
           <li><i class="fas fa-truck-moving"></i> Перевозка грузовика</li>
           <li><i class="fas fa-warehouse"></i> Перевозка гаража</li>
           <li><i class="fas fa-bolt"></i> Перевозка генератора</li>
-          <li><i class="fas fa-couch"></i> Перевозка мебели</li> <!-- изменено -->
+          <li><i class="fas fa-couch"></i> Перевозка мебели</li>
           <li><i class="fas fa-ship"></i> Перевозка катера</li>
           <li><i class="fas fa-motorcycle"></i> Перевозка квадроцикла</li>
           <li><i class="fas fa-box"></i> Перевозка кунга</li>
@@ -664,33 +654,33 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // ===== ДАННЫЕ АВТОПАРКА И КОМАНДЫ =====
+  // ===== ОБНОВЛЁННЫЕ НАЗВАНИЯ И ОПИСАНИЯ =====
   const techData = {
     evacuators: [
-      { name: "Эвакуатор манипулятор Mitsubishi\nБорт 5т, кму 2т", desc: "Стандартная воровайка, манипулятор для повседневных задач", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор манипулятор Isuzu. Борт 10-15т, кму 5т", desc: "Мощный эвакуатор для тяжёлой техники", image: "https://avatars.mds.yandex.net/get-altay/20285938/2a0000019e86c69fd13fa26f412088118dfa/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор манипулятор Fuso. Борт 10-15т, кму 5т", desc: "Усиленная сороконожка, грузоподъёмность до 15 тонн", image: "https://avatars.mds.yandex.net/get-altay/18105464/2a0000019c9d1c5d95fc23d09478e8e4e491/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор манипулятор Isuzu Борт 7-10т, кму 3т", desc: "Универсальный эвакуатор для средних грузов", image: "https://avatars.mds.yandex.net/get-altay/14586367/2a0000019d28c3b61ee54add148f48934411/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Эвакуатор манипулятор бортовой 5т, кму 3т.", desc: "Эвакуатор с лебедкой и аппарелями. Идеально для перевозки, эвакуации авто. Максимальный объем груза: длина 5.2 м, ширина 2.4 м, высота 3 м.", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор бортовой 7т, кму 3т.", desc: "Стандартная воровайка повышенной грузоподъемности для повседневных задач. Максимальный объем груза: длина 5.5 м, ширина 2.2 м, высота 2 м.", image: "https://avatars.mds.yandex.net/get-altay/19749282/2a0000019f3ad19b724a8d19c675a0943c6a/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" },
+      { name: "Эвакуатор манипулятор тяжёлый бортовой 10т, кму 3т.", desc: "Удобен для перевозки стройматериалов на палетах и других грузов. Борт 30 см. Максимальный объем груза: длина 7.5 м, ширина 2.4 м, высота 2.6 м.", image: "https://avatars.mds.yandex.net/get-altay/20285938/2a0000019e86c69fd13fa26f412088118dfa/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор тяжёлый сороконожка 15т, кму 5т.", desc: "Мощный эвакуатор для тяжелых грузов. Максимальный объем груза: длина 8 м, ширина 2.4 м, высота 2.7 м.", image: "https://avatars.mds.yandex.net/get-altay/14586367/2a0000019d28c3b61ee54add148f48934411/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор тяжёлый сороконожка №2. Борт 15т, кму 5т.", desc: "Мощный эвакуатор для тяжелых грузов. Максимальный объем груза: длина 8 м, ширина 2.4 м, высота 2.7 м.", image: "https://avatars.mds.yandex.net/get-altay/18105464/2a0000019c9d1c5d95fc23d09478e8e4e491/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
     excavators: [
       { name: "Экскаватор гусеничный 7,5т с гидромолотом", desc: "Демонтаж бетона, вскрытие асфальта, корчевание", image: "https://avatars.mds.yandex.net/get-altay/15352901/2a0000019448910594b726be2b483d33c56d/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Экскаватор гусеничный 7,5т с ковшом", desc: "Ковш 0.8м³, планировка участка, обратная лопата", image: "https://avatars.mds.yandex.net/get-altay/18748727/2a0000019c26195a31c73b69078196ba0e76/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" },
-      { name: "Фронтальный погрузчик Komatsu (петушок)", desc: "Высокая маневренность, ковш 2.5м³, для погрузки сыпучих материалов", image: "https://avatars.mds.yandex.net/get-altay/19555209/2a0000019c4a6a12e5236974f69d732d2b02/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Экскаватор гусеничный 7,5т с ковшом", desc: "Ковш 0.8м³, планировка участка, обратная лопата", image: "https://avatars.mds.yandex.net/get-altay/18748727/2a0000019c26195a31c73b69078196ba0e76/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" }
     ],
     special: [
-      { name: "Автовышка 15 метров", desc: "Подъем на высоту до 20 метров для монтажных работ", image: "https://avatars.mds.yandex.net/get-altay/19579876/2a0000019b7225ac01a7f77154ecc0942180/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Автовышка 15 метров", desc: "Высотные работы до 20 метров: монтаж конструкций, обслуживание фасадов, установка рекламы и кондиционеров.", image: "https://avatars.mds.yandex.net/get-altay/19579876/2a0000019b7225ac01a7f77154ecc0942180/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
       { name: "Фронтальный погрузчик Komatsu (петушок)", desc: "Высокая маневренность, ковш 2.5м³, для погрузки сыпучих материалов", image: "https://avatars.mds.yandex.net/get-altay/19555209/2a0000019c4a6a12e5236974f69d732d2b02/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
       { name: "Погрузчик с вилами", desc: "Грузоподъемность 1т, вилы длиной 1.2м, идеален для складских работ и погрузки поддонов", image: "https://avatars.mds.yandex.net/get-altay/18184740/2a0000019b2ad8f21c737f49db5497ca21eb/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
     dump: [
-      { name: "Самосвал борт 5т", desc: "Оптимален для малых строек, вывоз грунта до 5 тонн", image: "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019b33d7d5d3cc22f6bda53c6af0fc/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Самосвал 5т", desc: "Для сыпучих грузов и стройматериалов. Максимальный объем груза: 4 м, ширина 2 м, высота 0.82 м.", image: "https://avatars.mds.yandex.net/get-altay/18148618/2a0000019b33d7d5d3cc22f6bda53c6af0fc/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
     trucks: [
-      { name: "Грузовик борт 1т", desc: "Компактный грузовик для перевозки малых партий грузов, маневренный, удобен для доставки по городу", image: "https://avatars.mds.yandex.net/get-altay/18133168/2a0000019e86b67c9b2ee88033a151fef0a0/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Грузовик 1т", desc: "Для малых грузов и городских перевозок. Максимальный объем груза: длина 3.1 м, ширина 1.6 м, высота 1.8 м.", image: "https://avatars.mds.yandex.net/get-altay/18133168/2a0000019e86b67c9b2ee88033a151fef0a0/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
     trailers: [
-      { name: "Трал", desc: "Универсальный трал для перевозки тяжелых грузов до 25 тонн, низкий угол заезда, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019c79d69d3256578c96acfa00d6f3/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Бортовой полуприцеп", desc: "Перевозка длинномеров до 13 метров, усиленная рама", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019b2fd5072a3cccca4543c5b18490/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Тягач с тралом 25т", desc: "Для спецтехники негабаритных грузов. Максимальный объем груза: длина 12 м, ширина 2.6 м, высота 2.5 м.", image: "https://avatars.mds.yandex.net/get-altay/17753003/2a0000019c79d69d3256578c96acfa00d6f3/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Тягач с бортовым полуприцепом 25т", desc: "Для тяжёлых грузов, строительных материалов. До 25 тонн. Максимальный объем груза: длина 12 м, ширина 2.6 м, высота 2.5 м.", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019b2fd5072a3cccca4543c5b18490/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ]
   };
 
@@ -770,7 +760,7 @@
       });
     });
 
-    // ===== КАЛЬКУЛЯТОР =====
+    // ===== КАЛЬКУЛЯТОР (полный код) =====
     const hourlyRatesOld = {5: {first:7000, next:3500}, 10: {first:13000, next:4500}, 15: {first:15000, next:5000}};
     const hourlyRatesNew = {7: { first: 10000, next: 4000 }, 12: { first: 15000, next: 5000 }};
     const cityRatesOld = {
