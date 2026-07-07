@@ -6,7 +6,7 @@
     <title>Техно ДВ — Калькулятор перевозки</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* ===== Стили сайта (Техно ДВ) ===== */
+        /* ===== Стили сайта ===== */
         * {
             margin: 0;
             padding: 0;
@@ -23,6 +23,8 @@
             margin: 0 auto;
             padding: 0 24px;
         }
+
+        /* ===== Хедер ===== */
         .header {
             background: #fff;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
@@ -35,6 +37,11 @@
             flex-wrap: wrap;
             padding: 20px 0;
             gap: 16px;
+        }
+        .logo a {
+            text-decoration: none;
+            color: inherit;
+            display: inline-block;
         }
         .logo h1 {
             font-size: 1.7rem;
@@ -75,22 +82,8 @@
             text-decoration: none;
             color: #b45309;
         }
-        .btn {
-            display: inline-block;
-            background-color: #d97706;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background-color: #b45309;
-            transform: translateY(-2px);
-        }
+
+        /* ===== Футер ===== */
         footer {
             background: #0f172a;
             color: #cbd5e1;
@@ -173,6 +166,8 @@
             border-top: 1px solid #334155;
             padding-top: 24px;
         }
+
+        /* ===== Кнопка "Наверх" ===== */
         #scrollTopBtn {
             position: fixed;
             bottom: 30px;
@@ -225,12 +220,21 @@
             box-shadow: 0 8px 32px rgba(37, 99, 235, 0.25);
         }
         .calc-header p {
-            font-size: 1.5rem;
-            font-weight: 700;
+            font-size: 1.2rem;
+            font-weight: 500;
             margin: 0;
-            max-width: none;
-            width: 100%;
-            line-height: 1.3;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+        .calc-header p a {
+            color: #fcd34d;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        .calc-header p a:hover {
+            color: #fff;
         }
 
         .calculator-grid {
@@ -909,7 +913,6 @@
             gap: 4px;
         }
 
-        /* Блок деталей груза */
         .modal-cargo-details {
             background: #f1f5f9;
             border-radius: 10px;
@@ -1036,39 +1039,7 @@
             background: #cbd5e1;
         }
 
-        /* Адаптация модалки */
-        @media (max-width: 600px) {
-            .modal-window {
-                padding: 24px 16px 20px;
-                border-radius: 16px;
-            }
-            .modal-title {
-                font-size: 1.2rem;
-            }
-            .modal-form .form-row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-            .modal-form .submit-row {
-                flex-direction: column;
-            }
-            .modal-form .submit-row .btn-primary {
-                width: 100%;
-            }
-            .modal-form .submit-row .btn-secondary {
-                width: 100%;
-            }
-            .modal-cargo-details .detail-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 2px;
-            }
-            .modal-cargo-details .detail-value {
-                text-align: left;
-            }
-        }
-
-        /* ===== Улучшенная мобильная адаптация ===== */
+        /* ===== Мобильная адаптация ===== */
         @media (max-width: 820px) {
             .calc-container {
                 padding: 16px 12px 30px;
@@ -1078,7 +1049,7 @@
                 border-radius: 12px;
             }
             .calc-header p {
-                font-size: 1.2rem;
+                font-size: 1rem;
             }
             .input-panel {
                 padding: 18px 16px 22px;
@@ -1159,6 +1130,34 @@
                 font-size: 0.75rem;
                 padding: 6px 16px;
             }
+            .modal-window {
+                padding: 24px 16px 20px;
+                border-radius: 16px;
+            }
+            .modal-title {
+                font-size: 1.2rem;
+            }
+            .modal-form .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .modal-form .submit-row {
+                flex-direction: column;
+            }
+            .modal-form .submit-row .btn-primary {
+                width: 100%;
+            }
+            .modal-form .submit-row .btn-secondary {
+                width: 100%;
+            }
+            .modal-cargo-details .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 2px;
+            }
+            .modal-cargo-details .detail-value {
+                text-align: left;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1203,7 +1202,7 @@
                 font-size: 0.8rem;
             }
             .calc-header p {
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
             .input-panel {
                 padding: 14px 12px 18px;
@@ -1348,19 +1347,20 @@
 </head>
 <body>
 
-    <!-- ===== ШАПКА САЙТА ===== -->
+    <!-- ===== ХЕДЕР ===== -->
     <header class="header">
         <div class="container header-inner">
             <div class="logo">
-                <h1>Техно ДВ</h1>
-                <p>Транспортная компания | Спецтехника</p>
+                <a href="http://tehnodv25.ru/">
+                    <h1>Техно ДВ</h1>
+                    <p>Транспортная компания | Спецтехника</p>
+                </a>
             </div>
             <div class="nav">
                 <a href="http://tehnodv25.ru/">Главная</a>
-                <a href="http://tehnodv25.ru/#autopark">Автопарк</a>
-                <a href="http://tehnodv25.ru/#services">Услуги</a>
                 <a href="#contacts">Контакты</a>
-                <a href="http://tehnodv25.ru/blog.html">Блог</a>
+                <a href="http://tehnodv25.ru/mejgorod">Перевозка межгород</a>
+                <a href="http://tehnodv25.ru/spectehnika">Услуги спецтехники</a>
             </div>
             <div class="header-phones">
                 <div class="header-phone"><a href="tel:+79147312000"><i class="fas fa-phone-alt"></i> +7 (914) 731-20-00</a></div>
@@ -1373,27 +1373,27 @@
     <main>
         <div class="calc-container">
 
+            <!-- Шапка калькулятора (точка убрана) -->
             <header class="calc-header">
-                <p>Укажите параметры груза — калькулятор автоматически рассчитает актуальную стоимость, подберет транспорт.</p>
+                <p>
+                    Укажите параметры груза — калькулятор автоматически рассчитает стоимость и подберет оптимальный транспорт.
+                    <br>
+                    <a href="http://tehnodv25.ru/pogorodu.html" target="_blank">По городу</a> — от остановки Заря до Русского моста.
+                    <a href="http://tehnodv25.ru/mejgorod" target="_blank">Межгород</a> — за границами города.
+                </p>
             </header>
 
             <div class="calculator-grid">
 
                 <!-- Левая панель – параметры -->
                 <section class="input-panel" aria-label="Параметры груза">
+
                     <h2>📦 Параметры груза</h2>
 
                     <div class="cargo-type-group">
                         <label for="cargoTypeSelect">📋 Груз</label>
                         <select id="cargoTypeSelect">
-                            <option value="строительные материалы" selected>Строительные материалы</option>
-                            <option value="автомобиль">Автомобиль</option>
-                            <option value="грузовик">Грузовик</option>
-                            <option value="контейнер">Контейнер, бытовка, модуль</option>
-                            <option value="спецтехника">Спецтехника</option>
-                            <option value="сыпучие">Сыпучие</option>
-                            <option value="строительный мусор">Строительный мусор</option>
-                            <option value="прочее">Прочее</option>
+                            <!-- Опции будут заполнены и отсортированы в JS -->
                         </select>
                     </div>
 
@@ -1410,9 +1410,7 @@
                                 <input type="number" id="weightInput" class="num-input" min="0.1" max="25" step="0.1" value="5.0" aria-label="Вес груза в тоннах" />
                             </div>
                         </div>
-
                         <hr class="input-divider" />
-
                         <div class="dimension-grid">
                             <div class="input-group">
                                 <label>
@@ -1948,37 +1946,23 @@
                 Вы выбрали: <strong id="modalVehicleName">—</strong><br>
                 Стоимость: <strong id="modalVehiclePrice">—</strong> ₽ &nbsp;|&nbsp; Доп. часы: <strong id="modalVehicleExtra">0</strong> ч
             </div>
-
-            <!-- Блок с основными параметрами груза -->
             <div class="modal-cargo-params" id="modalCargoParams">
                 <span class="param-item"><strong>Груз:</strong> <span id="modalCargoType">—</span></span>
                 <span class="param-item"><strong>Вес:</strong> <span id="modalCargoWeight">—</span> т</span>
                 <span class="param-item"><strong>Габариты:</strong> <span id="modalCargoDimensions">—</span></span>
             </div>
-
-            <!-- Блок с детальными параметрами груза -->
-            <div class="modal-cargo-details" id="modalCargoDetails">
-                <!-- сюда будем вставлять строки через JS -->
-            </div>
-
+            <div class="modal-cargo-details" id="modalCargoDetails"></div>
             <form class="modal-form" id="orderForm" action="https://formsubmit.co/tehnodv25rus@yandex.ru" method="POST">
-                <!-- Скрытые поля с данными транспорта -->
                 <input type="hidden" id="formVehicleId" name="vehicle_id" value="">
                 <input type="hidden" id="formVehicleName" name="vehicle_name" value="">
                 <input type="hidden" id="formVehiclePrice" name="vehicle_price" value="">
                 <input type="hidden" id="formVehicleExtra" name="vehicle_extra" value="">
-
-                <!-- Скрытые поля с основными параметрами груза -->
                 <input type="hidden" id="formCargoType" name="cargo_type" value="">
                 <input type="hidden" id="formCargoWeight" name="cargo_weight" value="">
                 <input type="hidden" id="formCargoLength" name="cargo_length" value="">
                 <input type="hidden" id="formCargoWidth" name="cargo_width" value="">
                 <input type="hidden" id="formCargoHeight" name="cargo_height" value="">
-
-                <!-- Скрытые поля для деталей груза (отправляются как JSON, чтобы не плодить десятки полей) -->
                 <input type="hidden" id="formCargoDetails" name="cargo_details_json" value="">
-
-                <!-- Скрытые поля для FormSubmit -->
                 <input type="hidden" name="_subject" value="Новая заявка на перевозку">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
@@ -1987,17 +1971,14 @@
                     <label for="orderDateTime">Время и дата подачи машины <span class="required">*</span></label>
                     <input type="datetime-local" id="orderDateTime" name="datetime" required>
                 </div>
-
                 <div class="form-group">
                     <label for="orderPickupAddress">Адрес погрузки <span class="required">*</span></label>
                     <input type="text" id="orderPickupAddress" name="pickup_address" placeholder="Город, улица, дом" required>
                 </div>
-
                 <div class="form-group">
                     <label for="orderDeliveryAddress">Адрес выгрузки <span class="required">*</span></label>
                     <input type="text" id="orderDeliveryAddress" name="delivery_address" placeholder="Город, улица, дом" required>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label for="orderPickupLandmark">Ориентир для водителя на погрузке</label>
@@ -2008,20 +1989,17 @@
                         <input type="text" id="orderDeliveryLandmark" name="delivery_landmark" placeholder="Ориентир">
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label for="orderPhotos">Прикрепить фотографии места погрузки, выгрузки</label>
                     <input type="file" id="orderPhotos" name="photos" accept="image/*" multiple>
                     <div class="form-hint">Можно выбрать несколько фото (до 5 МБ каждое)</div>
                 </div>
-
                 <div class="form-group">
                     <div class="form-hint warning">
                         <i class="fas fa-exclamation-triangle"></i>
                         Сложный рельеф, подъездные пути, низкие провода могут увеличить стоимость. Фото помогут избежать незапланированного повышения цены.
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label for="orderName">Имя <span class="required">*</span></label>
@@ -2032,7 +2010,6 @@
                         <input type="tel" id="orderPhone" name="phone" placeholder="+7 (___) ___-__-__" required>
                     </div>
                 </div>
-
                 <div class="submit-row">
                     <button type="submit" class="btn-primary">Отправить заявку</button>
                     <button type="button" class="btn-secondary" id="modalCancel">Отмена</button>
@@ -2041,7 +2018,7 @@
         </div>
     </div>
 
-    <!-- ===== ПОДВАЛ САЙТА ===== -->
+    <!-- ===== ФУТЕР ===== -->
     <footer id="contacts">
         <div class="container footer-grid">
             <div>
@@ -2084,12 +2061,12 @@
         <div class="copy"><p>© 2017 Транспортная компания «Техно ДВ».</p></div>
     </footer>
 
-    <!-- Кнопка "Наверх" -->
+    <!-- ===== КНОПКА "НАВЕРХ" ===== -->
     <button id="scrollTopBtn" aria-label="Наверх"><i class="fas fa-arrow-up"></i></button>
 
-    <!-- ===== СКРИПТЫ ===== -->
+    <!-- ===== ПОЛНЫЙ JS-СКРИПТ КАЛЬКУЛЯТОРА ===== -->
     <script>
-        // ===== Кнопка "Наверх" =====
+        // Кнопка "Наверх"
         (function() {
             const scrollBtn = document.getElementById('scrollTopBtn');
             window.addEventListener('scroll', function() {
@@ -2108,7 +2085,6 @@
             const cancelBtn = document.getElementById('modalCancel');
             const form = document.getElementById('orderForm');
 
-            // Элементы для заполнения данными
             const vehicleName = document.getElementById('modalVehicleName');
             const vehiclePrice = document.getElementById('modalVehiclePrice');
             const vehicleExtra = document.getElementById('modalVehicleExtra');
@@ -2117,7 +2093,6 @@
             const formVehiclePrice = document.getElementById('formVehiclePrice');
             const formVehicleExtra = document.getElementById('formVehicleExtra');
 
-            // Элементы параметров груза
             const modalCargoType = document.getElementById('modalCargoType');
             const modalCargoWeight = document.getElementById('modalCargoWeight');
             const modalCargoDimensions = document.getElementById('modalCargoDimensions');
@@ -2129,7 +2104,6 @@
             const formCargoDetails = document.getElementById('formCargoDetails');
             const modalCargoDetails = document.getElementById('modalCargoDetails');
 
-            // Поля формы
             const dateTimeInput = document.getElementById('orderDateTime');
             const pickupAddr = document.getElementById('orderPickupAddress');
             const deliveryAddr = document.getElementById('orderDeliveryAddress');
@@ -2139,16 +2113,9 @@
             const nameInput = document.getElementById('orderName');
             const phoneInput = document.getElementById('orderPhone');
 
-            // Функция для формирования деталей груза в виде массива строк {label, value}
             function buildCargoDetails(cargoData) {
                 const type = cargoData.type || 'строительные материалы';
                 const details = [];
-
-                // Всегда добавляем основные параметры (они уже есть в отдельном блоке, но для полноты можно дублировать)
-                // Но мы будем добавлять только специфические, чтобы не повторяться
-                // Основные уже показаны в modal-cargo-params
-
-                // Добавляем специфические для каждого типа
                 if (type === 'автомобиль') {
                     details.push({ label: 'Тип авто', value: cargoData.autoType || '—' });
                     details.push({ label: 'Марка автомобиля', value: cargoData.autoMake || '—' });
@@ -2193,24 +2160,18 @@
                     details.push({ label: 'Описание груза', value: cargoData.otherDescription || '—' });
                     details.push({ label: 'Особые условия', value: cargoData.otherConditions || '—' });
                 }
-                // Для "строительные материалы" никаких дополнительных полей нет
-
                 return details;
             }
 
-            // Открыть модалку с данными карточки и параметрами груза
             window.openOrderModal = function(id, name, price, extra, cargoData) {
-                // Заполняем информацию о транспорте
                 vehicleName.textContent = name;
                 vehiclePrice.textContent = price.toLocaleString('ru-RU');
                 vehicleExtra.textContent = extra;
-
                 formVehicleId.value = id;
                 formVehicleName.value = name;
                 formVehiclePrice.value = price;
                 formVehicleExtra.value = extra;
 
-                // Заполняем основные параметры груза
                 const cargoType = cargoData.type || '—';
                 const weight = cargoData.weight || 0;
                 const length = cargoData.length || 0;
@@ -2229,7 +2190,6 @@
                 formCargoWidth.value = width;
                 formCargoHeight.value = height;
 
-                // Формируем детальные параметры
                 const details = buildCargoDetails(cargoData);
                 let detailsHtml = '';
                 details.forEach(d => {
@@ -2242,12 +2202,8 @@
                     detailsHtml = '<div class="detail-row"><span class="detail-label">Дополнительные параметры отсутствуют</span></div>';
                 }
                 modalCargoDetails.innerHTML = detailsHtml;
+                formCargoDetails.value = JSON.stringify(details);
 
-                // Сохраняем JSON всех деталей для отправки
-                const detailsJson = JSON.stringify(details);
-                formCargoDetails.value = detailsJson;
-
-                // Сбрасываем поля формы (кроме скрытых)
                 dateTimeInput.value = '';
                 pickupAddr.value = '';
                 deliveryAddr.value = '';
@@ -2261,7 +2217,6 @@
                 document.body.style.overflow = 'hidden';
             };
 
-            // Закрыть модалку
             function closeModal() {
                 modal.classList.remove('active');
                 document.body.style.overflow = '';
@@ -2269,22 +2224,15 @@
 
             closeBtn.addEventListener('click', closeModal);
             cancelBtn.addEventListener('click', closeModal);
-
-            // Закрытие по клику на фон
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) closeModal();
             });
-
-            // Закрытие по Escape
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
             });
 
-            // Отправка формы (через fetch, но можно и через action)
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                // Простая валидация
                 const requiredFields = [
                     { el: dateTimeInput, name: 'Время и дата' },
                     { el: pickupAddr, name: 'Адрес погрузки' },
@@ -2292,7 +2240,6 @@
                     { el: nameInput, name: 'Имя' },
                     { el: phoneInput, name: 'Телефон' }
                 ];
-
                 let valid = true;
                 requiredFields.forEach(field => {
                     if (!field.el.value.trim()) {
@@ -2302,16 +2249,11 @@
                         field.el.style.borderColor = '';
                     }
                 });
-
                 if (!valid) {
                     alert('Пожалуйста, заполните все обязательные поля.');
                     return;
                 }
-
-                // Собираем FormData
                 const formData = new FormData(form);
-
-                // Отправляем на formsubmit.co
                 fetch('https://formsubmit.co/tehnodv25rus@yandex.ru', {
                         method: 'POST',
                         body: formData
@@ -2330,9 +2272,7 @@
                     });
             });
         })();
-    </script>
 
-    <script>
         // ============================================================
         // DATA — рефрижератор удалён, добавлен самосвал
         // ============================================================
@@ -2451,13 +2391,12 @@
         // STATE
         // ============================================================
         const state = {
-            cargoType: 'строительные материалы',
+            cargoType: 'автомобиль',
             filter: 'all',
-            weight: 5.0,
-            length: 4.0,
-            width: 2.0,
-            height: 1.8,
-            // Auto
+            weight: 1.5,
+            length: 4.5,
+            width: 1.8,
+            height: 1.5,
             autoType: 'легковой',
             autoMake: '',
             autoCondition: 'После дтп',
@@ -2466,7 +2405,6 @@
             autoAccessRoad: 'без проблем',
             autoObstacles: 'нет',
             autoDocuments: 'предоставлю',
-            // Truck
             truckBodyType: 'С будкой',
             truckLoad: 'Пустой',
             truckMake: '',
@@ -2479,7 +2417,6 @@
             truckLength: 6.0,
             truckWidth: 2.5,
             truckHeight: 2.5,
-            // Container
             containerType: '20ft',
             containerCount: 1,
             containerLoad: 'Пустой',
@@ -2493,7 +2430,6 @@
             containerBaseLength: 6.0,
             containerBaseWidth: 2.4,
             containerBaseHeight: 2.6,
-            // Special
             specialType: 'экскаватор',
             specialMake: '',
             specialWheelsTurn: 'да',
@@ -2505,10 +2441,8 @@
             specialLength: 6,
             specialWidth: 2.5,
             specialHeight: 3,
-            // Bulk
             bulkMaterialType: 'песок',
             bulkWeight: 10,
-            // Other
             otherWeight: 5.0,
             otherName: '',
             otherDescription: '',
@@ -2518,17 +2452,10 @@
             otherHeight: 1.8
         };
 
-        // ============================================================
-        // Map для хранения дополнительных часов для каждого транспорта
-        // ============================================================
         const extraHoursMap = {};
 
-        // ============================================================
-        // DOM REFS
-        // ============================================================
+        // ===== DOM REFS =====
         const $ = id => document.getElementById(id);
-
-        // Строительные материалы
         const weightSlider = $('weightSlider');
         const weightInput = $('weightInput');
         const weightDisplay = $('weightDisplay');
@@ -2541,8 +2468,6 @@
         const heightSlider = $('heightSlider');
         const heightInput = $('heightInput');
         const heightDisplay = $('heightDisplay');
-
-        // Auto
         const autoType = $('autoType');
         const autoMake = $('autoMake');
         const autoCondition = $('autoCondition');
@@ -2551,8 +2476,6 @@
         const autoAccessRoad = $('autoAccessRoad');
         const autoObstacles = $('autoObstacles');
         const autoDocuments = $('autoDocuments');
-
-        // Truck
         const truckBodyType = $('truckBodyType');
         const truckLoad = $('truckLoad');
         const truckMake = $('truckMake');
@@ -2573,8 +2496,6 @@
         const truckHeightSlider = $('truckHeightSlider');
         const truckHeightInput = $('truckHeightInput');
         const truckHeightDisplay = $('truckHeightDisplay');
-
-        // Container
         const containerType = $('containerType');
         const containerCount = $('containerCount');
         const containerCountGroup = $('containerCountGroup');
@@ -2594,8 +2515,6 @@
         const containerHeightSlider = $('containerHeightSlider');
         const containerHeightInput = $('containerHeightInput');
         const containerHeightDisplay = $('containerHeightDisplay');
-
-        // Special
         const specialType = $('specialType');
         const specialMake = $('specialMake');
         const specialWheelsTurn = $('specialWheelsTurn');
@@ -2615,15 +2534,11 @@
         const specialHeightSlider = $('specialHeightSlider');
         const specialHeightInput = $('specialHeightInput');
         const specialHeightDisplay = $('specialHeightDisplay');
-
-        // Bulk
         const bulkMaterialType = $('bulkMaterialType');
         const bulkMaterialLabel = $('bulkMaterialLabel');
         const bulkWeightSlider = $('bulkWeightSlider');
         const bulkWeightInput = $('bulkWeightInput');
         const bulkWeightDisplay = $('bulkWeightDisplay');
-
-        // Other
         const otherName = $('otherName');
         const otherDescription = $('otherDescription');
         const otherConditions = $('otherConditions');
@@ -2639,7 +2554,6 @@
         const otherHeightSlider = $('otherHeightSlider');
         const otherHeightInput = $('otherHeightInput');
         const otherHeightDisplay = $('otherHeightDisplay');
-
         const cargoTypeSelect = $('cargoTypeSelect');
         const cargoTypeLabel = $('cargoTypeLabel');
         const weightDimensionsContainer = $('weightDimensionsContainer');
@@ -2649,14 +2563,41 @@
         const specialParams = $('specialParams');
         const bulkParams = $('bulkParams');
         const otherParams = $('otherParams');
-
         const vehicleList = $('vehicleList');
         const resultCount = $('resultCount');
         const filterBtns = document.querySelectorAll('#filterButtons button');
 
-        // ============================================================
-        // Утилита для связки слайдера и числового поля
-        // ============================================================
+        const cargoOptions = [
+            { value: 'автомобиль', label: 'Автомобиль' },
+            { value: 'грузовик', label: 'Грузовик' },
+            { value: 'контейнер', label: 'Контейнер, бытовка, модуль' },
+            { value: 'прочее', label: 'Прочее' },
+            { value: 'спецтехника', label: 'Спецтехника' },
+            { value: 'строительные материалы', label: 'Строительные материалы' },
+            { value: 'строительный мусор', label: 'Строительный мусор' },
+            { value: 'сыпучие', label: 'Сыпучие' }
+        ];
+
+        function initCargoSelect() {
+            const select = cargoTypeSelect;
+            const sorted = [...cargoOptions].sort((a, b) => a.label.localeCompare(b.label, 'ru'));
+            select.innerHTML = '';
+            sorted.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                select.appendChild(option);
+            });
+            const defaultValue = 'автомобиль';
+            if (select.querySelector(`option[value="${defaultValue}"]`)) {
+                select.value = defaultValue;
+            } else {
+                select.selectedIndex = 0;
+            }
+            state.cargoType = select.value;
+            cargoTypeLabel.textContent = select.options[select.selectedIndex].text;
+        }
+
         function bindSliderInput(slider, input, display, callback) {
             slider.addEventListener('input', () => {
                 input.value = slider.value;
@@ -2688,9 +2629,6 @@
             });
         }
 
-        // ============================================================
-        // Функции синхронизации
-        // ============================================================
         function syncBuildingMaterials() {
             state.weight = parseFloat(weightInput.value) || 0;
             state.length = parseFloat(lengthInput.value) || 0;
@@ -2717,23 +2655,18 @@
             const totalLength = state.containerBaseLength * multiplier;
             const totalWidth = state.containerBaseWidth;
             const totalHeight = state.containerBaseHeight;
-
             containerWeightSlider.value = totalWeight;
             containerWeightInput.value = totalWeight.toFixed(1);
             containerWeightDisplay.textContent = totalWeight.toFixed(1);
-
             containerLengthSlider.value = totalLength;
             containerLengthInput.value = totalLength.toFixed(1);
             containerLengthDisplay.textContent = totalLength.toFixed(1);
-
             containerWidthSlider.value = totalWidth;
             containerWidthInput.value = totalWidth.toFixed(1);
             containerWidthDisplay.textContent = totalWidth.toFixed(1);
-
             containerHeightSlider.value = totalHeight;
             containerHeightInput.value = totalHeight.toFixed(1);
             containerHeightDisplay.textContent = totalHeight.toFixed(1);
-
             state.containerWeight = totalWeight;
             state.containerLength = totalLength;
             state.containerWidth = totalWidth;
@@ -2794,16 +2727,12 @@
             render();
         }
 
-        // ============================================================
-        // Инициализация привязок
-        // ============================================================
         function initBindings() {
             bindSliderInput(weightSlider, weightInput, weightDisplay, syncBuildingMaterials);
             bindSliderInput(lengthSlider, lengthInput, lengthDisplay, syncBuildingMaterials);
             bindSliderInput(widthSlider, widthInput, widthDisplay, syncBuildingMaterials);
             bindSliderInput(heightSlider, heightInput, heightDisplay, syncBuildingMaterials);
 
-            // Auto
             autoType.addEventListener('change', () => { state.autoType = autoType.value;
                 render(); });
             autoMake.addEventListener('input', () => { state.autoMake = autoMake.value;
@@ -2824,7 +2753,6 @@
             autoDocuments.addEventListener('change', () => { state.autoDocuments = autoDocuments.value;
                 render(); });
 
-            // Truck
             truckBodyType.addEventListener('change', () => { state.truckBodyType = truckBodyType.value;
                 render(); });
             truckLoad.addEventListener('change', () => { state.truckLoad = truckLoad.value;
@@ -2849,7 +2777,6 @@
             bindSliderInput(truckWidthSlider, truckWidthInput, truckWidthDisplay, syncTruck);
             bindSliderInput(truckHeightSlider, truckHeightInput, truckHeightDisplay, syncTruck);
 
-            // Container
             containerType.addEventListener('change', () => {
                 state.containerType = containerType.value;
                 if (containerType.value === '5ft' || containerType.value === '10ft') {
@@ -2887,7 +2814,6 @@
             bindSliderInput(containerWidthSlider, containerWidthInput, containerWidthDisplay, syncContainer);
             bindSliderInput(containerHeightSlider, containerHeightInput, containerHeightDisplay, syncContainer);
 
-            // Special
             bindSliderInput(specialWeightSlider, specialWeightInput, specialWeightDisplay, syncSpecial);
             bindSliderInput(specialLengthSlider, specialLengthInput, specialLengthDisplay, syncSpecial);
             bindSliderInput(specialWidthSlider, specialWidthInput, specialWidthDisplay, syncSpecial);
@@ -2910,11 +2836,9 @@
             specialDocuments.addEventListener('change', () => { state.specialDocuments = specialDocuments.value;
                 render(); });
 
-            // Bulk
             bindSliderInput(bulkWeightSlider, bulkWeightInput, bulkWeightDisplay, syncBulk);
             bulkMaterialType.addEventListener('change', syncBulk);
 
-            // Other
             bindSliderInput(otherWeightSlider, otherWeightInput, otherWeightDisplay, syncOther);
             bindSliderInput(otherLengthSlider, otherLengthInput, otherLengthDisplay, syncOther);
             bindSliderInput(otherWidthSlider, otherWidthInput, otherWidthDisplay, syncOther);
@@ -3004,9 +2928,6 @@
             applyContainerMultiplier();
         }
 
-        // ============================================================
-        // Видимость блоков
-        // ============================================================
         function updateVisibilityAndDefaults() {
             const selected = cargoTypeSelect.value;
             state.cargoType = selected;
@@ -3113,23 +3034,12 @@
                 bulkParams.style.display = 'block';
                 if (selected === 'строительный мусор') {
                     bulkMaterialLabel.textContent = 'Тип строительного мусора';
-                    bulkMaterialType.innerHTML = `
-                            <option value="бетон">Бетон</option>
-                            <option value="кирпич">Кирпич</option>
-                            <option value="древесина">Древесина</option>
-                            <option value="металл">Металл</option>
-                            <option value="смешанный">Смешанный</option>
-                            <option value="другое">Другое</option>
-                        `;
+                    bulkMaterialType.innerHTML =
+                        `<option value="бетон">Бетон</option><option value="кирпич">Кирпич</option><option value="древесина">Древесина</option><option value="металл">Металл</option><option value="смешанный">Смешанный</option><option value="другое">Другое</option>`;
                 } else {
                     bulkMaterialLabel.textContent = 'Тип сыпучего материала';
-                    bulkMaterialType.innerHTML = `
-                            <option value="песок">Песок</option>
-                            <option value="щебень">Щебень</option>
-                            <option value="гравий">Гравий</option>
-                            <option value="удобрения">Удобрения</option>
-                            <option value="другое">Другое</option>
-                        `;
+                    bulkMaterialType.innerHTML =
+                        `<option value="песок">Песок</option><option value="щебень">Щебень</option><option value="гравий">Гравий</option><option value="удобрения">Удобрения</option><option value="другое">Другое</option>`;
                 }
                 bulkWeightSlider.value = state.bulkWeight;
                 bulkWeightInput.value = state.bulkWeight.toFixed(2);
@@ -3164,9 +3074,6 @@
             }
         }
 
-        // ============================================================
-        // Фильтры и обработчики
-        // ============================================================
         filterBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 filterBtns.forEach(b => b.classList.remove('active'));
@@ -3176,9 +3083,7 @@
             });
         });
 
-        // ===== Обработчик клика на кнопку "Заказать" =====
         vehicleList.addEventListener('click', (e) => {
-            // Кнопки +/- для доп. часов
             const target = e.target;
             if (target.classList.contains('extra-minus') || target.classList.contains('extra-plus')) {
                 const card = target.closest('.vehicle-card');
@@ -3195,27 +3100,20 @@
                 render();
                 return;
             }
-
-            // Кнопка "Заказать"
             const btn = e.target.closest('.order-btn');
             if (!btn) return;
             const card = btn.closest('.vehicle-card');
             if (!card) return;
-
-            // Получаем данные из карточки
             const id = parseInt(card.dataset.id);
             const name = card.dataset.name || 'Транспорт';
             const price = parseInt(card.dataset.price) || 0;
             const extra = parseInt(card.dataset.extra) || 0;
-
-            // Формируем объект с параметрами груза из текущего state
             const cargoData = {
                 type: state.cargoType,
                 weight: state.weight,
                 length: state.length,
                 width: state.width,
                 height: state.height,
-                // Auto
                 autoType: state.autoType,
                 autoMake: state.autoMake,
                 autoCondition: state.autoCondition,
@@ -3224,7 +3122,6 @@
                 autoAccessRoad: state.autoAccessRoad,
                 autoObstacles: state.autoObstacles,
                 autoDocuments: state.autoDocuments,
-                // Truck
                 truckBodyType: state.truckBodyType,
                 truckLoad: state.truckLoad,
                 truckMake: state.truckMake,
@@ -3233,13 +3130,11 @@
                 truckAccessRoad: state.truckAccessRoad,
                 truckObstacles: state.truckObstacles,
                 truckDocuments: state.truckDocuments,
-                // Container
                 containerType: state.containerType,
                 containerCount: state.containerCount,
                 containerLoad: state.containerLoad,
                 containerProtrusions: state.containerProtrusions,
                 containerProtrusionsOther: state.containerProtrusionsOther,
-                // Special
                 specialType: state.specialType,
                 specialMake: state.specialMake,
                 specialWheelsTurn: state.specialWheelsTurn,
@@ -3247,26 +3142,18 @@
                 specialAccessRoad: state.specialAccessRoad,
                 specialObstacles: state.specialObstacles,
                 specialDocuments: state.specialDocuments,
-                // Bulk
                 bulkMaterialType: state.bulkMaterialType,
-                // Other
                 otherName: state.otherName,
                 otherDescription: state.otherDescription,
                 otherConditions: state.otherConditions
             };
-
-            // Открываем модалку с подстановкой данных
             if (typeof window.openOrderModal === 'function') {
                 window.openOrderModal(id, name, price, extra, cargoData);
             } else {
-                // fallback, если что-то пошло не так
                 alert('🚛 Заказ транспорта\n\nТип: ' + name + '\nЦена: ' + price + ' ₽\nДоп. часы: ' + extra + ' ч');
             }
         });
 
-        // ============================================================
-        // COMPATIBILITY ENGINE
-        // ============================================================
         function getRoadSurcharge() {
             const cargo = state.cargoType;
             if (cargo === 'автомобиль') {
@@ -3288,52 +3175,37 @@
             length = state.length;
             width = state.width;
             height = state.height;
-
             let blocked = false;
             let blockReason = '';
-
-            // Блокировка для контейнера/бытовки/модуля: грузовики и самосвалы не подходят
             if (state.cargoType === 'контейнер' && (vehicle.type === 'грузовик' || vehicle.type === 'самосвал')) {
                 blocked = true;
                 blockReason = '🚫 Грузовики и самосвалы не подходят для перевозки контейнеров/бытовок/модулей';
             }
-
-            // Блокировка для автомобиля: самосвалы не подходят
             if (state.cargoType === 'автомобиль' && vehicle.type === 'самосвал') {
                 blocked = true;
                 blockReason = '🚫 Самосвалы не подходят для перевозки автомобилей';
             }
-
-            // Блокировка для грузовика: самосвалы не подходят
             if (state.cargoType === 'грузовик' && vehicle.type === 'самосвал') {
                 blocked = true;
                 blockReason = '🚫 Самосвалы не подходят для перевозки грузовиков';
             }
-
-            // Блокировка для спецтехники: самосвалы не подходят
             if (state.cargoType === 'спецтехника' && vehicle.type === 'самосвал') {
                 blocked = true;
                 blockReason = '🚫 Самосвалы не подходят для перевозки спецтехники';
             }
-
             const wRatio = Math.min(1, weight / vehicle.maxWeight);
             const lRatio = Math.min(1, length / vehicle.maxLength);
             const wdRatio = Math.min(1, width / vehicle.maxWidth);
             const hRatio = Math.min(1, height / vehicle.maxHeight);
-
             const dimRatio = (lRatio + wdRatio + hRatio) / 3;
-
             const weightOk = !blocked && weight <= vehicle.maxWeight;
             const dimOk = !blocked && length <= vehicle.maxLength && width <= vehicle.maxWidth && height <= vehicle.maxHeight;
-
             const weightScore = weightOk ? (1 - wRatio) * 100 : 0;
             const dimScore = dimOk ? (1 - dimRatio) * 100 : 0;
             const rawScore = (weightScore * 0.5 + dimScore * 0.5);
-
             const fullness = (wRatio * 0.5 + dimRatio * 0.5);
             const boost = Math.max(0, 1 - Math.abs(fullness - 0.65) * 2.5) * 8;
             const finalScore = Math.min(100, rawScore + boost);
-
             let status, statusLabel;
             if (!weightOk || !dimOk) {
                 status = 'incompatible';
@@ -3348,17 +3220,14 @@
                 status = 'warn';
                 statusLabel = 'С запасом';
             }
-
             const usage = {
                 weight: Math.round(wRatio * 100),
                 length: Math.round(lRatio * 100),
                 width: Math.round(wdRatio * 100),
                 height: Math.round(hRatio * 100),
             };
-
             const roadSurcharge = getRoadSurcharge();
             const totalPrice = blocked ? 0 : vehicle.price + extraHours * vehicle.extraHourPrice + roadSurcharge;
-
             return {
                 score: Math.round(finalScore),
                 status,
@@ -3383,29 +3252,21 @@
             };
         }
 
-        // ============================================================
-        // RENDER
-        // ============================================================
         function render() {
             const filtered = vehiclesData.filter(v => {
                 if (state.filter !== 'all' && v.type !== state.filter) return false;
                 return true;
             });
-
             const withCompat = filtered.map(v => {
                 const extra = extraHoursMap[v.id] || 0;
                 const comp = computeCompatibility(v, extra);
                 return { ...v, comp };
             });
-
             const compatible = withCompat.filter(v => v.comp.weightOk && v.comp.dimOk);
             const incompatible = withCompat.filter(v => !v.comp.weightOk || !v.comp.dimOk);
-
-            compatible.sort((a, b) => a.price - b.price || a.id - b.id);
-            incompatible.sort((a, b) => a.price - b.price || a.id - b.id);
-
+            compatible.sort((a, b) => a.comp.totalPrice - b.comp.totalPrice || a.id - b.id);
+            incompatible.sort((a, b) => a.comp.totalPrice - b.comp.totalPrice || a.id - b.id);
             const sorted = [...compatible, ...incompatible];
-
             let bestFound = false;
             for (const v of sorted) {
                 if (v.comp.weightOk && v.comp.dimOk && !bestFound) {
@@ -3413,32 +3274,22 @@
                     bestFound = true;
                 }
             }
-
             const compatibleCount = compatible.length;
             resultCount.textContent = compatibleCount + ' / ' + sorted.length;
-
             if (sorted.length === 0) {
-                vehicleList.innerHTML = `
-                        <div class="no-results">
-                            <div class="big-icon">🔍</div>
-                            <h3>Нет транспорта в этой категории</h3>
-                            <p>Попробуйте выбрать другой фильтр</p>
-                        </div>
-                    `;
+                vehicleList.innerHTML =
+                `<div class="no-results"><div class="big-icon">🔍</div><h3>Нет транспорта в этой категории</h3><p>Попробуйте выбрать другой фильтр</p></div>`;
                 return;
             }
-
             let html = '';
             for (const v of sorted) {
                 const c = v.comp;
                 const isIncompatible = !c.weightOk || !c.dimOk;
                 const cardClass = `vehicle-card ${isIncompatible ? 'incompatible' : ''} ${c.isBest ? 'best-match' : ''}`;
-
                 const usageBar = (val, status) => {
                     const cls = status === 'good' ? 'good' : status === 'warn' ? 'warn' : 'danger';
                     return `<div class="bar-wrap"><div class="bar ${cls}" style="width:${Math.min(100, val)}%"></div></div>`;
                 };
-
                 const priceStr = c.blocked ? '—' : c.totalPrice.toLocaleString('ru-RU');
                 let extraInfo = '';
                 if (c.blocked) {
@@ -3455,14 +3306,11 @@
                             `<div class="included" style="color:var(--danger);">🚧 Надбавка за подъезд: +${c.roadSurcharge} ₽</div>`;
                     }
                 }
-
                 let includedDefault = 'В цену включено: час погрузки, час разгрузки, время в пути';
                 let includedText = c.includedDesc || includedDefault;
-
                 const dataName = v.name;
                 const dataTotal = c.totalPrice;
                 const dataExtra = c.extraHours;
-
                 html += `
                         <div class="${cardClass}" data-id="${v.id}" data-name="${dataName}" data-price="${v.price}" data-extra="${dataExtra}" data-total="${dataTotal}">
                             <div class="card-icon">${v.icon}</div>
@@ -3515,31 +3363,35 @@
                         </div>
                     `;
             }
-
             vehicleList.innerHTML = html;
         }
 
-        // ============================================================
-        // INIT
-        // ============================================================
-        cargoTypeLabel.textContent = cargoTypeSelect.options[cargoTypeSelect.selectedIndex].text;
+        // ===== INIT =====
+        initCargoSelect();
+        weightDimensionsContainer.style.display = 'none';
         autoParams.style.display = 'none';
         truckParams.style.display = 'none';
         containerParams.style.display = 'none';
         specialParams.style.display = 'none';
         bulkParams.style.display = 'none';
         otherParams.style.display = 'none';
-        weightDimensionsContainer.style.display = 'block';
-
         initBindings();
-
+        weightSlider.value = state.weight;
+        weightInput.value = state.weight.toFixed(1);
+        weightDisplay.textContent = state.weight.toFixed(1);
+        lengthSlider.value = state.length;
+        lengthInput.value = state.length.toFixed(1);
+        lengthDisplay.textContent = state.length.toFixed(1);
+        widthSlider.value = state.width;
+        widthInput.value = state.width.toFixed(1);
+        widthDisplay.textContent = state.width.toFixed(1);
+        heightSlider.value = state.height;
+        heightInput.value = state.height.toFixed(1);
+        heightDisplay.textContent = state.height.toFixed(1);
         syncBuildingMaterials();
-
         cargoTypeSelect.addEventListener('change', updateVisibilityAndDefaults);
         updateVisibilityAndDefaults();
-
         console.log('✅ Калькулятор перевозки успешно загружен на сайте Техно ДВ.');
     </script>
-
 </body>
 </html>
