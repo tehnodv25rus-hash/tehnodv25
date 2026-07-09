@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Канбан-доска «Работа машин»</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
-        /* ... все стили без изменений (как в предыдущем ответе) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, system-ui, sans-serif; }
         body { background: #f4f6f9; padding: 24px; }
+
         .board-header {
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
             margin-bottom: 24px; background: #fff; padding: 16px 24px;
@@ -16,18 +17,34 @@
         .board-header h1 { font-size: 24px; font-weight: 600; color: #1a2639; }
         .board-header .stats { font-size: 14px; color: #4a5568; }
         .board-header .stats span { font-weight: 600; color: #2b6cb0; }
+        .board-header .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
         .btn-primary {
             background: #2b6cb0; color: white; border: none; padding: 10px 20px;
             border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
             transition: background 0.2s;
         }
         .btn-primary:hover { background: #1a4f7a; }
+        .btn-success {
+            background: #38a169; color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-success:hover { background: #2f855a; }
+
         .board {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; align-items: start;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            align-items: start;
         }
         .column {
             background: #eef1f5; border-radius: 12px; padding: 12px 10px;
-            min-height: 400px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            min-height: 200px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             transition: background 0.2s, border 0.2s;
             border: 2px solid transparent;
         }
@@ -46,6 +63,14 @@
         .column-body {
             display: flex; flex-direction: column; gap: 10px; min-height: 100px;
         }
+        .empty-message {
+            color: #a0aec0;
+            text-align: center;
+            padding: 30px 0;
+            font-size: 14px;
+            font-style: italic;
+        }
+
         .card {
             background: white; border-radius: 10px; padding: 14px 16px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-left: 4px solid #a0aec0;
@@ -57,8 +82,9 @@
         .card.dragging { opacity: 0.4; }
         .card .order-id { font-weight: 700; font-size: 15px; color: #2d3748; }
         .card .manager { font-size: 13px; color: #4a5568; margin: 2px 0; }
-        .card .client-phone { font-size: 13px; color: #2b6cb0; margin: 2px 0; }
-        .card .cargo-summary { font-size: 13px; color: #718096; margin: 2px 0; }
+        .card .client-line { font-size: 13px; color: #2b6cb0; margin: 2px 0; }
+        .card .pickup-line { font-size: 13px; color: #718096; margin: 2px 0; }
+        .card .cargo-line { font-size: 13px; color: #718096; margin: 2px 0; }
         .card .vehicle-summary { font-size: 13px; color: #2d3748; margin: 2px 0; font-weight: 500; }
         .card .cost { font-size: 15px; font-weight: 700; color: #38a169; margin: 4px 0; }
         .card .meta {
@@ -92,11 +118,13 @@
             display: inline-block;
         }
         .card .toggle-details:hover { text-decoration: underline; }
+
         .column-0 .card { border-left-color: #f6ad55; }
         .column-1 .card { border-left-color: #fbd38d; }
         .column-2 .card { border-left-color: #4299e1; }
         .column-3 .card { border-left-color: #48bb78; }
         .column-4 .card { border-left-color: #ed64a6; }
+        .column-5 .card { border-left-color: #fc8181; }
 
         .modal-overlay {
             display: none; position: fixed; top:0; left:0; right:0; bottom:0;
@@ -291,7 +319,8 @@
         @media (max-width: 480px) {
             .board { grid-template-columns: 1fr; }
             .board-header { flex-direction: column; align-items: stretch; }
-            .board-header .btn-primary { width: 100%; text-align: center; }
+            .board-header .actions { justify-content: stretch; }
+            .board-header .btn-primary, .board-header .btn-success { width: 100%; text-align: center; }
             .modal .form-row { grid-template-columns: 1fr; }
         }
     </style>
@@ -304,15 +333,18 @@
         Всего заказов: <span id="total-orders">0</span> &nbsp;|&nbsp;
         Машин в работе: <span id="active-machines">0</span>
     </div>
-    <button class="btn-primary" id="showModalBtn">➕ Новая карточка</button>
+    <div class="actions">
+        <button class="btn-primary" id="showModalBtn">➕ Новая карточка</button>
+        <button class="btn-success" id="exportBtn">📊 Выгрузить в Excel</button>
+    </div>
 </div>
 
 <div class="board" id="kanban-board"></div>
 
-<!-- Модальное окно -->
+<!-- Модалка создания/редактирования -->
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-        <h2>Новый заказ</h2>
+        <h2 id="modalTitle">Новый заказ</h2>
         <form id="newCardForm">
             <div class="form-row">
                 <div>
@@ -439,7 +471,7 @@
 
             <div class="actions">
                 <button type="button" class="btn-secondary" id="closeModalBtn">Отмена</button>
-                <button type="submit" class="btn-primary">Создать</button>
+                <button type="submit" class="btn-primary" id="submitBtn">Создать</button>
             </div>
         </form>
     </div>
@@ -447,267 +479,45 @@
 
 <script>
     // ------------------------------------------------------------
-    // 1. Автопарк (с обновлёнными typeName)
+    // 1. Автопарк
     // ------------------------------------------------------------
     const fleet = [
-        {
-            id: 1,
-            driver: 'Примаченко В.Л.',
-            plate: 'У 075 НХ 125',
-            brand: 'Мицубиси Фусо',
-            typeName: '5т, кму 3т',
-            capacity: 5,
-            prices: { city5: { base: 8000, extra: 4000 }, cityCash: { base: 7000, extra: 3000 }, city20: { base: 9600, extra: 4800 } }
-        },
-        {
-            id: 2,
-            driver: 'Маслов А.Н.',
-            plate: 'А 285 КА 125',
-            brand: 'Исузу Форвард',
-            typeName: '5т, кму 3т',
-            capacity: 5,
-            prices: { city5: { base: 8000, extra: 4000 }, cityCash: { base: 7000, extra: 3000 }, city20: { base: 9600, extra: 4800 } }
-        },
-        {
-            id: 3,
-            driver: 'Бердов А.А.',
-            plate: 'А 278 НМ 125',
-            brand: 'Мицубиси Фусо',
-            typeName: '10т, кму 3т',
-            capacity: 10,
-            prices: { city5: { base: 14000, extra: 5500 }, cityCash: { base: 13000, extra: 4500 }, city20: { base: 16800, extra: 6600 } }
-        },
-        {
-            id: 4,
-            driver: '(без водителя)',
-            plate: 'С 937 ЕС 125',
-            brand: 'Мицубиси Фусо Файтер',
-            typeName: '7т, кму 3т',
-            capacity: 7,
-            prices: { city5: { base: 11000, extra: 5000 }, cityCash: { base: 10000, extra: 4000 }, city20: { base: 13200, extra: 6000 } }
-        },
-        {
-            id: 5,
-            driver: '(без водителя)',
-            plate: 'К 166 ЕХ 125',
-            brand: 'Мицубиси Фусо Файтер',
-            typeName: '7т, кму 3т',
-            capacity: 7,
-            prices: { city5: { base: 11000, extra: 5000 }, cityCash: { base: 10000, extra: 4000 }, city20: { base: 13200, extra: 6000 } }
-        },
-        {
-            id: 6,
-            driver: '(без водителя)',
-            plate: 'Х 875 ВЕ 125',
-            brand: 'Hyundai',
-            typeName: '12т, кму 5т',
-            capacity: 12,
-            prices: { city5: { base: 16000, extra: 6000 }, cityCash: { base: 15000, extra: 5000 }, city20: { base: 19200, extra: 7200 } }
-        },
-        {
-            id: 7,
-            driver: 'Ильенко А.В.',
-            plate: 'К 157 ТР 125',
-            brand: 'Исузу Гига (V355)',
-            typeName: '12т, кму 5т',
-            capacity: 12,
-            prices: { city5: { base: 16000, extra: 6000 }, cityCash: { base: 15000, extra: 5000 }, city20: { base: 19200, extra: 7200 } }
-        },
-        {
-            id: 8,
-            driver: 'Курносов Ф.В.',
-            plate: 'А 464 ЕУ 125',
-            brand: 'Мицубиси Фусо',
-            typeName: '12т, кму 5т',
-            capacity: 12,
-            prices: { city5: { base: 16000, extra: 6000 }, cityCash: { base: 15000, extra: 5000 }, city20: { base: 19200, extra: 7200 } }
-        },
-        {
-            id: 9,
-            driver: '(без водителя)',
-            plate: 'О 508 ХВ 125',
-            brand: 'Исузу Гига',
-            typeName: '15т (без прайса)',
-            capacity: 15,
-            prices: null
-        },
-        {
-            id: 10,
-            driver: 'Гуменный С.А.',
-            plate: 'М 648 УХ 125',
-            brand: 'DONGFENG',
-            typeName: 'тягач с траллом 25т',
-            capacity: 25,
-            prices: { city5: { base: 22000, extra: 3000 }, cityCash: { base: 21000, extra: 2000 }, city20: { base: 26400, extra: 3600 } }
-        },
-        {
-            id: 11,
-            driver: 'Гуменный С.А.',
-            plate: 'М 648 УХ 125',
-            brand: 'DONGFENG',
-            typeName: 'тягач с бортовой платформой 25т',
-            capacity: 25,
-            prices: { city5: { base: 15000, extra: 2500 }, cityCash: { base: 14000, extra: 1500 }, city20: { base: 18000, extra: 3000 } }
-        },
-        {
-            id: 12,
-            driver: '(без водителя)',
-            plate: '—',
-            brand: '—',
-            typeName: 'самосвал 5т',
-            capacity: 5,
-            prices: { city5: { base: 14000, extra: 3500 }, cityCash: { base: 13000, extra: 2500 }, city20: { base: 16800, extra: 4200 } }
-        },
-        {
-            id: 13,
-            driver: '(без водителя)',
-            plate: 'В 817 ВС 125',
-            brand: 'Бонго',
-            typeName: 'самосвал 1т',
-            capacity: 1,
-            prices: null
-        },
-        {
-            id: 14,
-            driver: '(без водителя)',
-            plate: 'Т 933 ХТ 125',
-            brand: 'Дюна',
-            typeName: 'самосвал 1,3т',
-            capacity: 1.3,
-            prices: null
-        }
+        { id: 1, driver: 'Примаченко В.Л.', plate: 'У 075 НХ 125', brand: 'Мицубиси Фусо', typeName: '5т, кму 3т', capacity: 5, prices: { city5: { base: 8000, extra: 4000 }, cityCash: { base: 7000, extra: 3000 }, city20: { base: 9600, extra: 4800 } } },
+        { id: 2, driver: 'Маслов А.Н.', plate: 'А 285 КА 125', brand: 'Исузу Форвард', typeName: '5т, кму 3т', capacity: 5, prices: { city5: { base: 8000, extra: 4000 }, cityCash: { base: 7000, extra: 3000 }, city20: { base: 9600, extra: 4800 } } },
+        { id: 3, driver: 'Бердов А.А.', plate: 'А 278 НМ 125', brand: 'Мицубиси Фусо', typeName: '10т, кму 3т', capacity: 10, prices: { city5: { base: 14000, extra: 5500 }, cityCash: { base: 13000, extra: 4500 }, city20: { base: 16800, extra: 6600 } } },
+        { id: 4, driver: '(без водителя)', plate: 'С 937 ЕС 125', brand: 'Мицубиси Фусо Файтер', typeName: '7т, кму 3т', capacity: 7, prices: { city5: { base: 11000, extra: 5000 }, cityCash: { base: 10000, extra: 4000 }, city20: { base: 13200, extra: 6000 } } },
+        { id: 5, driver: '(без водителя)', plate: 'К 166 ЕХ 125', brand: 'Мицубиси Фусо Файтер', typeName: '7т, кму 3т', capacity: 7, prices: { city5: { base: 11000, extra: 5000 }, cityCash: { base: 10000, extra: 4000 }, city20: { base: 13200, extra: 6000 } } },
+        { id: 6, driver: '(без водителя)', plate: 'Х 875 ВЕ 125', brand: 'Hyundai', typeName: '12т, кму 5т', capacity: 12, prices: { city5: { base: 16000, extra: 6000 }, cityCash: { base: 15000, extra: 5000 }, city20: { base: 19200, extra: 7200 } } },
+        { id: 7, driver: 'Ильенко А.В.', plate: 'К 157 ТР 125', brand: 'Исузу Гига (V355)', typeName: '12т, кму 5т', capacity: 12, prices: { city5: { base: 16000, extra: 6000 }, cityCash: { base: 15000, extra: 5000 }, city20: { base: 19200, extra: 7200 } } },
+        { id: 8, driver: 'Курносов Ф.В.', plate: 'А 464 ЕУ 125', brand: 'Мицубиси Фусо', typeName: '12т, кму 5т', capacity: 12, prices: { city5: { base: 16000, extra: 6000 }, cityCash: { base: 15000, extra: 5000 }, city20: { base: 19200, extra: 7200 } } },
+        { id: 9, driver: '(без водителя)', plate: 'О 508 ХВ 125', brand: 'Исузу Гига', typeName: '15т (без прайса)', capacity: 15, prices: null },
+        { id: 10, driver: 'Гуменный С.А.', plate: 'М 648 УХ 125', brand: 'DONGFENG', typeName: 'тягач с траллом 25т', capacity: 25, prices: { city5: { base: 22000, extra: 3000 }, cityCash: { base: 21000, extra: 2000 }, city20: { base: 26400, extra: 3600 } } },
+        { id: 11, driver: 'Гуменный С.А.', plate: 'М 648 УХ 125', brand: 'DONGFENG', typeName: 'тягач с бортовой платформой 25т', capacity: 25, prices: { city5: { base: 15000, extra: 2500 }, cityCash: { base: 14000, extra: 1500 }, city20: { base: 18000, extra: 3000 } } },
+        { id: 12, driver: '(без водителя)', plate: '—', brand: '—', typeName: 'самосвал 5т', capacity: 5, prices: { city5: { base: 14000, extra: 3500 }, cityCash: { base: 13000, extra: 2500 }, city20: { base: 16800, extra: 4200 } } },
+        { id: 13, driver: '(без водителя)', plate: 'В 817 ВС 125', brand: 'Бонго', typeName: 'самосвал 1т', capacity: 1, prices: null },
+        { id: 14, driver: '(без водителя)', plate: 'Т 933 ХТ 125', brand: 'Дюна', typeName: 'самосвал 1,3т', capacity: 1.3, prices: null }
     ];
 
     const allDrivers = [...new Set(fleet.map(v => v.driver).filter(d => d))];
 
     // ------------------------------------------------------------
-    // 2. Данные колонок (обновлены примеры)
+    // 2. Колонки
     // ------------------------------------------------------------
     const columnsData = [
-        {
-            id: 'col0',
-            name: '📞 Поступил звонок',
-            wipLimit: 10,
-            cards: [
-                {
-                    id: 'c001',
-                    orderNumber: '1001',
-                    manager: 'Виктория',
-                    receivedTime: '09:10',
-                    pickupDateTime: '2026-07-25T14:30',
-                    pickupAddress: 'ул. Ленина, 5',
-                    pickupLandmark: 'въезд со двора',
-                    deliveryAddress: 'пр. Победы, 12',
-                    deliveryLandmark: 'склад №2',
-                    clientName: 'Клиент А',
-                    clientPhone: '+7 999 111-22-33',
-                    cargoType: 'Автомобиль',
-                    cargoWeight: 0,
-                    cargoLength: 0,
-                    cargoWidth: 0,
-                    cargoHeight: 0,
-                    cargoDetails: { autoType: 'Легковой', brand: 'Хонда', condition: 'После дтп', wheels: 'Да', loading: 'Заеду сам', access: 'Без проблем', obstacles: 'Нет', docs: 'Предоставлю' },
-                    vehicleId: 3,
-                    selectedDriver: 'Бердов А.А.',
-                    vehicleName: 'А 278 НМ 125, Мицубиси Фусо (10т, кму 3т)',
-                    vehiclePrice: 13000,
-                    extraHours: 2,
-                    totalPrice: 13000 + 2*4500,
-                    comment: 'Срочная доставка',
-                    salesChannel: 'Яндекс',
-                    statusTime: '09:15'
-                }
-            ]
-        },
-        {
-            id: 'col1',
-            name: '📥 Принял заказ',
-            wipLimit: 10,
-            cards: []
-        },
-        {
-            id: 'col2',
-            name: '🚛 Отправил(а) машину',
-            wipLimit: 5,
-            cards: [
-                {
-                    id: 'c201',
-                    orderNumber: '1002',
-                    manager: 'Настя',
-                    receivedTime: '08:20',
-                    pickupDateTime: '2026-07-25T10:00',
-                    pickupAddress: 'ул. Промышленная, 3',
-                    pickupLandmark: 'ворота №2',
-                    deliveryAddress: 'пер. Садовый, 3',
-                    deliveryLandmark: 'домофон 45',
-                    clientName: 'Клиент В',
-                    clientPhone: '+7 999 333-44-55',
-                    cargoType: 'Сыпучие',
-                    cargoWeight: 4.5,
-                    cargoLength: 3.0,
-                    cargoWidth: 1.8,
-                    cargoHeight: 0.8,
-                    cargoDetails: { material: 'Песок' },
-                    vehicleId: 12,
-                    selectedDriver: '(без водителя)',
-                    vehicleName: 'самосвал 5т',
-                    vehiclePrice: 13000,
-                    extraHours: 1,
-                    totalPrice: 13000 + 1*2500,
-                    comment: 'Прибытие ~10:30',
-                    salesChannel: '2ГИС',
-                    statusTime: 'выезд 08:30'
-                }
-            ]
-        },
-        {
-            id: 'col3',
-            name: '✅ Заказ выполнен',
-            wipLimit: 5,
-            cards: []
-        },
-        {
-            id: 'col4',
-            name: '🏠 Машина на базе',
-            wipLimit: 10,
-            cards: [
-                {
-                    id: 'c401',
-                    orderNumber: '—',
-                    manager: '—',
-                    receivedTime: '—',
-                    pickupDateTime: '',
-                    pickupAddress: '—',
-                    pickupLandmark: '—',
-                    deliveryAddress: '—',
-                    deliveryLandmark: '—',
-                    clientName: '—',
-                    clientPhone: '—',
-                    cargoType: '—',
-                    cargoWeight: 0,
-                    cargoLength: 0,
-                    cargoWidth: 0,
-                    cargoHeight: 0,
-                    cargoDetails: {},
-                    vehicleId: 1,
-                    selectedDriver: 'Примаченко В.Л.',
-                    vehicleName: 'У 075 НХ 125, Мицубиси Фусо (5т, кму 3т)',
-                    vehiclePrice: 7000,
-                    extraHours: 0,
-                    totalPrice: 7000,
-                    comment: 'Заправлен, готов к выезду',
-                    salesChannel: '',
-                    statusTime: 'возврат 08:00'
-                }
-            ]
-        }
+        { id: 'col0', name: '📞 Поступил звонок', wipLimit: 10, cards: [] },
+        { id: 'col1', name: '📥 Принял заказ', wipLimit: 10, cards: [] },
+        { id: 'col2', name: '🚛 Отправил(а) машину', wipLimit: 5, cards: [] },
+        { id: 'col3', name: '✅ Заказ выполнен', wipLimit: 5, cards: [] },
+        { id: 'col4', name: '🏠 Машина на базе', wipLimit: 10, cards: [] },
+        { id: 'col5', name: '❌ Отказ', wipLimit: 10, cards: [] }
     ];
 
-    let nextOrderNumber = 1005;
-    let nextCardId = 600;
+    let nextOrderNumber = 1001;
+    let nextCardId = 1;
+    let editingCardId = null;
 
     // ------------------------------------------------------------
-    // 3. Форматирование деталей груза (без изменений)
+    // 3. Форматирование деталей груза (для подробностей)
     // ------------------------------------------------------------
     function formatCargoDetails(details) {
         if (!details || Object.keys(details).length === 0) return '<span style="color:#a0aec0;">—</span>';
@@ -745,7 +555,7 @@
     }
 
     // ------------------------------------------------------------
-    // 4. Рендеринг доски
+    // 4. Рендеринг доски – карточка теперь показывает клиента, погрузку и параметры груза
     // ------------------------------------------------------------
     function renderBoard() {
         const board = document.getElementById('kanban-board');
@@ -761,65 +571,105 @@
             colDiv.appendChild(header);
             const body = document.createElement('div');
             body.className = 'column-body';
-            col.cards.forEach(cardData => {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.draggable = true;
-                card.dataset.cardId = cardData.id;
-                card.dataset.sourceColumn = col.id;
-                const managerHtml = cardData.manager && cardData.manager !== '—' ? `<div class="manager">👤 Менеджер: ${cardData.manager}</div>` : '';
-                const clientPhoneHtml = cardData.clientName && cardData.clientName !== '—' ? `<div class="client-phone">📞 ${cardData.clientName} | ${cardData.clientPhone}</div>` : '';
-                const cargoHtml = cardData.cargoType && cardData.cargoType !== '—' ? `<div class="cargo-summary">📦 ${cardData.cargoType} ${cardData.cargoWeight > 0 ? '('+cardData.cargoWeight+'т)' : ''}</div>` : '';
-                const vehicleHtml = cardData.vehicleName ? `<div class="vehicle-summary">🚛 ${cardData.selectedDriver || ''} — ${cardData.vehicleName}</div>` : '';
-                const costHtml = cardData.totalPrice ? `<div class="cost">💰 ${cardData.totalPrice.toLocaleString()} ₽</div>` : '';
-                let pickupDisplay = cardData.pickupDateTime || '—';
-                if (pickupDisplay && pickupDisplay.includes('T')) {
-                    const d = new Date(pickupDisplay);
-                    pickupDisplay = d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-                }
-                const detailsHtml = formatCargoDetails(cardData.cargoDetails || {});
-                const extraDetails = `
-                    <div class="extra-details" id="extra-${cardData.id}">
-                        <div><span class="label">Время подачи:</span> ${pickupDisplay}</div>
-                        <div><span class="label">Погрузка:</span> ${cardData.pickupAddress || '—'} (ориентир: ${cardData.pickupLandmark || '—'})</div>
-                        <div><span class="label">Выгрузка:</span> ${cardData.deliveryAddress || '—'} (ориентир: ${cardData.deliveryLandmark || '—'})</div>
-                        <div><span class="label">Параметры груза:</span> ${cardData.cargoType || '—'}, ${cardData.cargoWeight||0}т, ${cardData.cargoLength||0}x${cardData.cargoWidth||0}x${cardData.cargoHeight||0}м</div>
-                        <div><span class="label">Детали груза:</span> ${detailsHtml}</div>
-                        <div><span class="label">Водитель:</span> ${cardData.selectedDriver || '—'}</div>
-                        <div><span class="label">Доп. часы:</span> ${cardData.extraHours || 0}</div>
-                        <div><span class="label">Канал продаж:</span> ${cardData.salesChannel || '—'}</div>
-                        <div><span class="label">Комментарий:</span> ${cardData.comment || '—'}</div>
-                    </div>
-                `;
-                card.innerHTML = `
-                    <div class="order-id">Заказ №${cardData.orderNumber}</div>
-                    ${managerHtml}
-                    ${clientPhoneHtml}
-                    ${cargoHtml}
-                    ${vehicleHtml}
-                    ${costHtml}
-                    ${extraDetails}
-                    <div class="meta">
-                        <span>${cardData.statusTime || ''}</span>
-                        <span class="toggle-details" data-card-id="${cardData.id}">▶ Подробнее</span>
-                    </div>
-                `;
-                card.querySelector('.toggle-details').addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    const extra = document.getElementById(`extra-${this.dataset.cardId}`);
-                    if (extra) {
-                        extra.classList.toggle('show');
-                        this.textContent = extra.classList.contains('show') ? '▲ Скрыть' : '▶ Подробнее';
+
+            if (col.cards.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'empty-message';
+                emptyMsg.textContent = 'Нет заказов';
+                body.appendChild(emptyMsg);
+            } else {
+                col.cards.forEach(cardData => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.draggable = true;
+                    card.dataset.cardId = cardData.id;
+                    card.dataset.sourceColumn = col.id;
+                    card.addEventListener('dblclick', function(e) {
+                        e.stopPropagation();
+                        editCard(cardData.id);
+                    });
+
+                    // Менеджер
+                    const managerHtml = cardData.manager && cardData.manager !== '—' ? `<div class="manager">👤 Менеджер: ${cardData.manager}</div>` : '';
+
+                    // Клиент
+                    const clientLine = cardData.clientName && cardData.clientName !== '—' ? `<div class="client-line">👤 Клиент: ${cardData.clientName} | 📞 ${cardData.clientPhone}</div>` : '';
+
+                    // Адрес погрузки
+                    const pickupLine = cardData.pickupAddress && cardData.pickupAddress !== '—' ? `<div class="pickup-line">📍 Погрузка: ${cardData.pickupAddress}</div>` : '';
+
+                    // Параметры груза (тип + вес/габариты)
+                    let cargoParams = '';
+                    if (cardData.cargoWeight > 0 || cardData.cargoLength > 0 || cardData.cargoWidth > 0 || cardData.cargoHeight > 0) {
+                        cargoParams = ` (${cardData.cargoWeight}т, ${cardData.cargoLength}x${cardData.cargoWidth}x${cardData.cargoHeight}м)`;
                     }
+                    const cargoLine = cardData.cargoType && cardData.cargoType !== '—' ? `<div class="cargo-line">📦 Груз: ${cardData.cargoType}${cargoParams}</div>` : '';
+
+                    // Транспорт
+                    const vehicleHtml = cardData.vehicleName ? `<div class="vehicle-summary">🚛 ${cardData.selectedDriver || ''} — ${cardData.vehicleName}</div>` : '';
+
+                    // Цена
+                    const costHtml = cardData.totalPrice ? `<div class="cost">💰 ${cardData.totalPrice.toLocaleString()} ₽</div>` : '';
+
+                    // Дата/время подачи для отображения в подробностях
+                    let pickupDisplay = cardData.pickupDateTime || '—';
+                    if (pickupDisplay && pickupDisplay.includes('T')) {
+                        const d = new Date(pickupDisplay);
+                        pickupDisplay = d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    // Детали груза (для подробностей)
+                    const detailsHtml = formatCargoDetails(cardData.cargoDetails || {});
+
+                    // Блок "Подробнее" – теперь в нём только то, чего нет на карточке
+                    const extraDetails = `
+                        <div class="extra-details" id="extra-${cardData.id}">
+                            <div><span class="label">Время подачи:</span> ${pickupDisplay}</div>
+                            <div><span class="label">Выгрузка:</span> ${cardData.deliveryAddress || '—'} (ориентир: ${cardData.deliveryLandmark || '—'})</div>
+                            <div><span class="label">Ориентир погрузки:</span> ${cardData.pickupLandmark || '—'}</div>
+                            <div><span class="label">Детали груза:</span> ${detailsHtml}</div>
+                            <div><span class="label">Водитель:</span> ${cardData.selectedDriver || '—'}</div>
+                            <div><span class="label">Доп. часы:</span> ${cardData.extraHours || 0}</div>
+                            <div><span class="label">Канал продаж:</span> ${cardData.salesChannel || '—'}</div>
+                            <div><span class="label">Комментарий:</span> ${cardData.comment || '—'}</div>
+                        </div>
+                    `;
+
+                    card.innerHTML = `
+                        <div class="order-id">Заказ №${cardData.orderNumber}</div>
+                        ${managerHtml}
+                        ${clientLine}
+                        ${pickupLine}
+                        ${cargoLine}
+                        ${vehicleHtml}
+                        ${costHtml}
+                        ${extraDetails}
+                        <div class="meta">
+                            <span>${cardData.statusTime || ''}</span>
+                            <span class="toggle-details" data-card-id="${cardData.id}">▶ Подробнее</span>
+                        </div>
+                    `;
+
+                    card.querySelector('.toggle-details').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const extra = document.getElementById(`extra-${this.dataset.cardId}`);
+                        if (extra) {
+                            extra.classList.toggle('show');
+                            this.textContent = extra.classList.contains('show') ? '▲ Скрыть' : '▶ Подробнее';
+                        }
+                    });
+
+                    card.addEventListener('dragstart', handleDragStart);
+                    card.addEventListener('dragend', handleDragEnd);
+                    body.appendChild(card);
+
+                    // Статистика
+                    if (col.id !== 'col4' && col.id !== 'col5') {
+                        if (cardData.vehicleId) activeMachines++;
+                    }
+                    if (cardData.orderNumber && cardData.orderNumber !== '—') totalOrders++;
                 });
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
-                body.appendChild(card);
-                if (col.id !== 'col4') {
-                    if (cardData.vehicleId) activeMachines++;
-                }
-                if (cardData.orderNumber && cardData.orderNumber !== '—') totalOrders++;
-            });
+            }
             colDiv.appendChild(body);
             colDiv.addEventListener('dragover', handleDragOver);
             colDiv.addEventListener('dragenter', handleDragEnter);
@@ -893,12 +743,14 @@
     }
 
     // ------------------------------------------------------------
-    // 6. Форма создания
+    // 6. Модальное окно (создание/редактирование)
     // ------------------------------------------------------------
     const modalOverlay = document.getElementById('modalOverlay');
     const showBtn = document.getElementById('showModalBtn');
     const closeBtn = document.getElementById('closeModalBtn');
     const form = document.getElementById('newCardForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const submitBtn = document.getElementById('submitBtn');
 
     const orderNumberInput = document.getElementById('orderNumber');
     const receivedTimeInput = document.getElementById('receivedTime');
@@ -970,11 +822,15 @@
                 updateContainerDimensions();
             }
         }
+        modalTitle.textContent = 'Новый заказ';
+        submitBtn.textContent = 'Создать';
+        editingCardId = null;
     }
 
     function closeModal() {
         modalOverlay.classList.remove('active');
         form.reset();
+        editingCardId = null;
     }
 
     showBtn.addEventListener('click', openModal);
@@ -983,6 +839,79 @@
         if (e.target === modalOverlay) closeModal();
     });
 
+    // ------------------------------------------------------------
+    // Редактирование карточки
+    // ------------------------------------------------------------
+    function editCard(cardId) {
+        let foundCard = null;
+        let foundCol = null;
+        for (const col of columnsData) {
+            const card = col.cards.find(c => c.id === cardId);
+            if (card) {
+                foundCard = card;
+                foundCol = col;
+                break;
+            }
+        }
+        if (!foundCard) return;
+
+        editingCardId = cardId;
+        orderNumberInput.value = foundCard.orderNumber;
+        receivedTimeInput.value = foundCard.receivedTime;
+        managerSelect.value = foundCard.manager || '';
+        pickupDateTime.value = foundCard.pickupDateTime || '';
+        pickupAddress.value = foundCard.pickupAddress || '';
+        pickupLandmark.value = foundCard.pickupLandmark || '';
+        deliveryAddress.value = foundCard.deliveryAddress || '';
+        deliveryLandmark.value = foundCard.deliveryLandmark || '';
+        clientName.value = foundCard.clientName || '';
+        clientPhone.value = foundCard.clientPhone || '';
+        cargoType.value = foundCard.cargoType || '';
+        cargoWeight.value = foundCard.cargoWeight || 1;
+        cargoLength.value = foundCard.cargoLength || 2;
+        cargoWidth.value = foundCard.cargoWidth || 1.5;
+        cargoHeight.value = foundCard.cargoHeight || 1.2;
+        commentInput.value = foundCard.comment || '';
+        salesChannel.value = foundCard.salesChannel || '';
+
+        const vehicle = fleet.find(v => v.id === foundCard.vehicleId);
+        if (vehicle) {
+            selectedVehicle = vehicle;
+            selectedDriver = foundCard.selectedDriver || vehicle.driver;
+            selectVehicle(vehicle);
+            extraHours = foundCard.extraHours || 0;
+            extraHoursDisplay.textContent = extraHours;
+            updateTotalPrice();
+        } else {
+            selectedVehicle = null;
+            selectedDriver = null;
+            selectedVehicleInfo.classList.remove('visible');
+        }
+
+        renderDynamicFields();
+        if (foundCard.cargoDetails) {
+            const container = dynamicContainer;
+            if (container) {
+                const inputs = container.querySelectorAll('[id^="dyn_"]');
+                inputs.forEach(el => {
+                    const key = el.id.replace('dyn_', '');
+                    if (foundCard.cargoDetails[key] !== undefined) {
+                        el.value = foundCard.cargoDetails[key];
+                    }
+                });
+            }
+        }
+        updateDimensionsVisibility();
+        updateVehicleList();
+
+        modalTitle.textContent = 'Редактирование заказа';
+        submitBtn.textContent = 'Сохранить изменения';
+        modalOverlay.classList.add('active');
+    }
+
+    // ------------------------------------------------------------
+    // Динамические поля и прочие функции
+    // ------------------------------------------------------------
     function updateDimensionsVisibility() {
         const type = cargoType.value;
         if (type === 'Автомобиль' || type === 'Грузовик') {
@@ -1168,7 +1097,7 @@
     }
 
     // ------------------------------------------------------------
-    // Обновление списка транспорта
+    // Обновление списка транспорта – для Сыпучих только самосвалы
     // ------------------------------------------------------------
     function updateVehicleList() {
         const type = cargoType.value;
@@ -1181,7 +1110,11 @@
         }
 
         const weight = parseFloat(cargoWeight.value) || 0;
-        const filtered = fleet.filter(v => v.prices !== null && weight <= v.capacity);
+        let filtered = fleet.filter(v => v.prices !== null && weight <= v.capacity);
+
+        if (type === 'Сыпучие') {
+            filtered = filtered.filter(v => v.typeName.toLowerCase().includes('самосвал'));
+        }
 
         if (filtered.length === 0) {
             vehicleListContainer.innerHTML = '<p style="color:#e53e3e; font-size:14px;">Нет подходящего транспорта с указанными ценами. Измените вес груза.</p>';
@@ -1193,7 +1126,7 @@
 
         let html = '<div class="vehicle-list">';
         filtered.forEach((v, index) => {
-            const checked = index === 0 ? 'checked' : '';
+            const checked = (selectedVehicle && selectedVehicle.id === v.id) ? 'checked' : (index === 0 ? 'checked' : '');
             const displayName = `${v.plate}, ${v.brand} (${v.typeName})`;
             html += `
                 <label class="vehicle-item" data-id="${v.id}">
@@ -1216,27 +1149,28 @@
             });
         });
 
-        const firstRadio = vehicleListContainer.querySelector('input[name="vehicle"]');
-        if (firstRadio && !selectedVehicle) {
-            const v = JSON.parse(firstRadio.dataset.vehicle);
-            selectVehicle(v);
-            firstRadio.checked = true;
-            firstRadio.closest('.vehicle-item').classList.add('selected');
-        } else if (firstRadio && selectedVehicle) {
-            const stillInList = filtered.some(v => v.id === selectedVehicle.id);
-            if (!stillInList) {
+        if (selectedVehicle) {
+            const radioToCheck = Array.from(radios).find(r => JSON.parse(r.dataset.vehicle).id === selectedVehicle.id);
+            if (radioToCheck) {
+                radioToCheck.checked = true;
+                document.querySelectorAll('.vehicle-item').forEach(el => el.classList.remove('selected'));
+                radioToCheck.closest('.vehicle-item').classList.add('selected');
+            } else {
+                const firstRadio = vehicleListContainer.querySelector('input[name="vehicle"]');
+                if (firstRadio) {
+                    const v = JSON.parse(firstRadio.dataset.vehicle);
+                    selectVehicle(v);
+                    firstRadio.checked = true;
+                    firstRadio.closest('.vehicle-item').classList.add('selected');
+                }
+            }
+        } else {
+            const firstRadio = vehicleListContainer.querySelector('input[name="vehicle"]');
+            if (firstRadio) {
                 const v = JSON.parse(firstRadio.dataset.vehicle);
                 selectVehicle(v);
                 firstRadio.checked = true;
-                document.querySelectorAll('.vehicle-item').forEach(el => el.classList.remove('selected'));
                 firstRadio.closest('.vehicle-item').classList.add('selected');
-            } else {
-                const radioToCheck = Array.from(radios).find(r => JSON.parse(r.dataset.vehicle).id === selectedVehicle.id);
-                if (radioToCheck) {
-                    radioToCheck.checked = true;
-                    document.querySelectorAll('.vehicle-item').forEach(el => el.classList.remove('selected'));
-                    radioToCheck.closest('.vehicle-item').classList.add('selected');
-                }
             }
         }
     }
@@ -1323,7 +1257,99 @@
     });
 
     // ------------------------------------------------------------
-    // 7. Отправка формы
+    // 7. Экспорт в Excel
+    // ------------------------------------------------------------
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        const rows = [];
+        const headers = [
+            'Номер заказа', 'Менеджер', 'Время поступления', 'Дата/время подачи',
+            'Адрес погрузки', 'Ориентир погрузки', 'Адрес выгрузки', 'Ориентир выгрузки',
+            'Клиент', 'Телефон', 'Тип груза', 'Вес (т)', 'Длина (м)', 'Ширина (м)', 'Высота (м)',
+            'Детали груза', 'Транспорт (госномер, марка, тип)', 'Водитель',
+            'Базовая цена (₽)', 'Доп. часы', 'Итоговая цена (₽)',
+            'Канал продаж', 'Комментарий', 'Статус', 'Время статуса'
+        ];
+        rows.push(headers);
+
+        columnsData.forEach(col => {
+            col.cards.forEach(card => {
+                let detailsStr = '';
+                if (card.cargoDetails) {
+                    const labels = {
+                        autoType: 'Тип авто',
+                        brand: 'Марка',
+                        condition: 'Состояние',
+                        wheels: 'Колёса крутятся',
+                        loading: 'Тип погрузки',
+                        access: 'Подъездные пути',
+                        obstacles: 'Деревья/провода',
+                        docs: 'Документы',
+                        bodyType: 'Тип кузова',
+                        loadStatus: 'Груз в кузове',
+                        containerType: 'Тип контейнера',
+                        quantity: 'Количество',
+                        innerLoad: 'Груз внутри',
+                        protrusions: 'Выступающие элементы',
+                        protrusionDetails: 'Уточнение',
+                        equipType: 'Тип спецтехники',
+                        material: 'Материал',
+                        cargoName: 'Наименование груза',
+                        cargoDesc: 'Описание груза',
+                        special: 'Особые условия',
+                        extra: 'Дополнительно'
+                    };
+                    const parts = [];
+                    for (const [key, value] of Object.entries(card.cargoDetails)) {
+                        if (value) {
+                            const label = labels[key] || key;
+                            parts.push(`${label}: ${value}`);
+                        }
+                    }
+                    detailsStr = parts.join('; ');
+                }
+
+                const row = [
+                    card.orderNumber || '',
+                    card.manager || '',
+                    card.receivedTime || '',
+                    card.pickupDateTime ? new Date(card.pickupDateTime).toLocaleString('ru-RU') : '',
+                    card.pickupAddress || '',
+                    card.pickupLandmark || '',
+                    card.deliveryAddress || '',
+                    card.deliveryLandmark || '',
+                    card.clientName || '',
+                    card.clientPhone || '',
+                    card.cargoType || '',
+                    card.cargoWeight || 0,
+                    card.cargoLength || 0,
+                    card.cargoWidth || 0,
+                    card.cargoHeight || 0,
+                    detailsStr,
+                    card.vehicleName || '',
+                    card.selectedDriver || '',
+                    card.vehiclePrice || 0,
+                    card.extraHours || 0,
+                    card.totalPrice || 0,
+                    card.salesChannel || '',
+                    card.comment || '',
+                    col.name.replace(/[📞📥🚛✅❌🏠]/g, '').trim(),
+                    card.statusTime || ''
+                ];
+                rows.push(row);
+            });
+        });
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        XLSX.utils.book_append_sheet(wb, ws, 'Заказы');
+        const now = new Date();
+        const dateStr = now.toISOString().slice(0,10).replace(/-/g,'');
+        const filename = `заказы_${dateStr}.xlsx`;
+        XLSX.writeFile(wb, filename);
+    });
+
+    // ------------------------------------------------------------
+    // 8. Отправка формы (создание/обновление)
     // ------------------------------------------------------------
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -1349,9 +1375,9 @@
 
         const vehicleDisplay = `${selectedVehicle.plate}, ${selectedVehicle.brand} (${selectedVehicle.typeName})`;
 
-        const newCard = {
-            id: 'c' + (nextCardId++),
-            orderNumber: String(nextOrderNumber++),
+        const cardData = {
+            id: editingCardId ? editingCardId : 'c' + (nextCardId++),
+            orderNumber: editingCardId ? document.getElementById('orderNumber').value : String(nextOrderNumber++),
             manager: managerSelect.value,
             receivedTime: receivedTimeInput.value,
             pickupDateTime: pickupDateTime.value,
@@ -1378,13 +1404,25 @@
             statusTime: statusTime
         };
 
-        columnsData[0].cards.push(newCard);
+        if (editingCardId) {
+            for (const col of columnsData) {
+                const idx = col.cards.findIndex(c => c.id === editingCardId);
+                if (idx !== -1) {
+                    col.cards[idx] = cardData;
+                    break;
+                }
+            }
+            editingCardId = null;
+        } else {
+            columnsData[0].cards.push(cardData);
+        }
+
         closeModal();
         renderBoard();
     });
 
     // ------------------------------------------------------------
-    // 8. Запуск
+    // 9. Запуск
     // ------------------------------------------------------------
     renderBoard();
     setTimeout(() => {
