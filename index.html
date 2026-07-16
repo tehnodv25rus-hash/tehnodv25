@@ -12,6 +12,13 @@
   <link rel="canonical" href="https://tehnodv25.ru/">
   <link rel="sitemap" type="application/xml" title="Карта сайта" href="/sitemap.xml">
   
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  
   <!-- Стили и скрипты -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -684,14 +691,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-  // ===== ОБНОВЛЁННЫЕ НАЗВАНИЯ И ОПИСАНИЯ =====
+  // ===== ОБНОВЛЁННЫЕ ДАННЫЕ (без точек после тоннажа) =====
   const techData = {
     evacuators: [
-      { name: "Эвакуатор манипулятор бортовой 5т, кму 3т.", desc: "Эвакуатор с лебедкой и аппарелями. Идеально для перевозки, эвакуации авто. Максимальный объем груза: длина 5.2 м, ширина 2.4 м, высота 3 м.", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор манипулятор бортовой 7т, кму 3т.", desc: "Стандартная воровайка повышенной грузоподъемности для повседневных задач. Максимальный объем груза: длина 5.5 м, ширина 2.2 м, высота 2 м.", image: "https://avatars.mds.yandex.net/get-altay/19749282/2a0000019f3ad19b724a8d19c675a0943c6a/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" },
-      { name: "Эвакуатор манипулятор тяжёлый бортовой 10т, кму 3т.", desc: "Удобен для перевозки стройматериалов на палетах и других грузов. Борт 30 см. Максимальный объем груза: длина 7.5 м, ширина 2.4 м, высота 2.6 м.", image: "https://avatars.mds.yandex.net/get-altay/20285938/2a0000019e86c69fd13fa26f412088118dfa/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор манипулятор тяжёлый сороконожка 15т, кму 5т.", desc: "Мощный эвакуатор для тяжелых грузов. Максимальный объем груза: длина 8 м, ширина 2.4 м, высота 2.7 м.", image: "https://avatars.mds.yandex.net/get-altay/14586367/2a0000019d28c3b61ee54add148f48934411/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
-      { name: "Эвакуатор манипулятор тяжёлый сороконожка №2. Борт 15т, кму 5т.", desc: "Мощный эвакуатор для тяжелых грузов. Максимальный объем груза: длина 8 м, ширина 2.4 м, высота 2.7 м.", image: "https://avatars.mds.yandex.net/get-altay/18105464/2a0000019c9d1c5d95fc23d09478e8e4e491/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
+      { name: "Эвакуатор манипулятор бортовой 5т, кму 3т", desc: "Эвакуатор с лебедкой и аппарелями. Идеально для перевозки, эвакуации авто. Максимальный объем груза: длина 5.2 м, ширина 2.4 м, высота 3 м.", image: "https://avatars.mds.yandex.net/get-altay/16410678/2a0000019be356ac49fe2c176572d0304ee9/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор бортовой 7т, кму 3т", desc: "Стандартная воровайка повышенной грузоподъемности для повседневных задач. Максимальный объем груза: длина 5.5 м, ширина 2.2 м, высота 2 м.", image: "https://avatars.mds.yandex.net/get-altay/19749282/2a0000019f3ad19b724a8d19c675a0943c6a/XL?referer=lkb", hasImage: true, status: "🚩 возможно занят" },
+      { name: "Эвакуатор манипулятор тяжёлый бортовой 10т, кму 3т", desc: "Удобен для перевозки стройматериалов на палетах и других грузов. Борт 30 см. Максимальный объем груза: длина 7.5 м, ширина 2.4 м, высота 2.6 м.", image: "https://avatars.mds.yandex.net/get-altay/20285938/2a0000019e86c69fd13fa26f412088118dfa/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор тяжёлый сороконожка 15т, кму 5т", desc: "Мощный эвакуатор для тяжелых грузов. Максимальный объем груза: длина 8 м, ширина 2.4 м, высота 2.7 м.", image: "https://avatars.mds.yandex.net/get-altay/14586367/2a0000019d28c3b61ee54add148f48934411/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
+      { name: "Эвакуатор манипулятор тяжёлый сороконожка №2. Борт 15т, кму 5т", desc: "Мощный эвакуатор для тяжелых грузов. Максимальный объем груза: длина 8 м, ширина 2.4 м, высота 2.7 м.", image: "https://avatars.mds.yandex.net/get-altay/18105464/2a0000019c9d1c5d95fc23d09478e8e4e491/XL?referer=lkb", hasImage: true, status: "🚩 свободен" }
     ],
     excavators: [
       { name: "Экскаватор гусеничный 7,5т с гидромолотом", desc: "Демонтаж бетона, вскрытие асфальта, корчевание", image: "https://avatars.mds.yandex.net/get-altay/15352901/2a0000019448910594b726be2b483d33c56d/XL?referer=lkb", hasImage: true, status: "🚩 свободен" },
