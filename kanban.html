@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Канбан-доска «Работа машин»</title>
-    <!-- Firebase SDK (compat) -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js">
-    </script>
+    <!-- XLSX для отчётов -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <!-- Firebase SDK (compat-режим) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js"></script>
     <style>
         /* ===== CSS переменные для тёмной темы ===== */
         :root {
@@ -1162,8 +1163,7 @@
                     </div>
                     <div>
                         <label class="label-required">Время подачи</label>
-                        <!-- Убрали step="900", чтобы можно было выбрать любое время -->
-                        <input type="time" id="pickupTime" required />
+                        <input type="time" id="pickupTime" step="900" required />
                     </div>
                 </div>
                 <div class="form-row">
@@ -1472,26 +1472,26 @@
 
     <script>
         // ============================================================
-        //  ИНИЦИАЛИЗАЦИЯ FIREBASE
+        //  ПОЛНЫЙ СКРИПТ (ОБНОВЛЕН БЛОК НАЕМНИКА - ДВА СТОЛБЦА, БЕЗ ДУБЛИРОВАНИЯ, ИСПРАВЛЕН ДВОЙНОЙ КЛИК, ВЫРАВНИВАНИЕ ПО ПРАВОМУ КРАЮ)
         // ============================================================
-        // ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА ВАШИ ИЗ КОНСОЛИ FIREBASE
+        // ---- Firebase инициализация ----
         const firebaseConfig = {
-            apiKey: "AIzaSy...",
-            authDomain: "your-project.firebaseapp.com",
-            databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-            projectId: "your-project",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "...",
-            appId: "..."
+            apiKey: "AIzaSyDsvUrYf1EraDWPH6tfGVmIsdGk6Nrm0Do",
+            authDomain: "tehnodv25ru.firebaseapp.com",
+            databaseURL: "https://tehnodv25ru-default-rtdb.firebaseio.com",
+            projectId: "tehnodv25ru",
+            storageBucket: "tehnodv25ru.firebasestorage.app",
+            messagingSenderId: "253082983616",
+            appId: "1:253082983616:web:93dd2f76a08650a304e125",
+            measurementId: "G-P773E13DCL"
         };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
 
-        // ============================================================
-        //  ПОЛНЫЙ СКРИПТ (ОБНОВЛЕН ДЛЯ FIREBASE)
-        // ============================================================
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const dataRef = db.ref('kanban');
+
         const ADMIN_PASSWORD = 'admin123';
-        // STORAGE_KEY и DRAFT_KEY больше не нужны — удалены
+        const DRAFT_KEY = 'kanbanDraft'; // черновик остаётся локальным
 
         const DEFAULT_COLUMNS = [
             { id: 'col0', name: 'Поступил звонок', wipLimit: 10, cards: [] },
@@ -1787,71 +1787,58 @@
             document.getElementById('active-machines').textContent = active;
         }
 
-        // ----- СОХРАНЕНИЕ И ЗАГРУЗКА ЧЕРЕЗ FIREBASE -----
+        // ---- Сохранение и загрузка через Firebase ----
         function saveData() {
-            const data = { columnsData, nextOrderNumber, nextCardId };
-            database.ref('kanbanData').set(data);
-        }
-
-        function loadData() {
-            return new Promise((resolve) => {
-                database.ref('kanbanData').once('value').then((snapshot) => {
-                    const data = snapshot.val();
-                    if (data) {
-                        data = migrateData(data);
-                        if (data.columnsData && Array.isArray(data.columnsData)) {
-                            columnsData.length = 0;
-                            data.columnsData.forEach(col => columnsData.push(col));
-                            if (data.nextOrderNumber) nextOrderNumber = data.nextOrderNumber;
-                            if (data.nextCardId) nextCardId = data.nextCardId;
-                        }
-                        renderBoard();
-                        updateStats();
-                        resolve(true);
-                    } else {
-                        // Если данных нет, инициализируем по умолчанию и сохраняем
-                        columnsData = JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
-                        nextOrderNumber = 1001;
-                        nextCardId = 1;
-                        renderBoard();
-                        updateStats();
-                        saveData(); // создаём первую запись
-                        resolve(false);
-                    }
-                }).catch((err) => {
-                    console.error('Ошибка загрузки данных из Firebase:', err);
-                    // В случае ошибки используем локальные данные по умолчанию
-                    columnsData = JSON.parse(JSON.stringify(DEFAULT_COLUMNS));
-                    nextOrderNumber = 1001;
-                    nextCardId = 1;
-                    renderBoard();
+            const data = {
+                columnsData: columnsData,
+                nextOrderNumber: nextOrderNumber,
+                nextCardId: nextCardId
+            };
+            dataRef.set(data)
+                .then(() => {
+                    updateAddressList();
                     updateStats();
-                    resolve(false);
-                });
-            });
+                })
+                .catch(err => console.error('Ошибка сохранения:', err));
         }
 
-        function listenChanges() {
-            database.ref('kanbanData').on('value', (snapshot) => {
+        async function loadData() {
+            try {
+                const snapshot = await dataRef.once('value');
                 const data = snapshot.val();
-                if (data) {
-                    data = migrateData(data);
-                    if (data.columnsData && Array.isArray(data.columnsData)) {
-                        columnsData.length = 0;
-                        data.columnsData.forEach(col => columnsData.push(col));
-                        if (data.nextOrderNumber) nextOrderNumber = data.nextOrderNumber;
-                        if (data.nextCardId) nextCardId = data.nextCardId;
-                        renderBoard();
-                        updateStats();
-                    }
+                if (!data) return false;
+                const migrated = migrateData(data);
+                if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
+                    columnsData.length = 0;
+                    migrated.columnsData.forEach(col => columnsData.push(col));
+                    if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
+                    if (migrated.nextCardId) nextCardId = migrated.nextCardId;
+                    return true;
                 }
-            });
+                return false;
+            } catch (err) {
+                console.error('Ошибка загрузки:', err);
+                return false;
+            }
         }
 
-        // ----- ЧЕРНОВИК (локальный, только для формы) -----
-        // Мы оставляем черновик в localStorage для удобства, но он не синхронизируется.
-        const DRAFT_KEY = 'kanbanDraft';
+        // ---- Слушатель реального времени ----
+        dataRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+            const migrated = migrateData(data);
+            if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
+                columnsData.length = 0;
+                migrated.columnsData.forEach(col => columnsData.push(col));
+                if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
+                if (migrated.nextCardId) nextCardId = migrated.nextCardId;
+                renderBoard();
+                updateStats();
+                updateAddressList();
+            }
+        });
 
+        // ----- ЧЕРНОВИК -----
         function getManagerValue() {
             const checked = document.querySelector('input[name="managerRadio"]:checked');
             return checked ? checked.value : 'Диана';
@@ -1929,7 +1916,138 @@
             }
         }
 
-        // ----- СОХРАНЕНИЕ ЧЕРНОВИКА (локальное) -----
+        // ----- ФУНКЦИИ КОПИРОВАНИЯ В БУФЕР -----
+        function buildDriverMessageText(cardData) {
+            const lines = [];
+            // Клиент
+            lines.push(`Клиент: ${cardData.clientName || '—'}`);
+            lines.push(`Телефон: ${cardData.clientPhone || '—'}`);
+            // Груз
+            let measurementsText = '';
+            if (cardData.measurements) {
+                const m = cardData.measurements;
+                const parts = [];
+                if (m.measurementState && m.measurementState.weight) parts.push(`Вес: ${m.weight || 0} т`);
+                if (m.measurementState && m.measurementState.volume) parts.push(`Объём: ${(m.volume || 0).toFixed(2)} м³`);
+                if (m.measurementState && m.measurementState.dimensions) parts.push(`Габариты: ${m.dimLength || 0}×${m.dimWidth || 0}×${m.dimHeight || 0} м`);
+                measurementsText = parts.length ? parts.join('; ') : '—';
+            } else {
+                measurementsText = '—';
+            }
+            lines.push(`Груз: ${cardData.cargoType || '—'} (${measurementsText})`);
+            if (cardData.cargoDetails) {
+                const details = cardData.cargoDetails;
+                if (details.waterType) lines.push(`Тип водного транспорта: ${details.waterType}`);
+                if (details.waterBrand) lines.push(`Марка: ${details.waterBrand}`);
+                if (details.floors) lines.push(`Полы: ${details.floors}`);
+                if (details.hooks) lines.push(`Крюки/рыма: ${details.hooks}`);
+                if (details.location) lines.push(`Расположение: ${details.location}`);
+                if (details.special) lines.push(`Особенности: ${details.special}`);
+                // Прочее: только описание
+                if (details.cargoDesc) lines.push(`Описание груза: ${details.cargoDesc}`);
+                // Строительные материалы: только описание
+                if (details.cargoDesc) lines.push(`Описание груза: ${details.cargoDesc}`);
+                // Гараж: только описание
+                if (details.cargoDesc) lines.push(`Описание груза: ${details.cargoDesc}`);
+            }
+
+            lines.push(''); // пустая строка-разделитель
+
+            // Погрузка
+            lines.push('Погрузка');
+            const pickupDateTime = cardData.pickupDateTime ? new Date(cardData.pickupDateTime).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+            lines.push(`Дата/время подачи: ${pickupDateTime}`);
+            lines.push(`Адрес погрузки: ${cardData.pickupAddress || '—'}`);
+            lines.push(`Ориентир погрузки: ${cardData.pickupLandmark || '—'}`);
+            lines.push(`Помехи при погрузке: ${cardData.pickupObstacles ? cardData.pickupObstacles.join(', ') : '—'}`);
+            let pickupContact = '';
+            if (cardData.pickupContactCallCustomer) {
+                pickupContact = 'Звонить заказчику';
+            } else {
+                const name = cardData.pickupContactName || '';
+                const phone = cardData.pickupContactPhone || '';
+                pickupContact = [name, phone].filter(Boolean).join('; ') || '—';
+            }
+            lines.push(`Контакт на погрузке: ${pickupContact}`);
+
+            lines.push(''); // разделитель
+
+            // Выгрузка
+            lines.push('Выгрузка');
+            lines.push(`Адрес выгрузки: ${cardData.deliveryAddress || '—'}`);
+            lines.push(`Ориентир выгрузки: ${cardData.deliveryLandmark || '—'}`);
+            lines.push(`Помехи при выгрузке: ${cardData.deliveryObstacles ? cardData.deliveryObstacles.join(', ') : '—'}`);
+            let deliveryContact = '';
+            if (cardData.deliveryContactCallCustomer) {
+                deliveryContact = 'Звонить заказчику';
+            } else {
+                const name = cardData.deliveryContactName || '';
+                const phone = cardData.deliveryContactPhone || '';
+                deliveryContact = [name, phone].filter(Boolean).join('; ') || '—';
+            }
+            lines.push(`Контакт на выгрузке: ${deliveryContact}`);
+
+            lines.push(''); // разделитель
+
+            // Оплата и цена
+            if (cardData.vehicleId === 'hired') {
+                lines.push(`Цена за работу наемника: ${cardData.hiredPriceHirer ? cardData.hiredPriceHirer.toLocaleString() + ' ₽' : '—'}`);
+                lines.push(`Цена за доп час наемника: ${cardData.hiredPriceHirerExtra ? cardData.hiredPriceHirerExtra.toLocaleString() + ' ₽/ч' : '—'}`);
+                lines.push(`Способ оплаты наемнику: ${getPaymentDisplay(cardData.hiredPaymentMethod) || '—'}`);
+                lines.push(`Наша цена: ${cardData.hiredPrice ? cardData.hiredPrice.toLocaleString() + ' ₽' : '—'}`);
+                lines.push(`Наша цена за доп час: ${cardData.hiredPriceExtra ? cardData.hiredPriceExtra.toLocaleString() + ' ₽/ч' : '—'}`);
+                lines.push(`Способ оплаты клиенту: ${getPaymentDisplay(cardData.paymentMethod)}`);
+                lines.push(`Дополнительные часы: ${cardData.extraHours || 0}`);
+                lines.push(`Итоговая цена: ${cardData.totalPrice ? cardData.totalPrice.toLocaleString() + ' ₽' : '—'}`);
+            } else {
+                lines.push(`Способ оплаты: ${getPaymentDisplay(cardData.paymentMethod)}`);
+                lines.push(`Дополнительные часы: ${cardData.extraHours || 0}`);
+                lines.push(`Итоговая цена: ${cardData.totalPrice ? cardData.totalPrice.toLocaleString() + ' ₽' : '—'}`);
+            }
+
+            return lines.join('\n');
+        }
+
+        function getReviewMessage() {
+            return `Добрый день, компания Техно ДВ, спасибо что выбрали нашу компанию.
+
+        Будем очень благодарны за ваш отзыв о выполненной работе. Это помогает нам становиться лучше, а занимает всего минуту🙏
+
+        Ваш положительный отзыв является лучшей наградой для нас!
+
+        Яндекс: https://yandex.ru/profile/190856932517
+        2гис: https://go.2gis.com/DCsh3
+        Сайт vl.ru: https://www.vl.ru/tehno-dv-vl
+
+        А если в процессе выполнения заказа у вас произошел нестандартный случай, дайте нам знать, мы сделаем все что бы это не повторилось.`;
+        }
+
+        async function copyToClipboard(text, btnElement) {
+            try {
+                await navigator.clipboard.writeText(text);
+                btnElement.textContent = '✅ Скопировано!';
+                btnElement.classList.add('copied');
+                setTimeout(() => {
+                    btnElement.textContent = btnElement.dataset.originalText || 'Отправить водителю';
+                    btnElement.classList.remove('copied');
+                }, 3000);
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                btnElement.textContent = '✅ Скопировано!';
+                btnElement.classList.add('copied');
+                setTimeout(() => {
+                    btnElement.textContent = btnElement.dataset.originalText || 'Отправить водителю';
+                    btnElement.classList.remove('copied');
+                }, 3000);
+            }
+        }
+
+        // ----- СОХРАНЕНИЕ ЧЕРНОВИКА -----
         function saveDraft() {
             const draft = {
                 editingCardId: editingCardId || null,
@@ -4498,13 +4616,12 @@
             saveDraft();
         });
 
-        // ----- ЗАПУСК -----
-        loadTheme();
-
-        // Загружаем данные из Firebase и начинаем слушать изменения
-        loadData().then(() => {
-            listenChanges();
-            // Дополнительная инициализация после загрузки
+        // ===== ЗАПУСК ПРИЛОЖЕНИЯ =====
+        async function initApp() {
+            loadTheme();
+            await loadData();
+            renderBoard();
+            // Остальная инициализация
             setTimeout(() => {
                 renderDynamicFields();
                 updateContactFieldsVisibility();
@@ -4512,102 +4629,11 @@
                 if (!isHiredMode) updateVehicleList();
                 updateMeasurementFields();
             }, 100);
-        }).catch(console.error);
+            // Слушатель уже подключён выше, он будет обновлять доску при изменениях
+            // Но если данные загружены, то и так всё отрисуется.
+        }
 
-        // ===== КНОПКА АВТОМАТИЧЕСКОГО ЗАПОЛНЕНИЯ =====
-        document.getElementById('fillAutoBtn').addEventListener('click', function() {
-            // Заполняем основные поля
-            document.querySelector('input[name="managerRadio"][value="Диана"]').checked = true;
-
-            const now = new Date();
-            const today = now.toISOString().slice(0, 10);
-            document.getElementById('pickupDate').value = today;
-            let h = now.getHours(),
-                m = now.getMinutes() + 15;
-            if (m >= 60) { h += 1;
-                m -= 60; }
-            if (h >= 24) h -= 24;
-            document.getElementById('pickupTime').value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-
-            document.getElementById('pickupAddress').value = 'ул. Ленина, 5';
-            document.getElementById('pickupLandmark').value = 'въезд со двора';
-            document.getElementById('deliveryAddress').value = 'пр. Победы, 12';
-            document.getElementById('deliveryLandmark').value = 'склад №2';
-
-            document.getElementById('pickupContactName').value = 'Иван Иванов';
-            document.getElementById('pickupContactPhone').value = '+7 999 111-22-33';
-            document.getElementById('deliveryContactName').value = 'Петр Петров';
-            document.getElementById('deliveryContactPhone').value = '+7 999 444-55-66';
-
-            document.getElementById('clientName').value = 'ООО "Тест"';
-            document.getElementById('clientPhone').value = '+7 999 777-88-99';
-
-            // Тип груза - Автомобиль
-            document.getElementById('cargoType').value = 'Автомобиль';
-
-            // Измерения
-            document.getElementById('measWeight').checked = true;
-            document.getElementById('measVolume').checked = true;
-            document.getElementById('measDimensions').checked = true;
-            document.getElementById('cargoWeight').value = '1.5';
-            document.getElementById('cargoVolume').value = '5';
-            document.getElementById('cargoDimLength').value = '4';
-            document.getElementById('cargoDimWidth').value = '1.8';
-            document.getElementById('cargoDimHeight').value = '1.5';
-            updateMeasurementFields();
-
-            // Пропуска
-            document.querySelector('input[name="passRequiredPickup"][value="true"]').checked = true;
-            document.querySelector('input[name="passRequiredDelivery"][value="true"]').checked = true;
-
-            // Транспорт - выбираем первую машину (не наемник)
-            // Дождёмся, пока отрисуется список, и выберем
-            setTimeout(() => {
-                const select = document.getElementById('vehicleSelect');
-                if (select) {
-                    const firstOpt = select.querySelector('option:not([value="hired"])');
-                    if (firstOpt) {
-                        select.value = firstOpt.value;
-                        const v = JSON.parse(firstOpt.dataset.vehicle);
-                        selectVehicle(v);
-                    }
-                }
-                // Доп. часы
-                document.getElementById('extraHoursDisplay').textContent = '2';
-                extraHours = 2;
-                updateTotalPrice();
-            }, 200);
-
-            // Комментарий, канал
-            document.getElementById('comment').value = 'Тестовый заказ, заполнен автоматически';
-            document.getElementById('salesChannel').value = 'Яндекс';
-
-            // Динамические поля для Автомобиля
-            setTimeout(() => {
-                const dynContainer = document.getElementById('dynamicCargoFields');
-                if (dynContainer) {
-                    // Заполняем поля, если они есть
-                    const autoType = document.getElementById('dyn_autoType');
-                    if (autoType) autoType.value = 'Легковой';
-                    const brand = document.getElementById('dyn_brand');
-                    if (brand) brand.value = 'Toyota Camry';
-                    const condition = document.getElementById('dyn_condition');
-                    if (condition) condition.value = 'После дтп';
-                    const wheels = document.getElementById('dyn_wheels');
-                    if (wheels) wheels.value = 'Да';
-                    const loading = document.getElementById('dyn_loading');
-                    if (loading) loading.value = 'Заеду сам';
-                    const docs = document.getElementById('dyn_docs');
-                    if (docs) docs.value = 'Предоставлю';
-                }
-            }, 300);
-
-            // Обновляем контактные поля (видимость)
-            updateContactFieldsVisibility();
-
-            // Сохраняем черновик
-            saveDraft();
-        });
+        initApp();
     </script>
 </body>
 </html>
