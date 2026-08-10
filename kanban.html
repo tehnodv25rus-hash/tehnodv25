@@ -4,12 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Канбан-доска «Работа машин»</title>
-    <!-- XLSX для отчётов -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-    <!-- Firebase SDK (compat-режим) -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js"></script>
     <style>
         /* ===== CSS переменные для тёмной темы ===== */
         :root {
@@ -1472,26 +1467,11 @@
 
     <script>
         // ============================================================
-        //  ПОЛНЫЙ СКРИПТ (ОБНОВЛЕН БЛОК НАЕМНИКА - ДВА СТОЛБЦА, БЕЗ ДУБЛИРОВАНИЯ, ИСПРАВЛЕН ДВОЙНОЙ КЛИК, ВЫРАВНИВАНИЕ ПО ПРАВОМУ КРАЮ)
+        //  ПОЛНЫЙ СКРИПТ (БЕЗ FIREBASE, ТОЛЬКО LOCALSTORAGE)
         // ============================================================
-        // ---- Firebase инициализация ----
-        const firebaseConfig = {
-            apiKey: "AIzaSyDsvUrYf1EraDWPH6tfGVmIsdGk6Nrm0Do",
-            authDomain: "tehnodv25ru.firebaseapp.com",
-            databaseURL: "https://tehnodv25ru-default-rtdb.firebaseio.com",
-            projectId: "tehnodv25ru",
-            storageBucket: "tehnodv25ru.firebasestorage.app",
-            messagingSenderId: "253082983616",
-            appId: "1:253082983616:web:93dd2f76a08650a304e125",
-            measurementId: "G-P773E13DCL"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const dataRef = db.ref('kanban');
-
         const ADMIN_PASSWORD = 'admin123';
-        const DRAFT_KEY = 'kanbanDraft'; // черновик остаётся локальным
+        const STORAGE_KEY = 'kanbanData';
+        const DRAFT_KEY = 'kanbanDraft';
 
         const DEFAULT_COLUMNS = [
             { id: 'col0', name: 'Поступил звонок', wipLimit: 10, cards: [] },
@@ -1787,56 +1767,29 @@
             document.getElementById('active-machines').textContent = active;
         }
 
-        // ---- Сохранение и загрузка через Firebase ----
         function saveData() {
-            const data = {
-                columnsData: columnsData,
-                nextOrderNumber: nextOrderNumber,
-                nextCardId: nextCardId
-            };
-            dataRef.set(data)
-                .then(() => {
-                    updateAddressList();
-                    updateStats();
-                })
-                .catch(err => console.error('Ошибка сохранения:', err));
+            const data = { columnsData, nextOrderNumber, nextCardId };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            updateAddressList();
+            updateStats();
         }
 
-        async function loadData() {
+        function loadData() {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return false;
             try {
-                const snapshot = await dataRef.once('value');
-                const data = snapshot.val();
-                if (!data) return false;
-                const migrated = migrateData(data);
-                if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
+                let data = JSON.parse(raw);
+                data = migrateData(data);
+                if (data.columnsData && Array.isArray(data.columnsData)) {
                     columnsData.length = 0;
-                    migrated.columnsData.forEach(col => columnsData.push(col));
-                    if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
-                    if (migrated.nextCardId) nextCardId = migrated.nextCardId;
+                    data.columnsData.forEach(col => columnsData.push(col));
+                    if (data.nextOrderNumber) nextOrderNumber = data.nextOrderNumber;
+                    if (data.nextCardId) nextCardId = data.nextCardId;
                     return true;
                 }
-                return false;
-            } catch (err) {
-                console.error('Ошибка загрузки:', err);
-                return false;
-            }
+            } catch (_) {}
+            return false;
         }
-
-        // ---- Слушатель реального времени ----
-        dataRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (!data) return;
-            const migrated = migrateData(data);
-            if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
-                columnsData.length = 0;
-                migrated.columnsData.forEach(col => columnsData.push(col));
-                if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
-                if (migrated.nextCardId) nextCardId = migrated.nextCardId;
-                renderBoard();
-                updateStats();
-                updateAddressList();
-            }
-        });
 
         // ----- ЧЕРНОВИК -----
         function getManagerValue() {
@@ -4616,24 +4569,113 @@
             saveDraft();
         });
 
-        // ===== ЗАПУСК ПРИЛОЖЕНИЯ =====
-        async function initApp() {
-            loadTheme();
-            await loadData();
-            renderBoard();
-            // Остальная инициализация
-            setTimeout(() => {
-                renderDynamicFields();
-                updateContactFieldsVisibility();
-                if (cargoType.value === 'Контейнер') updateContainerDimensions();
-                if (!isHiredMode) updateVehicleList();
-                updateMeasurementFields();
-            }, 100);
-            // Слушатель уже подключён выше, он будет обновлять доску при изменениях
-            // Но если данные загружены, то и так всё отрисуется.
-        }
+        // ----- ЗАПУСК -----
+        loadTheme();
+        loadData();
+        renderBoard();
+        setTimeout(() => {
+            renderDynamicFields();
+            updateContactFieldsVisibility();
+            if (cargoType.value === 'Контейнер') updateContainerDimensions();
+            if (!isHiredMode) updateVehicleList();
+            updateMeasurementFields();
+        }, 100);
+        saveData();
 
-        initApp();
+        // ===== КНОПКА АВТОМАТИЧЕСКОГО ЗАПОЛНЕНИЯ =====
+        document.getElementById('fillAutoBtn').addEventListener('click', function() {
+            // Заполняем основные поля
+            document.querySelector('input[name="managerRadio"][value="Диана"]').checked = true;
+
+            const now = new Date();
+            const today = now.toISOString().slice(0, 10);
+            document.getElementById('pickupDate').value = today;
+            let h = now.getHours(),
+                m = now.getMinutes() + 15;
+            if (m >= 60) { h += 1;
+                m -= 60; }
+            if (h >= 24) h -= 24;
+            document.getElementById('pickupTime').value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+
+            document.getElementById('pickupAddress').value = 'ул. Ленина, 5';
+            document.getElementById('pickupLandmark').value = 'въезд со двора';
+            document.getElementById('deliveryAddress').value = 'пр. Победы, 12';
+            document.getElementById('deliveryLandmark').value = 'склад №2';
+
+            document.getElementById('pickupContactName').value = 'Иван Иванов';
+            document.getElementById('pickupContactPhone').value = '+7 999 111-22-33';
+            document.getElementById('deliveryContactName').value = 'Петр Петров';
+            document.getElementById('deliveryContactPhone').value = '+7 999 444-55-66';
+
+            document.getElementById('clientName').value = 'ООО "Тест"';
+            document.getElementById('clientPhone').value = '+7 999 777-88-99';
+
+            // Тип груза - Автомобиль
+            document.getElementById('cargoType').value = 'Автомобиль';
+
+            // Измерения
+            document.getElementById('measWeight').checked = true;
+            document.getElementById('measVolume').checked = true;
+            document.getElementById('measDimensions').checked = true;
+            document.getElementById('cargoWeight').value = '1.5';
+            document.getElementById('cargoVolume').value = '5';
+            document.getElementById('cargoDimLength').value = '4';
+            document.getElementById('cargoDimWidth').value = '1.8';
+            document.getElementById('cargoDimHeight').value = '1.5';
+            updateMeasurementFields();
+
+            // Пропуска
+            document.querySelector('input[name="passRequiredPickup"][value="true"]').checked = true;
+            document.querySelector('input[name="passRequiredDelivery"][value="true"]').checked = true;
+
+            // Транспорт - выбираем первую машину (не наемник)
+            // Дождёмся, пока отрисуется список, и выберем
+            setTimeout(() => {
+                const select = document.getElementById('vehicleSelect');
+                if (select) {
+                    const firstOpt = select.querySelector('option:not([value="hired"])');
+                    if (firstOpt) {
+                        select.value = firstOpt.value;
+                        const v = JSON.parse(firstOpt.dataset.vehicle);
+                        selectVehicle(v);
+                    }
+                }
+                // Доп. часы
+                document.getElementById('extraHoursDisplay').textContent = '2';
+                extraHours = 2;
+                updateTotalPrice();
+            }, 200);
+
+            // Комментарий, канал
+            document.getElementById('comment').value = 'Тестовый заказ, заполнен автоматически';
+            document.getElementById('salesChannel').value = 'Яндекс';
+
+            // Динамические поля для Автомобиля
+            setTimeout(() => {
+                const dynContainer = document.getElementById('dynamicCargoFields');
+                if (dynContainer) {
+                    // Заполняем поля, если они есть
+                    const autoType = document.getElementById('dyn_autoType');
+                    if (autoType) autoType.value = 'Легковой';
+                    const brand = document.getElementById('dyn_brand');
+                    if (brand) brand.value = 'Toyota Camry';
+                    const condition = document.getElementById('dyn_condition');
+                    if (condition) condition.value = 'После дтп';
+                    const wheels = document.getElementById('dyn_wheels');
+                    if (wheels) wheels.value = 'Да';
+                    const loading = document.getElementById('dyn_loading');
+                    if (loading) loading.value = 'Заеду сам';
+                    const docs = document.getElementById('dyn_docs');
+                    if (docs) docs.value = 'Предоставлю';
+                }
+            }, 300);
+
+            // Обновляем контактные поля (видимость)
+            updateContactFieldsVisibility();
+
+            // Сохраняем черновик
+            saveDraft();
+        });
     </script>
 </body>
 </html>
