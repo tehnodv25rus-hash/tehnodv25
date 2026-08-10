@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Канбан-доска «Работа машин»</title>
+    <title>Канбан-доска «Работа машин» (синхронизация)</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js"></script>
     <style>
         /* ===== CSS переменные для тёмной темы ===== */
         :root {
@@ -41,11 +44,7 @@
             --modal-bg: #2c2c2e;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -73,9 +72,7 @@
             transition: background 0.3s, box-shadow 0.3s;
             border: 1px solid transparent;
         }
-        body.dark .board-header {
-            border-color: var(--border-light);
-        }
+        body.dark .board-header { border-color: var(--border-light); }
 
         .board-header h1 {
             font-size: 26px;
@@ -94,13 +91,8 @@
             align-items: center;
         }
 
-        .board-header .stats span {
-            font-weight: 600;
-            color: #007AFF;
-        }
-        body.dark .board-header .stats span {
-            color: #0a84ff;
-        }
+        .board-header .stats span { font-weight: 600; color: #007AFF; }
+        body.dark .board-header .stats span { color: #0a84ff; }
 
         .board-header .actions {
             display: flex;
@@ -122,12 +114,8 @@
             box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2);
             letter-spacing: -0.2px;
         }
-        .btn-primary:hover {
-            background: #0066d9;
-        }
-        .btn-primary:active {
-            transform: scale(0.97);
-        }
+        .btn-primary:hover { background: #0066d9; }
+        .btn-primary:active { transform: scale(0.97); }
 
         .btn-success {
             background: #34c759;
@@ -141,12 +129,8 @@
             transition: background 0.2s, transform 0.1s;
             box-shadow: 0 2px 8px rgba(52, 199, 89, 0.2);
         }
-        .btn-success:hover {
-            background: #28a745;
-        }
-        .btn-success:active {
-            transform: scale(0.97);
-        }
+        .btn-success:hover { background: #28a745; }
+        .btn-success:active { transform: scale(0.97); }
 
         .btn-secondary {
             background: var(--badge-bg);
@@ -159,15 +143,9 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
         }
-        .btn-secondary:hover {
-            background: #d1d1d6;
-        }
-        .btn-secondary:active {
-            transform: scale(0.97);
-        }
-        body.dark .btn-secondary:hover {
-            background: #4a4a4c;
-        }
+        .btn-secondary:hover { background: #d1d1d6; }
+        .btn-secondary:active { transform: scale(0.97); }
+        body.dark .btn-secondary:hover { background: #4a4a4c; }
 
         .btn-icon {
             background: transparent;
@@ -178,12 +156,8 @@
             border-radius: 8px;
             transition: background 0.2s;
         }
-        .btn-icon:hover {
-            background: var(--badge-bg);
-        }
-        body.dark .btn-icon:hover {
-            background: #3a3a3c;
-        }
+        .btn-icon:hover { background: var(--badge-bg); }
+        body.dark .btn-icon:hover { background: #3a3a3c; }
 
         .btn-copy {
             background: #007AFF;
@@ -198,15 +172,9 @@
             width: 100%;
             text-align: center;
         }
-        .btn-copy:hover {
-            background: #0066d9;
-        }
-        .btn-copy:active {
-            transform: scale(0.97);
-        }
-        .btn-copy.copied {
-            background: #34c759;
-        }
+        .btn-copy:hover { background: #0066d9; }
+        .btn-copy:active { transform: scale(0.97); }
+        .btn-copy.copied { background: #34c759; }
 
         .board {
             display: grid;
@@ -226,9 +194,7 @@
             border: 1px solid rgba(255, 255, 255, 0.5);
             transition: background 0.3s, border-color 0.2s, box-shadow 0.3s;
         }
-        body.dark .column {
-            border-color: var(--border-light);
-        }
+        body.dark .column { border-color: var(--border-light); }
 
         .column.drag-over {
             background: rgba(0, 122, 255, 0.05);
@@ -287,9 +253,7 @@
             position: relative;
         }
 
-        .card:active {
-            cursor: grabbing;
-        }
+        .card:active { cursor: grabbing; }
 
         .card:hover {
             transform: translateY(-2px);
@@ -319,18 +283,14 @@
             color: #007AFF;
             margin: 2px 0;
         }
-        body.dark .card .client-name {
-            color: #0a84ff;
-        }
+        body.dark .card .client-name { color: #0a84ff; }
 
         .card .client-phone {
             font-size: 14px;
             color: #007AFF;
             margin: 2px 0;
         }
-        body.dark .card .client-phone {
-            color: #0a84ff;
-        }
+        body.dark .card .client-phone { color: #0a84ff; }
 
         .card .cargo-line {
             font-size: 14px;
@@ -338,24 +298,22 @@
             margin: 2px 0;
         }
 
-        /* ===== Улучшенная анимация раскрытия карточки (быстро, как в Apple) ===== */
         .card .extra-details {
             display: block;
             max-height: 0;
             overflow: hidden;
             opacity: 0;
-            /* Apple-like easing: быстрое начало, плавное замедление */
             transition: max-height 0.15s cubic-bezier(0.25, 0.1, 0.25, 1), opacity 0.15s ease, margin 0.15s ease;
             margin-top: 0;
             padding-top: 0;
             border-top: none;
             font-size: 14px;
             color: var(--text-primary);
-            text-align: left; /* Все элементы теперь слева */
+            text-align: left;
         }
 
         .card .extra-details.show {
-            max-height: 3000px; /* достаточно для любого содержимого */
+            max-height: 3000px;
             opacity: 1;
             margin-top: 12px;
             padding-top: 12px;
@@ -369,9 +327,7 @@
             margin-bottom: 4px;
             margin-top: 12px;
         }
-        .card .extra-details .label:first-of-type {
-            margin-top: 0;
-        }
+        .card .extra-details .label:first-of-type { margin-top: 0; }
 
         .card .extra-details .detail-item {
             display: flex;
@@ -395,9 +351,7 @@
             color: #007AFF;
             text-decoration: none;
         }
-        .card .extra-details .detail-item .value a:hover {
-            text-decoration: underline;
-        }
+        .card .extra-details .detail-item .value a:hover { text-decoration: underline; }
 
         .card .delete-btn-inline {
             background: #ff3b30;
@@ -414,9 +368,7 @@
             width: 100%;
             text-align: center;
         }
-        .card .delete-btn-inline:hover {
-            background: #d70015;
-        }
+        .card .delete-btn-inline:hover { background: #d70015; }
 
         .card .print-btn-inline {
             background: var(--badge-bg);
@@ -433,12 +385,8 @@
             width: 100%;
             text-align: center;
         }
-        .card .print-btn-inline:hover {
-            background: #d1d1d6;
-        }
-        body.dark .card .print-btn-inline:hover {
-            background: #4a4a4c;
-        }
+        .card .print-btn-inline:hover { background: #d1d1d6; }
+        body.dark .card .print-btn-inline:hover { background: #4a4a4c; }
 
         .card .copy-btn-inline {
             background: #007AFF;
@@ -455,12 +403,8 @@
             width: 100%;
             text-align: center;
         }
-        .card .copy-btn-inline:hover {
-            background: #0066d9;
-        }
-        .card .copy-btn-inline.copied {
-            background: #34c759;
-        }
+        .card .copy-btn-inline:hover { background: #0066d9; }
+        .card .copy-btn-inline.copied { background: #34c759; }
 
         .card .action-group {
             margin-top: 10px;
@@ -482,18 +426,10 @@
             margin-bottom: 4px;
         }
 
-        .column-0 .card {
-            border-left-color: #ff9500;
-        }
-        .column-1 .card {
-            border-left-color: #007AFF;
-        }
-        .column-2 .card {
-            border-left-color: #34c759;
-        }
-        .column-3 .card {
-            border-left-color: #ff3b30;
-        }
+        .column-0 .card { border-left-color: #ff9500; }
+        .column-1 .card { border-left-color: #007AFF; }
+        .column-2 .card { border-left-color: #34c759; }
+        .column-3 .card { border-left-color: #ff3b30; }
 
         .return-reason-badge {
             font-size: 11px;
@@ -531,9 +467,7 @@
             align-items: center;
             z-index: 1000;
         }
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
 
         .modal {
             background: var(--modal-bg);
@@ -549,14 +483,8 @@
         }
 
         @keyframes modalFade {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .modal h2 {
@@ -584,9 +512,7 @@
             gap: 16px;
             margin-bottom: 16px;
         }
-        .modal .form-row.full {
-            grid-template-columns: 1fr;
-        }
+        .modal .form-row.full { grid-template-columns: 1fr; }
 
         .modal label {
             display: block;
@@ -597,10 +523,7 @@
             letter-spacing: -0.2px;
         }
 
-        .modal .label-required::after {
-            content: ' *';
-            color: #ff3b30;
-        }
+        .modal .label-required::after { content: ' *'; color: #ff3b30; }
 
         .modal input,
         .modal textarea,
@@ -626,10 +549,7 @@
             background: var(--bg-card);
         }
 
-        .modal textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
+        .modal textarea { resize: vertical; min-height: 60px; }
 
         .modal .actions {
             display: flex;
@@ -649,12 +569,8 @@
             font-size: 15px;
             transition: background 0.2s;
         }
-        .modal .btn-secondary:hover {
-            background: #d1d1d6;
-        }
-        body.dark .modal .btn-secondary:hover {
-            background: #4a4a4c;
-        }
+        .modal .btn-secondary:hover { background: #d1d1d6; }
+        body.dark .modal .btn-secondary:hover { background: #4a4a4c; }
 
         .modal .checkbox-row {
             margin: 8px 0 12px 0;
@@ -711,9 +627,7 @@
             margin-bottom: 8px;
             border: 1px solid var(--border-light);
         }
-        .contact-fields.visible {
-            display: block;
-        }
+        .contact-fields.visible { display: block; }
 
         .radio-group {
             display: flex;
@@ -745,9 +659,7 @@
             display: none;
             transition: background 0.3s;
         }
-        .selected-vehicle-info.visible {
-            display: block;
-        }
+        .selected-vehicle-info.visible { display: block; }
 
         .selected-vehicle-info .info-row {
             display: flex;
@@ -760,9 +672,7 @@
             color: var(--text-secondary);
             min-width: 130px;
         }
-        .selected-vehicle-info .info-row .val {
-            color: var(--text-primary);
-        }
+        .selected-vehicle-info .info-row .val { color: var(--text-primary); }
         .selected-vehicle-info .info-row select {
             padding: 6px 10px;
             border-radius: 10px;
@@ -820,7 +730,6 @@
             border-radius: 12px;
         }
 
-        /* Блок выбора измерений */
         .measurements-block {
             margin-top: 12px;
             padding: 12px 16px;
@@ -829,9 +738,7 @@
             border: 1px solid var(--border-light);
             transition: background 0.3s;
         }
-        .measurements-block .checkbox-group {
-            margin-bottom: 8px;
-        }
+        .measurements-block .checkbox-group { margin-bottom: 8px; }
         .measurement-fields {
             display: none;
             padding: 8px 12px;
@@ -840,17 +747,10 @@
             margin-top: 6px;
             border: 1px solid var(--border-light);
         }
-        .measurement-fields.visible {
-            display: block;
-        }
-        .measurement-fields .form-row {
-            margin-bottom: 4px;
-        }
+        .measurement-fields.visible { display: block; }
+        .measurement-fields .form-row { margin-bottom: 4px; }
 
-        /* Помехи - отступы */
-        .obstacles-group {
-            margin: 0 0 16px 0;
-        }
+        .obstacles-group { margin: 0 0 16px 0; }
 
         .report-options {
             display: flex;
@@ -893,9 +793,7 @@
             display: none;
             margin-top: 6px;
         }
-        .history-content.open {
-            display: block;
-        }
+        .history-content.open { display: block; }
         .history-toggle {
             cursor: pointer;
             user-select: none;
@@ -907,130 +805,48 @@
             font-size: 14px;
             padding: 4px 0;
         }
-        .history-toggle:hover {
-            color: #0066d9;
-        }
+        .history-toggle:hover { color: #0066d9; }
         .history-toggle .arrow {
             display: inline-block;
             transition: transform 0.2s;
             font-size: 12px;
         }
-        .history-toggle .arrow.open {
-            transform: rotate(90deg);
-        }
+        .history-toggle .arrow.open { transform: rotate(90deg); }
 
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            body {
-                background: white !important;
-                padding: 20px !important;
-                color: black !important;
-            }
-            .board-header {
-                background: white !important;
-                box-shadow: none !important;
-                backdrop-filter: none !important;
-                border: 1px solid #ddd !important;
-            }
-            .column {
-                background: white !important;
-                backdrop-filter: none !important;
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
-                page-break-inside: avoid;
-            }
-            .card {
-                background: white !important;
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
-                page-break-inside: avoid;
-            }
-            .card .extra-details {
-                display: block !important;
-                max-height: none !important;
-                opacity: 1 !important;
-                margin-top: 12px !important;
-                padding-top: 12px !important;
-                border-top: 1px solid #ddd !important;
-            }
+            .no-print { display: none !important; }
+            body { background: white !important; padding: 20px !important; color: black !important; }
+            .board-header { background: white !important; box-shadow: none !important; backdrop-filter: none !important; border: 1px solid #ddd !important; }
+            .column { background: white !important; backdrop-filter: none !important; box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
+            .card { background: white !important; box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
+            .card .extra-details { display: block !important; max-height: none !important; opacity: 1 !important; margin-top: 12px !important; padding-top: 12px !important; border-top: 1px solid #ddd !important; }
             .card .action-group,
             .card .delete-btn-inline,
             .card .print-btn-inline,
-            .card .copy-btn-inline {
-                display: none !important;
-            }
-            .card .meta {
-                border-top-color: #ddd !important;
-            }
-            .history-toggle {
-                display: none !important;
-            }
-            .history-content {
-                display: block !important;
-            }
-            .modal-overlay {
-                display: none !important;
-            }
+            .card .copy-btn-inline { display: none !important; }
+            .card .meta { border-top-color: #ddd !important; }
+            .history-toggle { display: none !important; }
+            .history-content { display: block !important; }
+            .modal-overlay { display: none !important; }
         }
 
-        @media (max-width: 1024px) {
-            .board {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-        @media (max-width: 700px) {
-            .board {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+        @media (max-width: 1024px) { .board { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 700px) { .board { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 480px) {
-            .board {
-                grid-template-columns: 1fr;
-            }
-            .board-header {
-                flex-direction: column;
-                align-items: stretch;
-                padding: 16px;
-            }
-            .board-header .actions {
-                justify-content: stretch;
-            }
+            .board { grid-template-columns: 1fr; }
+            .board-header { flex-direction: column; align-items: stretch; padding: 16px; }
+            .board-header .actions { justify-content: stretch; }
             .board-header .btn-primary,
             .board-header .btn-secondary,
-            .board-header .btn-success {
-                width: 100%;
-                text-align: center;
-            }
-            .modal {
-                padding: 24px 20px;
-            }
-            .modal .form-row {
-                grid-template-columns: 1fr;
-            }
-            .report-period .form-row {
-                grid-template-columns: 1fr;
-            }
-            .radio-group {
-                gap: 14px;
-            }
-            .selected-vehicle-info .info-row {
-                flex-wrap: wrap;
-            }
-            .selected-vehicle-info .info-row .lbl {
-                min-width: auto;
-                width: 100%;
-            }
-            .board-header .stats {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-            .measurements-block .checkbox-group {
-                flex-direction: column;
-                gap: 6px;
-            }
+            .board-header .btn-success { width: 100%; text-align: center; }
+            .modal { padding: 24px 20px; }
+            .modal .form-row { grid-template-columns: 1fr; }
+            .report-period .form-row { grid-template-columns: 1fr; }
+            .radio-group { gap: 14px; }
+            .selected-vehicle-info .info-row { flex-wrap: wrap; }
+            .selected-vehicle-info .info-row .lbl { min-width: auto; width: 100%; }
+            .board-header .stats { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .measurements-block .checkbox-group { flex-direction: column; gap: 6px; }
         }
     </style>
 </head>
@@ -1354,8 +1170,7 @@
             </form>
         </div>
     </div>
-
-    <!-- ===== МОДАЛКА ПРИЧИНЫ ВОЗВРАТА ===== -->
+        <!-- ===== МОДАЛКА ПРИЧИНЫ ВОЗВРАТА ===== -->
     <div class="modal-overlay" id="returnReasonModal">
         <div class="modal">
             <h2>Возврат заказа</h2>
@@ -1467,11 +1282,27 @@
 
     <script>
         // ============================================================
-        //  ПОЛНЫЙ СКРИПТ (БЕЗ FIREBASE, ТОЛЬКО LOCALSTORAGE)
+        //  ПОЛНЫЙ СКРИПТ (СИНХРОНИЗАЦИЯ ЧЕРЕЗ FIREBASE)
         // ============================================================
+        // ---- Firebase инициализация ----
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsvUrYf1EraDWPH6tfGVmIsdGk6Nrm0Do",
+            authDomain: "tehnodv25ru.firebaseapp.com",
+            databaseURL: "https://tehnodv25ru-default-rtdb.firebaseio.com",
+            projectId: "tehnodv25ru",
+            storageBucket: "tehnodv25ru.firebasestorage.app",
+            messagingSenderId: "253082983616",
+            appId: "1:253082983616:web:93dd2f76a08650a304e125",
+            measurementId: "G-P773E13DCL"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const dataRef = db.ref('kanban');
+
         const ADMIN_PASSWORD = 'admin123';
-        const STORAGE_KEY = 'kanbanData';
         const DRAFT_KEY = 'kanbanDraft';
+        const BACKUP_KEY = 'kanbanLocalBackup';
 
         const DEFAULT_COLUMNS = [
             { id: 'col0', name: 'Поступил звонок', wipLimit: 10, cards: [] },
@@ -1767,29 +1598,81 @@
             document.getElementById('active-machines').textContent = active;
         }
 
+        // ---- Сохранение в Firebase с бэкапом ----
         function saveData() {
-            const data = { columnsData, nextOrderNumber, nextCardId };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-            updateAddressList();
-            updateStats();
+            const data = {
+                columnsData: columnsData,
+                nextOrderNumber: nextOrderNumber,
+                nextCardId: nextCardId
+            };
+            localStorage.setItem(BACKUP_KEY, JSON.stringify(data));
+            dataRef.set(data)
+                .then(() => {
+                    console.log('✅ Данные сохранены в Firebase');
+                    updateAddressList();
+                    updateStats();
+                })
+                .catch(err => {
+                    console.error('❌ Ошибка сохранения в Firebase:', err);
+                    alert('Не удалось сохранить в облако, данные сохранены локально.');
+                });
         }
 
-        function loadData() {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            if (!raw) return false;
+        // ---- Загрузка из Firebase с бэкапом ----
+        async function loadData() {
             try {
-                let data = JSON.parse(raw);
-                data = migrateData(data);
-                if (data.columnsData && Array.isArray(data.columnsData)) {
-                    columnsData.length = 0;
-                    data.columnsData.forEach(col => columnsData.push(col));
-                    if (data.nextOrderNumber) nextOrderNumber = data.nextOrderNumber;
-                    if (data.nextCardId) nextCardId = data.nextCardId;
-                    return true;
+                const snapshot = await dataRef.once('value');
+                const data = snapshot.val();
+                if (data) {
+                    const migrated = migrateData(data);
+                    if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
+                        columnsData.length = 0;
+                        migrated.columnsData.forEach(col => columnsData.push(col));
+                        if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
+                        if (migrated.nextCardId) nextCardId = migrated.nextCardId;
+                        localStorage.setItem(BACKUP_KEY, JSON.stringify(migrated));
+                        console.log('✅ Данные загружены из Firebase');
+                        return true;
+                    }
                 }
-            } catch (_) {}
+            } catch (err) {
+                console.error('❌ Ошибка загрузки из Firebase:', err);
+            }
+
+            const backup = localStorage.getItem(BACKUP_KEY);
+            if (backup) {
+                try {
+                    const data = JSON.parse(backup);
+                    const migrated = migrateData(data);
+                    if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
+                        columnsData.length = 0;
+                        migrated.columnsData.forEach(col => columnsData.push(col));
+                        if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
+                        if (migrated.nextCardId) nextCardId = migrated.nextCardId;
+                        console.log('🔄 Данные загружены из локального бэкапа');
+                        return true;
+                    }
+                } catch (_) {}
+            }
+            console.warn('⚠️ Данные не загружены, используются значения по умолчанию');
             return false;
         }
+
+        // ---- Слушатель реального времени ----
+        dataRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) return;
+            const migrated = migrateData(data);
+            if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
+                columnsData.length = 0;
+                migrated.columnsData.forEach(col => columnsData.push(col));
+                if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
+                if (migrated.nextCardId) nextCardId = migrated.nextCardId;
+                renderBoard();
+                updateStats();
+                updateAddressList();
+            }
+        });
 
         // ----- ЧЕРНОВИК -----
         function getManagerValue() {
@@ -4569,113 +4452,23 @@
             saveDraft();
         });
 
-        // ----- ЗАПУСК -----
-        loadTheme();
-        loadData();
-        renderBoard();
-        setTimeout(() => {
-            renderDynamicFields();
-            updateContactFieldsVisibility();
-            if (cargoType.value === 'Контейнер') updateContainerDimensions();
-            if (!isHiredMode) updateVehicleList();
-            updateMeasurementFields();
-        }, 100);
-        saveData();
-
-        // ===== КНОПКА АВТОМАТИЧЕСКОГО ЗАПОЛНЕНИЯ =====
-        document.getElementById('fillAutoBtn').addEventListener('click', function() {
-            // Заполняем основные поля
-            document.querySelector('input[name="managerRadio"][value="Диана"]').checked = true;
-
-            const now = new Date();
-            const today = now.toISOString().slice(0, 10);
-            document.getElementById('pickupDate').value = today;
-            let h = now.getHours(),
-                m = now.getMinutes() + 15;
-            if (m >= 60) { h += 1;
-                m -= 60; }
-            if (h >= 24) h -= 24;
-            document.getElementById('pickupTime').value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-
-            document.getElementById('pickupAddress').value = 'ул. Ленина, 5';
-            document.getElementById('pickupLandmark').value = 'въезд со двора';
-            document.getElementById('deliveryAddress').value = 'пр. Победы, 12';
-            document.getElementById('deliveryLandmark').value = 'склад №2';
-
-            document.getElementById('pickupContactName').value = 'Иван Иванов';
-            document.getElementById('pickupContactPhone').value = '+7 999 111-22-33';
-            document.getElementById('deliveryContactName').value = 'Петр Петров';
-            document.getElementById('deliveryContactPhone').value = '+7 999 444-55-66';
-
-            document.getElementById('clientName').value = 'ООО "Тест"';
-            document.getElementById('clientPhone').value = '+7 999 777-88-99';
-
-            // Тип груза - Автомобиль
-            document.getElementById('cargoType').value = 'Автомобиль';
-
-            // Измерения
-            document.getElementById('measWeight').checked = true;
-            document.getElementById('measVolume').checked = true;
-            document.getElementById('measDimensions').checked = true;
-            document.getElementById('cargoWeight').value = '1.5';
-            document.getElementById('cargoVolume').value = '5';
-            document.getElementById('cargoDimLength').value = '4';
-            document.getElementById('cargoDimWidth').value = '1.8';
-            document.getElementById('cargoDimHeight').value = '1.5';
-            updateMeasurementFields();
-
-            // Пропуска
-            document.querySelector('input[name="passRequiredPickup"][value="true"]').checked = true;
-            document.querySelector('input[name="passRequiredDelivery"][value="true"]').checked = true;
-
-            // Транспорт - выбираем первую машину (не наемник)
-            // Дождёмся, пока отрисуется список, и выберем
+        // ===== ЗАПУСК ПРИЛОЖЕНИЯ =====
+        async function initApp() {
+            loadTheme();
+            const loaded = await loadData();
+            renderBoard(); // всегда рендерим, даже если данные не загружены
+            // Остальная инициализация
             setTimeout(() => {
-                const select = document.getElementById('vehicleSelect');
-                if (select) {
-                    const firstOpt = select.querySelector('option:not([value="hired"])');
-                    if (firstOpt) {
-                        select.value = firstOpt.value;
-                        const v = JSON.parse(firstOpt.dataset.vehicle);
-                        selectVehicle(v);
-                    }
-                }
-                // Доп. часы
-                document.getElementById('extraHoursDisplay').textContent = '2';
-                extraHours = 2;
-                updateTotalPrice();
-            }, 200);
+                renderDynamicFields();
+                updateContactFieldsVisibility();
+                if (cargoType.value === 'Контейнер') updateContainerDimensions();
+                if (!isHiredMode) updateVehicleList();
+                updateMeasurementFields();
+            }, 100);
+            // Слушатель уже подключён выше, он будет обновлять доску при изменениях
+        }
 
-            // Комментарий, канал
-            document.getElementById('comment').value = 'Тестовый заказ, заполнен автоматически';
-            document.getElementById('salesChannel').value = 'Яндекс';
-
-            // Динамические поля для Автомобиля
-            setTimeout(() => {
-                const dynContainer = document.getElementById('dynamicCargoFields');
-                if (dynContainer) {
-                    // Заполняем поля, если они есть
-                    const autoType = document.getElementById('dyn_autoType');
-                    if (autoType) autoType.value = 'Легковой';
-                    const brand = document.getElementById('dyn_brand');
-                    if (brand) brand.value = 'Toyota Camry';
-                    const condition = document.getElementById('dyn_condition');
-                    if (condition) condition.value = 'После дтп';
-                    const wheels = document.getElementById('dyn_wheels');
-                    if (wheels) wheels.value = 'Да';
-                    const loading = document.getElementById('dyn_loading');
-                    if (loading) loading.value = 'Заеду сам';
-                    const docs = document.getElementById('dyn_docs');
-                    if (docs) docs.value = 'Предоставлю';
-                }
-            }, 300);
-
-            // Обновляем контактные поля (видимость)
-            updateContactFieldsVisibility();
-
-            // Сохраняем черновик
-            saveDraft();
-        });
+        initApp();
     </script>
 </body>
 </html>
