@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Канбан-доска «Работа машин» (синхронизация)</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js"></script>
     <style>
-        /* ===== CSS переменные для тёмной темы ===== */
+        /* ===== CSS ===== */
         :root {
             --bg-primary: #f5f5f7;
             --bg-secondary: rgba(255, 255, 255, 0.8);
@@ -26,7 +23,6 @@
             --badge-bg: #e5e5ea;
             --modal-bg: white;
         }
-
         body.dark {
             --bg-primary: #1c1c1e;
             --bg-secondary: rgba(44, 44, 46, 0.9);
@@ -43,9 +39,7 @@
             --badge-bg: #3a3a3c;
             --modal-bg: #2c2c2e;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg-primary);
@@ -55,7 +49,6 @@
             -moz-osx-font-smoothing: grayscale;
             transition: background 0.3s, color 0.3s;
         }
-
         .board-header {
             display: flex;
             justify-content: space-between;
@@ -73,33 +66,11 @@
             border: 1px solid transparent;
         }
         body.dark .board-header { border-color: var(--border-light); }
-
-        .board-header h1 {
-            font-size: 26px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            color: var(--text-primary);
-        }
-
-        .board-header .stats {
-            font-size: 15px;
-            font-weight: 400;
-            color: var(--text-secondary);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-        }
-
+        .board-header h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; color: var(--text-primary); }
+        .board-header .stats { font-size: 15px; font-weight: 400; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
         .board-header .stats span { font-weight: 600; color: #007AFF; }
         body.dark .board-header .stats span { color: #0a84ff; }
-
-        .board-header .actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
+        .board-header .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
 
         .btn-primary {
             background: #007AFF;
@@ -176,12 +147,7 @@
         .btn-copy:active { transform: scale(0.97); }
         .btn-copy.copied { background: #34c759; }
 
-        .board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            align-items: start;
-        }
+        .board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-items: start; }
 
         .column {
             background: var(--bg-column);
@@ -196,10 +162,7 @@
         }
         body.dark .column { border-color: var(--border-light); }
 
-        .column.drag-over {
-            background: rgba(0, 122, 255, 0.05);
-            border-color: #007AFF;
-        }
+        .column.drag-over { background: rgba(0, 122, 255, 0.05); border-color: #007AFF; }
 
         .column-header {
             display: flex;
@@ -208,14 +171,7 @@
             margin-bottom: 14px;
             padding: 0 4px;
         }
-
-        .column-header h2 {
-            font-size: 17px;
-            font-weight: 600;
-            color: var(--text-primary);
-            letter-spacing: -0.3px;
-        }
-
+        .column-header h2 { font-size: 17px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.3px; }
         .column-header .badge {
             background: var(--badge-bg);
             color: var(--text-primary);
@@ -226,20 +182,9 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        .column-body {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            min-height: 100px;
-        }
+        .column-body { display: flex; flex-direction: column; gap: 12px; min-height: 100px; }
 
-        .empty-message {
-            color: var(--text-muted);
-            text-align: center;
-            padding: 30px 0;
-            font-size: 14px;
-            font-weight: 400;
-        }
+        .empty-message { color: var(--text-muted); text-align: center; padding: 30px 0; font-size: 14px; font-weight: 400; }
 
         .card {
             background: var(--bg-card);
@@ -252,51 +197,17 @@
             user-select: none;
             position: relative;
         }
-
         .card:active { cursor: grabbing; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); }
+        .card.dragging { opacity: 0.5; transform: scale(0.98); }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .card.dragging {
-            opacity: 0.5;
-            transform: scale(0.98);
-        }
-
-        .card .order-id {
-            font-weight: 600;
-            font-size: 16px;
-            color: var(--text-primary);
-            letter-spacing: -0.2px;
-        }
-
-        .card .manager {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 4px 0 2px;
-        }
-
-        .card .client-name {
-            font-size: 14px;
-            color: #007AFF;
-            margin: 2px 0;
-        }
+        .card .order-id { font-weight: 600; font-size: 16px; color: var(--text-primary); letter-spacing: -0.2px; }
+        .card .manager { font-size: 14px; color: var(--text-secondary); margin: 4px 0 2px; }
+        .card .client-name { font-size: 14px; color: #007AFF; margin: 2px 0; }
         body.dark .card .client-name { color: #0a84ff; }
-
-        .card .client-phone {
-            font-size: 14px;
-            color: #007AFF;
-            margin: 2px 0;
-        }
+        .card .client-phone { font-size: 14px; color: #007AFF; margin: 2px 0; }
         body.dark .card .client-phone { color: #0a84ff; }
-
-        .card .cargo-line {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin: 2px 0;
-        }
+        .card .cargo-line { font-size: 14px; color: var(--text-secondary); margin: 2px 0; }
 
         .card .extra-details {
             display: block;
@@ -311,7 +222,6 @@
             color: var(--text-primary);
             text-align: left;
         }
-
         .card .extra-details.show {
             max-height: 3000px;
             opacity: 1;
@@ -319,38 +229,12 @@
             padding-top: 12px;
             border-top: 1px solid var(--border-light);
         }
-
-        .card .extra-details .label {
-            font-weight: 600;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 4px;
-            margin-top: 12px;
-        }
+        .card .extra-details .label { font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 4px; margin-top: 12px; }
         .card .extra-details .label:first-of-type { margin-top: 0; }
-
-        .card .extra-details .detail-item {
-            display: flex;
-            justify-content: flex-start;
-            padding: 2px 0;
-            border-bottom: none;
-            gap: 8px;
-        }
-
-        .card .extra-details .detail-item .key {
-            color: var(--text-secondary);
-            min-width: 140px;
-            flex-shrink: 0;
-        }
-        .card .extra-details .detail-item .value {
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .card .extra-details .detail-item .value a {
-            color: #007AFF;
-            text-decoration: none;
-        }
+        .card .extra-details .detail-item { display: flex; justify-content: flex-start; padding: 2px 0; border-bottom: none; gap: 8px; }
+        .card .extra-details .detail-item .key { color: var(--text-secondary); min-width: 140px; flex-shrink: 0; }
+        .card .extra-details .detail-item .value { font-weight: 500; color: var(--text-primary); }
+        .card .extra-details .detail-item .value a { color: #007AFF; text-decoration: none; }
         .card .extra-details .detail-item .value a:hover { text-decoration: underline; }
 
         .card .delete-btn-inline {
@@ -406,11 +290,7 @@
         .card .copy-btn-inline:hover { background: #0066d9; }
         .card .copy-btn-inline.copied { background: #34c759; }
 
-        .card .action-group {
-            margin-top: 10px;
-            padding-top: 8px;
-            border-top: 1px dashed var(--border-light);
-        }
+        .card .action-group { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--border-light); }
 
         .card .info-block {
             background: var(--input-bg);
@@ -419,39 +299,15 @@
             margin-top: 8px;
             transition: background 0.3s;
         }
-        .card .info-block .block-title {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
+        .card .info-block .block-title { font-weight: 600; font-size: 14px; color: var(--text-primary); margin-bottom: 4px; }
 
         .column-0 .card { border-left-color: #ff9500; }
         .column-1 .card { border-left-color: #007AFF; }
         .column-2 .card { border-left-color: #34c759; }
         .column-3 .card { border-left-color: #ff3b30; }
 
-        .return-reason-badge {
-            font-size: 11px;
-            background: #ffd1d1;
-            color: #b80000;
-            padding: 2px 12px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        .refusal-reason-badge {
-            font-size: 11px;
-            background: #ffb3b3;
-            color: #8b0000;
-            padding: 2px 12px;
-            border-radius: 12px;
-            display: inline-block;
-            margin-top: 4px;
-            font-weight: 500;
-        }
+        .return-reason-badge { font-size: 11px; background: #ffd1d1; color: #b80000; padding: 2px 12px; border-radius: 12px; display: inline-block; margin-top: 4px; font-weight: 500; }
+        .refusal-reason-badge { font-size: 11px; background: #ffb3b3; color: #8b0000; padding: 2px 12px; border-radius: 12px; display: inline-block; margin-top: 4px; font-weight: 500; }
 
         .modal-overlay {
             display: none;
@@ -487,47 +343,16 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        .modal h2 {
-            font-size: 28px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            margin-bottom: 24px;
-            color: var(--text-primary);
-            text-align: center;
-        }
+        .modal h2 { font-size: 28px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 24px; color: var(--text-primary); text-align: center; }
+        .modal h3 { font-size: 18px; font-weight: 500; margin: 24px 0 12px 0; color: var(--text-primary); border-bottom: 1px solid var(--border-light); padding-bottom: 6px; text-align: center; }
 
-        .modal h3 {
-            font-size: 18px;
-            font-weight: 500;
-            margin: 24px 0 12px 0;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-light);
-            padding-bottom: 6px;
-            text-align: center;
-        }
-
-        .modal .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
+        .modal .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
         .modal .form-row.full { grid-template-columns: 1fr; }
 
-        .modal label {
-            display: block;
-            font-weight: 500;
-            margin-top: 6px;
-            font-size: 14px;
-            color: var(--text-primary);
-            letter-spacing: -0.2px;
-        }
-
+        .modal label { display: block; font-weight: 500; margin-top: 6px; font-size: 14px; color: var(--text-primary); letter-spacing: -0.2px; }
         .modal .label-required::after { content: ' *'; color: #ff3b30; }
 
-        .modal input,
-        .modal textarea,
-        .modal select {
+        .modal input, .modal textarea, .modal select {
             width: 100%;
             padding: 10px 14px;
             border: 1px solid var(--border-medium);
@@ -539,24 +364,15 @@
             background: var(--input-bg);
             color: var(--text-primary);
         }
-
-        .modal input:focus,
-        .modal textarea:focus,
-        .modal select:focus {
+        .modal input:focus, .modal textarea:focus, .modal select:focus {
             outline: none;
             border-color: #007AFF;
             box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.12);
             background: var(--bg-card);
         }
-
         .modal textarea { resize: vertical; min-height: 60px; }
 
-        .modal .actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 28px;
-            justify-content: flex-end;
-        }
+        .modal .actions { display: flex; gap: 12px; margin-top: 28px; justify-content: flex-end; }
 
         .modal .btn-secondary {
             background: var(--badge-bg);
@@ -572,83 +388,20 @@
         .modal .btn-secondary:hover { background: #d1d1d6; }
         body.dark .modal .btn-secondary:hover { background: #4a4a4c; }
 
-        .modal .checkbox-row {
-            margin: 8px 0 12px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .modal .checkbox-row { margin: 8px 0 12px 0; display: flex; align-items: center; gap: 10px; }
+        .modal .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; accent-color: #007AFF; margin: 0; padding: 0; flex-shrink: 0; }
+        .modal .checkbox-row label { margin: 0; font-weight: 400; font-size: 14px; cursor: pointer; color: var(--text-primary); }
 
-        .modal .checkbox-row input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #007AFF;
-            margin: 0;
-            padding: 0;
-            flex-shrink: 0;
-        }
+        .modal .checkbox-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 4px; }
+        .modal .checkbox-group label { display: flex; align-items: center; gap: 6px; font-weight: 400; font-size: 14px; cursor: pointer; margin: 0; }
+        .modal .checkbox-group input[type="checkbox"] { width: 18px; height: 18px; accent-color: #007AFF; margin: 0; }
 
-        .modal .checkbox-row label {
-            margin: 0;
-            font-weight: 400;
-            font-size: 14px;
-            cursor: pointer;
-            color: var(--text-primary);
-        }
-
-        .modal .checkbox-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 4px;
-        }
-        .modal .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 400;
-            font-size: 14px;
-            cursor: pointer;
-            margin: 0;
-        }
-        .modal .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #007AFF;
-            margin: 0;
-        }
-
-        .contact-fields {
-            display: none;
-            padding: 12px 16px;
-            background: var(--input-bg);
-            border-radius: 12px;
-            margin-top: 6px;
-            margin-bottom: 8px;
-            border: 1px solid var(--border-light);
-        }
+        .contact-fields { display: none; padding: 12px 16px; background: var(--input-bg); border-radius: 12px; margin-top: 6px; margin-bottom: 8px; border: 1px solid var(--border-light); }
         .contact-fields.visible { display: block; }
 
-        .radio-group {
-            display: flex;
-            gap: 24px;
-            flex-wrap: wrap;
-            margin-top: 6px;
-        }
-        .radio-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 400;
-            font-size: 15px;
-            cursor: pointer;
-        }
-        .radio-group input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #007AFF;
-            margin: 0;
-        }
+        .radio-group { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 6px; }
+        .radio-group label { display: flex; align-items: center; gap: 8px; font-weight: 400; font-size: 15px; cursor: pointer; }
+        .radio-group input[type="radio"] { width: 18px; height: 18px; accent-color: #007AFF; margin: 0; }
 
         .selected-vehicle-info {
             margin-top: 16px;
@@ -661,74 +414,19 @@
         }
         .selected-vehicle-info.visible { display: block; }
 
-        .selected-vehicle-info .info-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 6px 0;
-        }
-        .selected-vehicle-info .info-row .lbl {
-            font-weight: 500;
-            color: var(--text-secondary);
-            min-width: 130px;
-        }
+        .selected-vehicle-info .info-row { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+        .selected-vehicle-info .info-row .lbl { font-weight: 500; color: var(--text-secondary); min-width: 130px; }
         .selected-vehicle-info .info-row .val { color: var(--text-primary); }
-        .selected-vehicle-info .info-row select {
-            padding: 6px 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border-medium);
-            font-size: 14px;
-            background: var(--bg-card);
-            color: var(--text-primary);
-            flex: 1;
-        }
+        .selected-vehicle-info .info-row select { padding: 6px 10px; border-radius: 10px; border: 1px solid var(--border-medium); font-size: 14px; background: var(--bg-card); color: var(--text-primary); flex: 1; }
 
-        .selected-vehicle-info .extra-control {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin: 0;
-        }
-        .selected-vehicle-info .extra-control button {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 1px solid var(--border-medium);
-            background: var(--bg-card);
-            font-size: 20px;
-            cursor: pointer;
-            transition: 0.15s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-primary);
-        }
-        .selected-vehicle-info .extra-control button:hover {
-            background: var(--badge-bg);
-            border-color: #007AFF;
-        }
-        .selected-vehicle-info .extra-control span {
-            font-size: 20px;
-            font-weight: 500;
-            min-width: 34px;
-            text-align: center;
-        }
+        .selected-vehicle-info .extra-control { display: flex; align-items: center; gap: 14px; margin: 0; }
+        .selected-vehicle-info .extra-control button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border-medium); background: var(--bg-card); font-size: 20px; cursor: pointer; transition: 0.15s; display: flex; align-items: center; justify-content: center; color: var(--text-primary); }
+        .selected-vehicle-info .extra-control button:hover { background: var(--badge-bg); border-color: #007AFF; }
+        .selected-vehicle-info .extra-control span { font-size: 20px; font-weight: 500; min-width: 34px; text-align: center; }
 
-        .selected-vehicle-info .total-price {
-            font-size: 20px;
-            font-weight: 600;
-            color: #34c759;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--border-light);
-            text-align: right;
-        }
+        .selected-vehicle-info .total-price { font-size: 20px; font-weight: 600; color: #34c759; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-light); text-align: right; }
 
-        .dynamic-fields {
-            margin-top: 10px;
-            padding: 6px;
-            border-radius: 12px;
-        }
+        .dynamic-fields { margin-top: 10px; padding: 6px; border-radius: 12px; }
 
         .measurements-block {
             margin-top: 12px;
@@ -739,60 +437,22 @@
             transition: background 0.3s;
         }
         .measurements-block .checkbox-group { margin-bottom: 8px; }
-        .measurement-fields {
-            display: none;
-            padding: 8px 12px;
-            background: var(--bg-card);
-            border-radius: 8px;
-            margin-top: 6px;
-            border: 1px solid var(--border-light);
-        }
+        .measurement-fields { display: none; padding: 8px 12px; background: var(--bg-card); border-radius: 8px; margin-top: 6px; border: 1px solid var(--border-light); }
         .measurement-fields.visible { display: block; }
         .measurement-fields .form-row { margin-bottom: 4px; }
 
         .obstacles-group { margin: 0 0 16px 0; }
 
-        .report-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin: 16px 0;
-        }
-        .report-options label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 16px;
-            cursor: pointer;
-            color: var(--text-primary);
-        }
-        .report-options input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #007AFF;
-        }
+        .report-options { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+        .report-options label { display: flex; align-items: center; gap: 12px; font-size: 16px; cursor: pointer; color: var(--text-primary); }
+        .report-options input[type="radio"] { width: 20px; height: 20px; accent-color: #007AFF; }
 
-        .report-period {
-            margin-top: 12px;
-            padding: 16px;
-            background: var(--input-bg);
-            border-radius: 14px;
-        }
-        .report-period .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
+        .report-period { margin-top: 12px; padding: 16px; background: var(--input-bg); border-radius: 14px; }
+        .report-period .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-        #returnReasonModal .modal,
-        #refusalReasonModal .modal {
-            max-width: 480px;
-        }
+        #returnReasonModal .modal, #refusalReasonModal .modal { max-width: 480px; }
 
-        .history-content {
-            display: none;
-            margin-top: 6px;
-        }
+        .history-content { display: none; margin-top: 6px; }
         .history-content.open { display: block; }
         .history-toggle {
             cursor: pointer;
@@ -806,11 +466,7 @@
             padding: 4px 0;
         }
         .history-toggle:hover { color: #0066d9; }
-        .history-toggle .arrow {
-            display: inline-block;
-            transition: transform 0.2s;
-            font-size: 12px;
-        }
+        .history-toggle .arrow { display: inline-block; transition: transform 0.2s; font-size: 12px; }
         .history-toggle .arrow.open { transform: rotate(90deg); }
 
         @media print {
@@ -820,10 +476,7 @@
             .column { background: white !important; backdrop-filter: none !important; box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
             .card { background: white !important; box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
             .card .extra-details { display: block !important; max-height: none !important; opacity: 1 !important; margin-top: 12px !important; padding-top: 12px !important; border-top: 1px solid #ddd !important; }
-            .card .action-group,
-            .card .delete-btn-inline,
-            .card .print-btn-inline,
-            .card .copy-btn-inline { display: none !important; }
+            .card .action-group, .card .delete-btn-inline, .card .print-btn-inline, .card .copy-btn-inline { display: none !important; }
             .card .meta { border-top-color: #ddd !important; }
             .history-toggle { display: none !important; }
             .history-content { display: block !important; }
@@ -836,9 +489,7 @@
             .board { grid-template-columns: 1fr; }
             .board-header { flex-direction: column; align-items: stretch; padding: 16px; }
             .board-header .actions { justify-content: stretch; }
-            .board-header .btn-primary,
-            .board-header .btn-secondary,
-            .board-header .btn-success { width: 100%; text-align: center; }
+            .board-header .btn-primary, .board-header .btn-secondary, .board-header .btn-success { width: 100%; text-align: center; }
             .modal { padding: 24px 20px; }
             .modal .form-row { grid-template-columns: 1fr; }
             .report-period .form-row { grid-template-columns: 1fr; }
@@ -1170,7 +821,7 @@
             </form>
         </div>
     </div>
-        <!-- ===== МОДАЛКА ПРИЧИНЫ ВОЗВРАТА ===== -->
+    <!-- ===== МОДАЛКА ПРИЧИНЫ ВОЗВРАТА ===== -->
     <div class="modal-overlay" id="returnReasonModal">
         <div class="modal">
             <h2>Возврат заказа</h2>
@@ -1280,10 +931,17 @@
 
     <datalist id="addressList"></datalist>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+
         // ============================================================
         //  ПОЛНЫЙ СКРИПТ (СИНХРОНИЗАЦИЯ ЧЕРЕЗ FIREBASE)
+        //  С ДОБАВЛЕННЫМИ ПРОВЕРКАМИ ДЛЯ ОТЛАДКИ
         // ============================================================
+        console.log('🚀 Скрипт начал загрузку');
+
         // ---- Firebase инициализация ----
         const firebaseConfig = {
             apiKey: "AIzaSyDsvUrYf1EraDWPH6tfGVmIsdGk6Nrm0Do",
@@ -1296,9 +954,10 @@
             measurementId: "G-P773E13DCL"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const dataRef = db.ref('kanban');
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+        const dataRef = ref(db, 'kanban');
 
         const ADMIN_PASSWORD = 'admin123';
         const DRAFT_KEY = 'kanbanDraft';
@@ -1312,160 +971,17 @@
         ];
 
         const fleet = [
-            {
-                id: '1',
-                brand: 'Мицубиси Фусо',
-                plate: 'У 075 НХ 125',
-                typeName: 'Эвакуатор',
-                capacity: 5,
-                driver: 'Примаченко В.Л.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 7000, extra: 3000 },
-                    city5: { base: 8000, extra: 4000 },
-                    city20: { base: 9600, extra: 4800 }
-                }
-            },
-            {
-                id: '2',
-                brand: 'Исузу Форвард',
-                plate: 'А 285 КА 125',
-                typeName: 'Эвакуатор',
-                capacity: 5,
-                driver: 'Маслов А.Н.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 7000, extra: 3000 },
-                    city5: { base: 8000, extra: 4000 },
-                    city20: { base: 9600, extra: 4800 }
-                }
-            },
-            {
-                id: '3',
-                brand: 'Мицубиси Фусо',
-                plate: 'А 464 ЕУ 125',
-                typeName: 'Эвакуатор',
-                capacity: 12,
-                driver: 'Курносов Ф.В.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 15000, extra: 5000 },
-                    city5: { base: 16000, extra: 6000 },
-                    city20: { base: 19200, extra: 7200 }
-                }
-            },
-            {
-                id: '4',
-                brand: 'Исузу Гига',
-                plate: 'К 157 ТР 125',
-                typeName: 'Эвакуатор',
-                capacity: 12,
-                driver: 'Ильенко А.В.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 15000, extra: 5000 },
-                    city5: { base: 16000, extra: 6000 },
-                    city20: { base: 19200, extra: 7200 }
-                }
-            },
-            {
-                id: '5',
-                brand: 'Мицубиси Фусо',
-                plate: 'А 278 НМ 125',
-                typeName: 'Эвакуатор',
-                capacity: 10,
-                driver: 'Бердов А.А.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 15000, extra: 5000 },
-                    city5: { base: 16000, extra: 6000 },
-                    city20: { base: 19200, extra: 7200 }
-                }
-            },
-            {
-                id: '6',
-                brand: 'DONGFENG',
-                plate: 'М 648 УХ 125',
-                typeName: 'Тягач с траллом',
-                capacity: 25,
-                driver: 'Гуменный С.А.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 21000, extra: 2000 },
-                    city5: { base: 22000, extra: 3000 },
-                    city20: { base: 26400, extra: 3600 }
-                }
-            },
-            {
-                id: '7',
-                brand: 'DONGFENG',
-                plate: 'М 648 УХ 125',
-                typeName: 'Тягач с бортовой платформой',
-                capacity: 25,
-                driver: 'Гуменный С.А.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 14000, extra: 1500 },
-                    city5: { base: 15000, extra: 2500 },
-                    city20: { base: 18000, extra: 3000 }
-                }
-            },
-            {
-                id: '8',
-                brand: 'Мицубиси Фусо Файтер',
-                plate: 'С 937 ЕС 125',
-                typeName: 'Эвакуатор',
-                capacity: 7,
-                driver: '',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 10000, extra: 4000 },
-                    city5: { base: 11000, extra: 5000 },
-                    city20: { base: 13200, extra: 6000 }
-                }
-            },
-            {
-                id: '9',
-                brand: 'Мицубиси Фусо Файтер',
-                plate: 'К 166 ЕХ 125',
-                typeName: 'Эвакуатор',
-                capacity: 7,
-                driver: 'Недякин И.Н.',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 10000, extra: 4000 },
-                    city5: { base: 11000, extra: 5000 },
-                    city20: { base: 13200, extra: 6000 }
-                }
-            },
-            {
-                id: '10',
-                brand: 'Hyundai',
-                plate: 'Х 875 ВЕ 125',
-                typeName: 'Эвакуатор',
-                capacity: 12,
-                driver: '',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 15000, extra: 5000 },
-                    city5: { base: 16000, extra: 6000 },
-                    city20: { base: 19200, extra: 7200 }
-                }
-            },
-            {
-                id: '11',
-                brand: 'Исузу Гига',
-                plate: 'О 508 ХВ 125',
-                typeName: 'Эвакуатор',
-                capacity: 15,
-                driver: '',
-                suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'],
-                prices: {
-                    cityCash: { base: 15000, extra: 5000 },
-                    city5: { base: 16000, extra: 6000 },
-                    city20: { base: 19200, extra: 7200 }
-                }
-            }
+            { id: '1', brand: 'Мицубиси Фусо', plate: 'У 075 НХ 125', typeName: 'Эвакуатор', capacity: 5, driver: 'Примаченко В.Л.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 7000, extra: 3000 }, city5: { base: 8000, extra: 4000 }, city20: { base: 9600, extra: 4800 } } },
+            { id: '2', brand: 'Исузу Форвард', plate: 'А 285 КА 125', typeName: 'Эвакуатор', capacity: 5, driver: 'Маслов А.Н.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 7000, extra: 3000 }, city5: { base: 8000, extra: 4000 }, city20: { base: 9600, extra: 4800 } } },
+            { id: '3', brand: 'Мицубиси Фусо', plate: 'А 464 ЕУ 125', typeName: 'Эвакуатор', capacity: 12, driver: 'Курносов Ф.В.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 15000, extra: 5000 }, city5: { base: 16000, extra: 6000 }, city20: { base: 19200, extra: 7200 } } },
+            { id: '4', brand: 'Исузу Гига', plate: 'К 157 ТР 125', typeName: 'Эвакуатор', capacity: 12, driver: 'Ильенко А.В.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 15000, extra: 5000 }, city5: { base: 16000, extra: 6000 }, city20: { base: 19200, extra: 7200 } } },
+            { id: '5', brand: 'Мицубиси Фусо', plate: 'А 278 НМ 125', typeName: 'Эвакуатор', capacity: 10, driver: 'Бердов А.А.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 15000, extra: 5000 }, city5: { base: 16000, extra: 6000 }, city20: { base: 19200, extra: 7200 } } },
+            { id: '6', brand: 'DONGFENG', plate: 'М 648 УХ 125', typeName: 'Тягач с траллом', capacity: 25, driver: 'Гуменный С.А.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 21000, extra: 2000 }, city5: { base: 22000, extra: 3000 }, city20: { base: 26400, extra: 3600 } } },
+            { id: '7', brand: 'DONGFENG', plate: 'М 648 УХ 125', typeName: 'Тягач с бортовой платформой', capacity: 25, driver: 'Гуменный С.А.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 14000, extra: 1500 }, city5: { base: 15000, extra: 2500 }, city20: { base: 18000, extra: 3000 } } },
+            { id: '8', brand: 'Мицубиси Фусо Файтер', plate: 'С 937 ЕС 125', typeName: 'Эвакуатор', capacity: 7, driver: '', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 10000, extra: 4000 }, city5: { base: 11000, extra: 5000 }, city20: { base: 13200, extra: 6000 } } },
+            { id: '9', brand: 'Мицубиси Фусо Файтер', plate: 'К 166 ЕХ 125', typeName: 'Эвакуатор', capacity: 7, driver: 'Недякин И.Н.', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 10000, extra: 4000 }, city5: { base: 11000, extra: 5000 }, city20: { base: 13200, extra: 6000 } } },
+            { id: '10', brand: 'Hyundai', plate: 'Х 875 ВЕ 125', typeName: 'Эвакуатор', capacity: 12, driver: '', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 15000, extra: 5000 }, city5: { base: 16000, extra: 6000 }, city20: { base: 19200, extra: 7200 } } },
+            { id: '11', brand: 'Исузу Гига', plate: 'О 508 ХВ 125', typeName: 'Эвакуатор', capacity: 15, driver: '', suitableTypes: ['Автомобиль', 'Грузовик', 'Контейнер', 'Бытовка, модуль', 'Спецтехника', 'Сыпучие', 'Строительный мусор', 'Прочее', 'Строительные материалы', 'Гараж', 'Водный транспорт'], prices: { cityCash: { base: 15000, extra: 5000 }, city5: { base: 16000, extra: 6000 }, city20: { base: 19200, extra: 7200 } } }
         ];
 
         const allDrivers = [...new Set(fleet.map(v => v.driver).filter(d => d && d !== ''))];
@@ -1515,20 +1031,17 @@
             });
             const cleaned = filtered.map(c => ({
                 ...c,
-                name: c.name.replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]/gu,
-                    '').trim()
+                name: c.name.replace(/[\u{1F300}-\u{1FAFF}]|[\u{2600}-\u{27BF}]|[\u{1F600}-\u{1F64F}]|[\u{1F680}-\u{1F6FF}]/gu, '').trim()
             }));
             if (cleaned.length !== 4) {
                 const all = [];
                 cleaned.forEach(col => col.cards.forEach(c => all.push(c)));
                 const nc = DEFAULT_COLUMNS.map(c => ({ ...c, cards: [] }));
                 all.forEach(card => {
-                    let lastColId = null,
-                        lastTime = null;
+                    let lastColId = null, lastTime = null;
                     if (card.timeline) {
                         for (const [colId, ts] of Object.entries(card.timeline)) {
-                            if (!lastTime || new Date(ts) > new Date(lastTime)) { lastTime = ts;
-                                lastColId = colId; }
+                            if (!lastTime || new Date(ts) > new Date(lastTime)) { lastTime = ts; lastColId = colId; }
                         }
                     }
                     if (lastColId === 'col3') lastColId = 'col2';
@@ -1546,12 +1059,10 @@
                     data.columnsData.forEach(col => col.cards.forEach(c => all.push(c)));
                     const nc = DEFAULT_COLUMNS.map(c => ({ ...c, cards: [] }));
                     all.forEach(card => {
-                        let lastColId = null,
-                            lastTime = null;
+                        let lastColId = null, lastTime = null;
                         if (card.timeline) {
                             for (const [colId, ts] of Object.entries(card.timeline)) {
-                                if (!lastTime || new Date(ts) > new Date(lastTime)) { lastTime = ts;
-                                    lastColId = colId; }
+                                if (!lastTime || new Date(ts) > new Date(lastTime)) { lastTime = ts; lastColId = colId; }
                             }
                         }
                         if (lastColId === 'col3') lastColId = 'col2';
@@ -1606,7 +1117,7 @@
                 nextCardId: nextCardId
             };
             localStorage.setItem(BACKUP_KEY, JSON.stringify(data));
-            dataRef.set(data)
+            set(dataRef, data)
                 .then(() => {
                     console.log('✅ Данные сохранены в Firebase');
                     updateAddressList();
@@ -1621,7 +1132,7 @@
         // ---- Загрузка из Firebase с бэкапом ----
         async function loadData() {
             try {
-                const snapshot = await dataRef.once('value');
+                const snapshot = await get(dataRef);
                 const data = snapshot.val();
                 if (data) {
                     const migrated = migrateData(data);
@@ -1659,7 +1170,7 @@
         }
 
         // ---- Слушатель реального времени ----
-        dataRef.on('value', (snapshot) => {
+        onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (!data) return;
             const migrated = migrateData(data);
@@ -1779,11 +1290,6 @@
                 if (details.hooks) lines.push(`Крюки/рыма: ${details.hooks}`);
                 if (details.location) lines.push(`Расположение: ${details.location}`);
                 if (details.special) lines.push(`Особенности: ${details.special}`);
-                // Прочее: только описание
-                if (details.cargoDesc) lines.push(`Описание груза: ${details.cargoDesc}`);
-                // Строительные материалы: только описание
-                if (details.cargoDesc) lines.push(`Описание груза: ${details.cargoDesc}`);
-                // Гараж: только описание
                 if (details.cargoDesc) lines.push(`Описание груза: ${details.cargoDesc}`);
             }
 
@@ -1911,7 +1417,6 @@
                 paymentMethod: document.getElementById('paymentMethod').value,
                 dynamicFields: {},
                 measurements: getMeasurements(),
-                // Добавляем поля для наемника и выбора транспорта
                 hiredMode: isHiredMode,
                 hiredName: document.getElementById('hiredName') ? document.getElementById('hiredName').value : '',
                 hiredPlate: document.getElementById('hiredPlate') ? document.getElementById('hiredPlate').value : '',
@@ -1924,10 +1429,9 @@
                 selectedVehicleId: selectedVehicle ? selectedVehicle.id : null,
                 selectedDriver: selectedDriver || '',
                 extraHours: extraHours,
-                // Пропуск и номер (сохраняем только настройки, номер будет введён позже)
                 passRequiredPickup: document.querySelector('input[name="passRequiredPickup"]:checked') ? document.querySelector('input[name="passRequiredPickup"]:checked').value === 'true' : false,
                 passRequiredDelivery: document.querySelector('input[name="passRequiredDelivery"]:checked') ? document.querySelector('input[name="passRequiredDelivery"]:checked').value === 'true' : false,
-                passNumber: '' // не вводится в форме, будет заполнено позже
+                passNumber: ''
             };
             const container = document.getElementById('dynamicCargoFields');
             if (container) {
@@ -1984,16 +1488,9 @@
             if (draft.deliveryContactCallCustomer !== undefined) {
                 document.getElementById('deliveryContactCallCustomer').checked = draft.deliveryContactCallCustomer;
             }
-            if (draft.pickupObstacles) {
-                setSelectedObstacles('pickup-obstacle', draft.pickupObstacles);
-            }
-            if (draft.deliveryObstacles) {
-                setSelectedObstacles('delivery-obstacle', draft.deliveryObstacles);
-            }
-            if (draft.measurements) {
-                setMeasurements(draft.measurements);
-            }
-            // Восстановление пропусков
+            if (draft.pickupObstacles) setSelectedObstacles('pickup-obstacle', draft.pickupObstacles);
+            if (draft.deliveryObstacles) setSelectedObstacles('delivery-obstacle', draft.deliveryObstacles);
+            if (draft.measurements) setMeasurements(draft.measurements);
             if (draft.passRequiredPickup !== undefined) {
                 const radio = document.querySelector(`input[name="passRequiredPickup"][value="${draft.passRequiredPickup}"]`);
                 if (radio) radio.checked = true;
@@ -2013,10 +1510,8 @@
                     }
                 }, 50);
             }
-            // Восстанавливаем поля наемника и выбранный транспорт
             if (draft.hiredMode !== undefined) {
                 if (draft.hiredMode) {
-                    // Включаем режим наемника
                     showHiredFields();
                     if (draft.hiredName !== undefined) document.getElementById('hiredName').value = draft.hiredName;
                     if (draft.hiredPlate !== undefined) document.getElementById('hiredPlate').value = draft.hiredPlate;
@@ -2026,19 +1521,14 @@
                     if (draft.hiredPaymentMethod !== undefined) document.getElementById('hiredPaymentMethod').value = draft.hiredPaymentMethod;
                     if (draft.hiredPrice !== undefined) document.getElementById('hiredPrice').value = draft.hiredPrice;
                     if (draft.hiredPriceExtra !== undefined) document.getElementById('hiredPriceExtra').value = draft.hiredPriceExtra;
-                    // Устанавливаем select в 'hired'
                     const select = document.getElementById('vehicleSelect');
-                    if (select) {
-                        select.value = 'hired';
-                    }
+                    if (select) select.value = 'hired';
                 } else {
-                    // Обычный транспорт
                     if (draft.selectedVehicleId) {
                         const vehicle = fleet.find(v => v.id === draft.selectedVehicleId);
                         if (vehicle) {
                             selectedVehicle = vehicle;
                             selectedDriver = draft.selectedDriver || vehicle.driver;
-                            // Обновим список и выберем
                             if (isHiredMode) hideHiredFields();
                             updateVehicleList();
                             const select = document.getElementById('vehicleSelect');
@@ -2052,10 +1542,7 @@
                         extraHours = draft.extraHours;
                         extraHoursDisplay.textContent = extraHours;
                     }
-                    if (draft.selectedDriver !== undefined) {
-                        selectedDriver = draft.selectedDriver;
-                        // будет применено при выборе машины
-                    }
+                    if (draft.selectedDriver !== undefined) selectedDriver = draft.selectedDriver;
                 }
                 updateTotalPrice();
             }
@@ -2090,18 +1577,13 @@
                 });
             document.getElementById('dynamicCargoFields')?.addEventListener('input', saveDraft);
             document.getElementById('dynamicCargoFields')?.addEventListener('change', saveDraft);
-            document.getElementById('measWeight').addEventListener('change', () => { updateMeasurementFields();
-                saveDraft(); });
-            document.getElementById('measVolume').addEventListener('change', () => { updateMeasurementFields();
-                saveDraft(); });
-            document.getElementById('measDimensions').addEventListener('change', () => { updateMeasurementFields();
-                saveDraft(); });
-            // Сохраняем изменения выбора транспорта
+            document.getElementById('measWeight').addEventListener('change', () => { updateMeasurementFields(); saveDraft(); });
+            document.getElementById('measVolume').addEventListener('change', () => { updateMeasurementFields(); saveDraft(); });
+            document.getElementById('measDimensions').addEventListener('change', () => { updateMeasurementFields(); saveDraft(); });
             document.getElementById('vehicleSelect')?.addEventListener('change', saveDraft);
             document.getElementById('driverSelect')?.addEventListener('change', saveDraft);
             document.getElementById('extraMinus')?.addEventListener('click', saveDraft);
             document.getElementById('extraPlus')?.addEventListener('click', saveDraft);
-            // Поля наемника
             document.getElementById('hiredName')?.addEventListener('input', saveDraft);
             document.getElementById('hiredPlate')?.addEventListener('input', saveDraft);
             document.getElementById('hiredPhone')?.addEventListener('input', saveDraft);
@@ -2110,7 +1592,6 @@
             document.getElementById('hiredPaymentMethod')?.addEventListener('change', saveDraft);
             document.getElementById('hiredPrice')?.addEventListener('input', saveDraft);
             document.getElementById('hiredPriceExtra')?.addEventListener('input', saveDraft);
-            // Переключатели пропуска
             document.querySelectorAll('input[name="passRequiredPickup"]').forEach(el => {
                 el.addEventListener('change', saveDraft);
             });
@@ -2213,27 +1694,17 @@
             } else {
                 measurementsText = '—';
             }
-            // Транспорт
-            let vehicleDisplay = '';
-            let driverDisplay = '';
+            let vehicleDisplay = '', driverDisplay = '';
             if (cardData.vehicleId === 'hired') {
                 vehicleDisplay = `Наемник: ${cardData.hiredName || '—'} (${cardData.hiredPlate || '—'})`;
                 driverDisplay = cardData.hiredPhone || '—';
-                // Для наемника выводим отдельные строки
-                const hirerPrice = cardData.hiredPriceHirer ? cardData.hiredPriceHirer.toLocaleString() + ' ₽' : '—';
-                const hirerExtra = cardData.hiredPriceHirerExtra ? cardData.hiredPriceHirerExtra.toLocaleString() + ' ₽/ч' : '—';
-                const hiredPayment = getPaymentDisplay(cardData.hiredPaymentMethod) || '—';
-                const ourPrice = cardData.hiredPrice ? cardData.hiredPrice.toLocaleString() + ' ₽' : '—';
-                const ourExtra = cardData.hiredPriceExtra ? cardData.hiredPriceExtra.toLocaleString() + ' ₽/ч' : '—';
-                const clientPayment = getPaymentDisplay(cardData.paymentMethod);
-                // Добавим в таблицу транспорта
                 extraRows = `
-                    <tr><td>Цена за работу наемника</td><td>${hirerPrice}</td></tr>
-                    <tr><td>Цена за доп час наемника</td><td>${hirerExtra}</td></tr>
-                    <tr><td>Способ оплаты наемнику</td><td>${hiredPayment}</td></tr>
-                    <tr><td>Наша цена</td><td>${ourPrice}</td></tr>
-                    <tr><td>Наша цена за доп час</td><td>${ourExtra}</td></tr>
-                    <tr><td>Способ оплаты клиенту</td><td>${clientPayment}</td></tr>
+                    <tr><td>Цена за работу наемника</td><td>${cardData.hiredPriceHirer ? cardData.hiredPriceHirer.toLocaleString() + ' ₽' : '—'}</td></tr>
+                    <tr><td>Цена за доп час наемника</td><td>${cardData.hiredPriceHirerExtra ? cardData.hiredPriceHirerExtra.toLocaleString() + ' ₽/ч' : '—'}</td></tr>
+                    <tr><td>Способ оплаты наемнику</td><td>${getPaymentDisplay(cardData.hiredPaymentMethod) || '—'}</td></tr>
+                    <tr><td>Наша цена</td><td>${cardData.hiredPrice ? cardData.hiredPrice.toLocaleString() + ' ₽' : '—'}</td></tr>
+                    <tr><td>Наша цена за доп час</td><td>${cardData.hiredPriceExtra ? cardData.hiredPriceExtra.toLocaleString() + ' ₽/ч' : '—'}</td></tr>
+                    <tr><td>Способ оплаты клиенту</td><td>${getPaymentDisplay(cardData.paymentMethod)}</td></tr>
                 `;
             } else {
                 vehicleDisplay = cardData.vehicleName || '—';
@@ -2241,7 +1712,6 @@
             }
             const totalPrice = cardData.totalPrice ? cardData.totalPrice.toLocaleString() + ' ₽' : '—';
             const comment = cardData.comment || '—';
-
             let detailsHtml = '';
             if (cardData.cargoDetails) {
                 const labels = {
@@ -2278,16 +1748,11 @@
                     }
                 }
             }
-
             const timelineHtml = columnsData.map(c => {
-                const ts = cardData.timeline && cardData.timeline[c.id] ? formatTimestamp(cardData.timeline[c.id]) :
-                    '—';
+                const ts = cardData.timeline && cardData.timeline[c.id] ? formatTimestamp(cardData.timeline[c.id]) : '—';
                 return `<tr><td>${c.name}</td><td>${ts}</td></tr>`;
             }).join('');
-
-            // Для наемника добавим строки с ценами
             let extraRows = '';
-
             const html = `
             <!DOCTYPE html>
             <html>
@@ -2334,9 +1799,7 @@
                 <div class="section"><h2>История перемещений</h2>
                 <table>${timelineHtml}</table></div>
                 <div class="print-footer">Отчёт сгенерирован ${new Date().toLocaleString()}</div>
-                <script>
-                    window.onload = function() { window.print(); }
-                <\/script>
+                <script>window.onload = function() { window.print(); }<\/script>
             </body>
             </html>
             `;
@@ -2348,11 +1811,9 @@
         let dragCounter = 0;
         let pendingReturnData = null;
         let pendingRefusalData = null;
-        let pendingPassData = null; // для пропуска
+        let pendingPassData = null;
 
-        function getColumnIndex(colId) {
-            return columnsData.findIndex(c => c.id === colId);
-        }
+        function getColumnIndex(colId) { return columnsData.findIndex(c => c.id === colId); }
 
         function handleDragStart(e) {
             const card = e.target.closest('.card');
@@ -2395,95 +1856,72 @@
             if (!targetCol) return;
             document.querySelectorAll('.column').forEach(c => c.classList.remove('drag-over'));
             dragCounter = 0;
-
             const raw = e.dataTransfer.getData('text/plain');
             if (!raw) return;
             const { cardId, sourceCol } = JSON.parse(raw);
             const targetColId = targetCol.dataset.columnId;
             if (sourceCol === targetColId) return;
-
             const srcIdx = getColumnIndex(sourceCol);
             const tgtIdx = getColumnIndex(targetColId);
             if (srcIdx === -1 || tgtIdx === -1) return;
-
-            // Отказ (col4) – всегда запрос причины
+            // Отказ (col4)
             if (targetColId === 'col4' && tgtIdx > srcIdx) {
                 pendingRefusalData = { cardId, sourceCol, targetColId };
                 document.getElementById('refusalReasonText').value = '';
                 document.getElementById('refusalReasonModal').classList.add('active');
                 return;
             }
-
-            // Возврат на предыдущий этап – запрос причины
+            // Возврат
             if (tgtIdx < srcIdx) {
                 pendingReturnData = { cardId, sourceCol, targetColId };
                 document.getElementById('returnReasonText').value = '';
                 document.getElementById('returnReasonModal').classList.add('active');
                 return;
             }
-
-            // Перемещение из col0 в col1 – проверка пропуска (погрузка или выгрузка) и выбор транспорта
+            // Перемещение из col0 в col1 с проверкой пропуска
             if (sourceCol === 'col0' && targetColId === 'col1') {
-                // Находим карточку
                 let card = null;
                 for (const col of columnsData) {
                     const found = col.cards.find(c => c.id === cardId);
                     if (found) { card = found; break; }
                 }
-                if (card) {
-                    // Если требуется пропуск на погрузку ИЛИ на выгрузку, и номер не указан, запрашиваем
-                    if ((card.passRequiredPickup || card.passRequiredDelivery) && !card.passNumber) {
-                        pendingPassData = { cardId, sourceCol, targetColId };
-                        // Заполняем модалку текущими данными из карточки
-                        const select = document.getElementById('passVehicleSelect');
-                        // Очищаем и заполняем список машин (как в форме)
-                        populatePassVehicleSelect(card.cargoType, card.vehicleId);
-                        // Устанавливаем выбранное
-                        if (card.vehicleId && card.vehicleId !== 'hired') {
-                            select.value = card.vehicleId;
-                            showPassHiredFields(false);
-                            // Заполняем водителей
-                            populatePassDriverSelect(card.vehicleId);
-                            if (card.selectedDriver) {
-                                document.getElementById('passDriverSelect').value = card.selectedDriver;
-                            }
-                        } else if (card.vehicleId === 'hired') {
-                            select.value = 'hired';
-                            showPassHiredFields(true);
-                            document.getElementById('passHiredName').value = card.hiredName || '';
-                            document.getElementById('passHiredPhone').value = card.hiredPhone || '';
-                            document.getElementById('passHiredPlate').value = card.hiredPlate || '';
-                        } else {
-                            // Если транспорт не выбран, выбираем первую машину
-                            const firstOpt = select.querySelector('option:not([value="hired"])');
-                            if (firstOpt) {
-                                select.value = firstOpt.value;
-                                const v = JSON.parse(firstOpt.dataset.vehicle);
-                                onPassVehicleSelect(v);
-                            }
+                if (card && (card.passRequiredPickup || card.passRequiredDelivery) && !card.passNumber) {
+                    pendingPassData = { cardId, sourceCol, targetColId };
+                    const select = document.getElementById('passVehicleSelect');
+                    populatePassVehicleSelect(card.cargoType, card.vehicleId);
+                    if (card.vehicleId && card.vehicleId !== 'hired') {
+                        select.value = card.vehicleId;
+                        showPassHiredFields(false);
+                        populatePassDriverSelect(card.vehicleId);
+                        if (card.selectedDriver) {
+                            document.getElementById('passDriverSelect').value = card.selectedDriver;
                         }
-                        document.getElementById('passNumberInput').value = '';
-                        document.getElementById('passModal').classList.add('active');
-                        return;
+                    } else if (card.vehicleId === 'hired') {
+                        select.value = 'hired';
+                        showPassHiredFields(true);
+                        document.getElementById('passHiredName').value = card.hiredName || '';
+                        document.getElementById('passHiredPhone').value = card.hiredPhone || '';
+                        document.getElementById('passHiredPlate').value = card.hiredPlate || '';
+                    } else {
+                        const firstOpt = select.querySelector('option:not([value="hired"])');
+                        if (firstOpt) {
+                            select.value = firstOpt.value;
+                            const v = JSON.parse(firstOpt.dataset.vehicle);
+                            onPassVehicleSelect(v);
+                        }
                     }
+                    document.getElementById('passNumberInput').value = '';
+                    document.getElementById('passModal').classList.add('active');
+                    return;
                 }
             }
-
-            // Все остальные перемещения выполняем сразу
             executeMove(cardId, sourceCol, targetColId);
         }
 
-        // Вспомогательные функции для модалки пропуска
         function populatePassVehicleSelect(cargoType, selectedVehicleId) {
             const select = document.getElementById('passVehicleSelect');
             select.innerHTML = `<option value="hired">Наемник (ввести свои данные)</option>`;
-            let weight = 0;
-            if (document.getElementById('measWeight').checked) {
-                weight = parseFloat(document.getElementById('cargoWeight').value) || 0;
-            } else {
-                weight = 1;
-            }
-            // Фильтруем машины по типу груза и грузоподъемности
+            let weight = document.getElementById('measWeight').checked ? parseFloat(document.getElementById('cargoWeight').value) || 0 : 1;
             const filtered = fleet.filter(v => {
                 if (!v.prices) return false;
                 if (weight > v.capacity) return false;
@@ -2494,10 +1932,8 @@
                 const short = formatVehicleShort(v);
                 const price = v.prices?.cityCash?.base || 0;
                 const selectedAttr = (selectedVehicleId === v.id) ? 'selected' : '';
-                select.innerHTML +=
-                    `<option value="${v.id}" data-vehicle='${JSON.stringify(v)}' ${selectedAttr}>${short} (${price.toLocaleString()} ₽)</option>`;
+                select.innerHTML += `<option value="${v.id}" data-vehicle='${JSON.stringify(v)}' ${selectedAttr}>${short} (${price.toLocaleString()} ₽)</option>`;
             });
-            // Добавляем обработчик изменения
             select.onchange = function() {
                 const val = this.value;
                 if (val === 'hired') {
@@ -2510,7 +1946,6 @@
                     onPassVehicleSelect(v);
                 }
             };
-            // Если есть выбранный, вызываем обработчик
             if (selectedVehicleId && selectedVehicleId !== 'hired') {
                 const opt = select.querySelector(`option[value="${selectedVehicleId}"]`);
                 if (opt) {
@@ -2534,10 +1969,7 @@
                 if (driver === vehicle.driver) opt.selected = true;
                 driverSelect.appendChild(opt);
             });
-            // Если у машины есть водитель, выбираем его
-            if (vehicle.driver) {
-                driverSelect.value = vehicle.driver;
-            }
+            if (vehicle.driver) driverSelect.value = vehicle.driver;
         }
 
         function populatePassDriverSelect(vehicleId) {
@@ -2553,9 +1985,7 @@
                 if (driver === vehicle.driver) opt.selected = true;
                 driverSelect.appendChild(opt);
             });
-            if (vehicle.driver) {
-                driverSelect.value = vehicle.driver;
-            }
+            if (vehicle.driver) driverSelect.value = vehicle.driver;
         }
 
         function showPassHiredFields(show) {
@@ -2571,11 +2001,9 @@
             const srcCol = columnsData.find(c => c.id === sourceCol);
             const tgtCol = columnsData.find(c => c.id === targetColId);
             if (!srcCol || !tgtCol) return;
-
             const idx = srcCol.cards.findIndex(c => c.id === cardId);
             if (idx === -1) return;
             const [moved] = srcCol.cards.splice(idx, 1);
-
             if (isRefusal) {
                 moved.refusalReason = reason;
                 delete moved.returnReason;
@@ -2586,13 +2014,11 @@
                 delete moved.returnReason;
                 delete moved.refusalReason;
             }
-
             tgtCol.cards.push(moved);
             const now = new Date();
             moved.statusTime = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             if (!moved.timeline) moved.timeline = {};
             moved.timeline[targetColId] = now.toISOString();
-
             renderBoard();
             saveData();
         }
@@ -2649,12 +2075,9 @@
         document.getElementById('passConfirmBtn').addEventListener('click', () => {
             const passNum = document.getElementById('passNumberInput').value.trim();
             if (!passNum) { alert('Пожалуйста, введите номер пропуска.'); return; }
-
-            // Собираем данные из модалки
             const vehicleSelect = document.getElementById('passVehicleSelect');
             const vehicleVal = vehicleSelect.value;
             let vehicleId, vehicleName, selectedDriver, hiredName, hiredPlate, hiredPhone;
-
             if (vehicleVal === 'hired') {
                 hiredName = document.getElementById('passHiredName').value.trim();
                 hiredPhone = document.getElementById('passHiredPhone').value.trim();
@@ -2675,7 +2098,6 @@
                 hiredPlate = '';
                 hiredPhone = '';
             }
-
             if (pendingPassData) {
                 const { cardId, sourceCol, targetColId } = pendingPassData;
                 let card = null;
@@ -2684,7 +2106,6 @@
                     if (found) { card = found; break; }
                 }
                 if (card) {
-                    // Обновляем данные карточки
                     card.vehicleId = vehicleId;
                     card.vehicleName = vehicleName;
                     card.selectedDriver = selectedDriver;
@@ -2692,8 +2113,6 @@
                     card.hiredPlate = hiredPlate;
                     card.hiredPhone = hiredPhone;
                     card.passNumber = passNum;
-
-                    // Пересчитываем цену (если выбран не наемник)
                     if (vehicleId !== 'hired') {
                         const vehicle = fleet.find(v => v.id === vehicleId);
                         if (vehicle) {
@@ -2702,10 +2121,7 @@
                             card.totalPrice = total;
                             card.vehiclePrice = getPriceForPaymentMethod(vehicle, card.paymentMethod || 'cash')?.base || 0;
                         }
-                    } else {
-                        // Для наемника оставляем цены как есть
                     }
-
                     saveData();
                     executeMove(cardId, sourceCol, targetColId);
                 }
@@ -2770,59 +2186,46 @@
         let extraHours = 0;
         let selectedVehicle = null;
         let selectedDriver = null;
-        let isHiredMode = false; // флаг, что выбран наемник
+        let isHiredMode = false;
 
         const containerData = {
             '5ft': { weight: 0.5, volume: 0.5 * 1.5 * 1.2 * 1.2, length: 1.5, width: 1.2, height: 1.2, maxQuantity: 2 },
             '10ft': { weight: 1.0, volume: 1.0 * 3.0 * 1.2 * 1.2, length: 3.0, width: 1.2, height: 1.2, maxQuantity: 2 },
             '20ft': { weight: 2.0, volume: 2.0 * 6.0 * 2.4 * 2.4, length: 6.0, width: 2.4, height: 2.4, maxQuantity: 1 },
             '40ft': { weight: 4.0, volume: 4.0 * 12.0 * 2.4 * 2.4, length: 12.0, width: 2.4, height: 2.4, maxQuantity: 1 },
-            '40ft HC': { weight: 4.0, volume: 4.0 * 12.0 * 2.4 * 2.7, length: 12.0, width: 2.4, height: 2.7,
-            maxQuantity: 1 }
+            '40ft HC': { weight: 4.0, volume: 4.0 * 12.0 * 2.4 * 2.7, length: 12.0, width: 2.4, height: 2.7, maxQuantity: 1 }
         };
 
-        // ---- Функция расчёта итоговой цены с учётом наценки за вечернее время ----
         function calculateTotalPrice(vehicle, paymentMethod, extraHours, receivedTime) {
             if (!vehicle) return 0;
             const priceData = getPriceForPaymentMethod(vehicle, paymentMethod);
             if (!priceData) return 0;
             let total = priceData.base + (priceData.extra || 0) * extraHours;
-
-            // Наценка за вечернее время (после 17:00) только для эвакуаторов
             if (vehicle.typeName && vehicle.typeName.includes('Эвакуатор')) {
                 const hour = parseInt(receivedTime.split(':')[0], 10);
                 if (hour >= 17) {
                     let surcharge = 0;
-                    if (vehicle.capacity <= 7) {
-                        surcharge = 1000;
-                    } else if (vehicle.capacity > 7) {
-                        surcharge = 2000;
-                    }
+                    if (vehicle.capacity <= 7) surcharge = 1000;
+                    else if (vehicle.capacity > 7) surcharge = 2000;
                     total += surcharge;
                 }
             }
             return total;
         }
 
-        // ---- Обработчики кнопок доп. часов ----
         extraMinus.addEventListener('click', () => {
-            if (extraHours > 0) {
-                extraHours--;
+            if (extraHours > 0) { extraHours--;
                 extraHoursDisplay.textContent = extraHours;
                 updateTotalPrice();
-                saveDraft();
-            }
+                saveDraft(); }
         });
         extraPlus.addEventListener('click', () => {
-            if (extraHours < 10) {
-                extraHours++;
+            if (extraHours < 10) { extraHours++;
                 extraHoursDisplay.textContent = extraHours;
                 updateTotalPrice();
-                saveDraft();
-            }
+                saveDraft(); }
         });
 
-        // ---- Функции для работы с наемником (исправленная версия, без "Способ оплаты (нам):") ----
         function showHiredFields() {
             let hiredFields = document.getElementById('hiredFieldsContainer');
             if (!hiredFields) {
@@ -2833,52 +2236,18 @@
                 hiredFields.style.gap = '12px';
                 hiredFields.style.marginTop = '12px';
                 hiredFields.innerHTML = `
-                    <!-- Данные наемника: занимают обе колонки -->
                     <div style="grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 4px;">
-                        <div style="flex:1; min-width:180px;">
-                            <label>Имя наемника</label>
-                            <input type="text" id="hiredName" placeholder="Например, Иван Петров" />
-                        </div>
-                        <div style="flex:1; min-width:180px;">
-                            <label>Телефон наемника</label>
-                            <input type="text" id="hiredPhone" placeholder="+7 999 123-45-67" />
-                        </div>
-                        <div style="flex:1; min-width:180px;">
-                            <label>Госномер наемника</label>
-                            <input type="text" id="hiredPlate" placeholder="А123АА 125" />
-                        </div>
+                        <div style="flex:1; min-width:180px;"><label>Имя наемника</label><input type="text" id="hiredName" placeholder="Например, Иван Петров" /></div>
+                        <div style="flex:1; min-width:180px;"><label>Телефон наемника</label><input type="text" id="hiredPhone" placeholder="+7 999 123-45-67" /></div>
+                        <div style="flex:1; min-width:180px;"><label>Госномер наемника</label><input type="text" id="hiredPlate" placeholder="А123АА 125" /></div>
                     </div>
-                    <!-- Цены и оплата -->
-                    <div style="grid-column: 1;">
-                        <label>Цена за работу (наемник)</label>
-                        <input type="number" id="hiredPriceHirer" min="0" step="100" value="0" />
-                    </div>
-                    <div style="grid-column: 2;">
-                        <label>Цена за работу (наша)</label>
-                        <input type="number" id="hiredPrice" min="0" step="100" value="0" />
-                    </div>
-                    <div style="grid-column: 1;">
-                        <label>Цена за доп час (наемник)</label>
-                        <input type="number" id="hiredPriceHirerExtra" min="0" step="100" value="0" />
-                    </div>
-                    <div style="grid-column: 2;">
-                        <label>Цена за доп час (наша)</label>
-                        <input type="number" id="hiredPriceExtra" min="0" step="100" value="0" />
-                    </div>
-                    <div style="grid-column: 1;">
-                        <label>Способ оплаты (наемнику)</label>
-                        <select id="hiredPaymentMethod">
-                            <option value="cash">Наличные</option>
-                            <option value="transfer">Перевод</option>
-                            <option value="5">Безнал, по договору 5%</option>
-                            <option value="22">Безнал, по договору 22%</option>
-                        </select>
-                    </div>
-                    <!-- Удалён блок "Способ оплаты (нам):" — он дублируется основным селектом -->
+                    <div style="grid-column: 1;"><label>Цена за работу (наемник)</label><input type="number" id="hiredPriceHirer" min="0" step="100" value="0" /></div>
+                    <div style="grid-column: 2;"><label>Цена за работу (наша)</label><input type="number" id="hiredPrice" min="0" step="100" value="0" /></div>
+                    <div style="grid-column: 1;"><label>Цена за доп час (наемник)</label><input type="number" id="hiredPriceHirerExtra" min="0" step="100" value="0" /></div>
+                    <div style="grid-column: 2;"><label>Цена за доп час (наша)</label><input type="number" id="hiredPriceExtra" min="0" step="100" value="0" /></div>
+                    <div style="grid-column: 1;"><label>Способ оплаты (наемнику)</label><select id="hiredPaymentMethod"><option value="cash">Наличные</option><option value="transfer">Перевод</option><option value="5">Безнал, по договору 5%</option><option value="22">Безнал, по договору 22%</option></select></div>
                 `;
                 vehicleListContainer.appendChild(hiredFields);
-
-                // Подключаем обработчики для пересчёта цены
                 document.getElementById('hiredPrice').addEventListener('input', updateTotalPrice);
                 document.getElementById('hiredPrice').addEventListener('change', updateTotalPrice);
                 document.getElementById('hiredPriceExtra').addEventListener('input', updateTotalPrice);
@@ -2899,16 +2268,12 @@
 
         function hideHiredFields() {
             const hiredFields = document.getElementById('hiredFieldsContainer');
-            if (hiredFields) {
-                hiredFields.style.display = 'none';
-            }
+            if (hiredFields) hiredFields.style.display = 'none';
             driverRow.style.display = 'flex';
             isHiredMode = false;
-            // Если есть выбранный транспорт – восстановить его отображение
             if (selectedVehicle) {
                 updateVehicleDisplay();
             } else {
-                // Попытаться выбрать первую доступную машину (если есть)
                 const select = document.getElementById('vehicleSelect');
                 if (select) {
                     const firstOpt = select.querySelector('option:not([value="hired"])');
@@ -2924,7 +2289,6 @@
 
         function updateTotalPrice() {
             if (isHiredMode) {
-                // Для наемника итоговая цена для клиента = наша цена + наша цена за доп. час * часы
                 const priceInput = document.getElementById('hiredPrice');
                 const extraInput = document.getElementById('hiredPriceExtra');
                 const base = priceInput ? parseFloat(priceInput.value) || 0 : 0;
@@ -2956,19 +2320,14 @@
         }
 
         function selectVehicle(v) {
-            // Сбрасываем режим наемника, если он активен
-            if (isHiredMode) {
-                hideHiredFields();
-            }
+            if (isHiredMode) hideHiredFields();
             selectedVehicle = v;
             selectedDriver = v.driver || '';
-
             driverSelect.innerHTML = '';
             const emptyOpt = document.createElement('option');
             emptyOpt.value = '';
             emptyOpt.textContent = '—';
             driverSelect.appendChild(emptyOpt);
-
             allDrivers.forEach(driver => {
                 const opt = document.createElement('option');
                 opt.value = driver;
@@ -2983,12 +2342,10 @@
                 opt.selected = true;
                 driverSelect.appendChild(opt);
             }
-
             driverSelect.onchange = function() {
                 selectedDriver = this.value;
                 saveDraft();
             };
-
             updateVehicleDisplay();
             saveDraft();
         }
@@ -3004,20 +2361,16 @@
             receivedTimeInput.value = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             const today = now.toISOString().slice(0, 10);
             pickupDate.value = today;
-            // Время подачи: текущее + 15 минут (без округления)
-            let h = now.getHours(),
-                m = now.getMinutes() + 15;
-            if (m >= 60) { h += 1;
-                m -= 60; }
+            let h = now.getHours(), m = now.getMinutes() + 15;
+            if (m >= 60) { h += 1; m -= 60; }
             if (h >= 24) h -= 24;
-            // Форматируем: HH:MM
             pickupTime.value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
         }
 
         function openModal() {
+            console.log('📂 openModal вызвана');
             setAutoFields();
             editingCardId = null;
-            // Сброс переменных перед загрузкой черновика
             extraHours = 0;
             extraHoursDisplay.textContent = '0';
             isHiredMode = false;
@@ -3025,7 +2378,6 @@
             selectedDriver = null;
             selectedVehicleInfo.classList.remove('visible');
             totalPriceDisplay.textContent = '0 ₽';
-            // Скрываем поля наемника, если они есть
             const hiredFields = document.getElementById('hiredFieldsContainer');
             if (hiredFields) hiredFields.style.display = 'none';
             driverRow.style.display = 'flex';
@@ -3053,15 +2405,11 @@
                     }
                 }, 100);
             }
-            if (!draft || !draft.paymentMethod) {
-                paymentMethod.value = 'cash';
-            }
-            // Дополнительное восстановление выбранного транспорта, если не сработало в applyDraftIfValid
+            if (!draft || !draft.paymentMethod) paymentMethod.value = 'cash';
             if (draft) {
                 if (draft.hiredMode) {
-                    // уже восстановлено в applyDraftIfValid
+                    // already applied
                 } else if (draft.selectedVehicleId) {
-                    // Если машина не выбрана, попробуем восстановить через список
                     if (!selectedVehicle) {
                         const vehicle = fleet.find(v => v.id === draft.selectedVehicleId);
                         if (vehicle) {
@@ -3093,6 +2441,7 @@
             form.reset();
         }
 
+        // Привязка обработчиков
         showModalBtn.addEventListener('click', openModal);
         closeBtn.addEventListener('click', closeModal);
         modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
@@ -3104,16 +2453,11 @@
             document.getElementById('deliveryContactFields').classList.toggle('visible', !dChecked);
         }
 
-        pickupContactCallCustomer.addEventListener('change', () => {
-            updateContactFieldsVisibility();
-            saveDraft();
-        });
-        deliveryContactCallCustomer.addEventListener('change', () => {
-            updateContactFieldsVisibility();
-            saveDraft();
-        });
+        pickupContactCallCustomer.addEventListener('change', () => { updateContactFieldsVisibility();
+            saveDraft(); });
+        deliveryContactCallCustomer.addEventListener('change', () => { updateContactFieldsVisibility();
+            saveDraft(); });
 
-        // ----- РЕДАКТИРОВАНИЕ -----
         function editCard(cardId) {
             let found = null;
             for (const col of columnsData) {
@@ -3121,13 +2465,11 @@
                 if (c) { found = c; break; }
             }
             if (!found) return;
-
             editingCardId = cardId;
             orderNumberInput.value = found.orderNumber;
             receivedTimeInput.value = found.receivedTime;
             const radio = document.querySelector(`input[name="managerRadio"][value="${found.manager || 'Диана'}"]`);
             if (radio) radio.checked = true;
-
             if (found.pickupDateTime) {
                 const dt = new Date(found.pickupDateTime);
                 if (!isNaN(dt)) {
@@ -3141,27 +2483,22 @@
             pickupAddress.value = found.pickupAddress || '';
             pickupContactName.value = found.pickupContactName || '';
             pickupContactPhone.value = found.pickupContactPhone || '';
-            pickupContactCallCustomer.checked = found.pickupContactCallCustomer !== undefined ? found
-                .pickupContactCallCustomer : true;
+            pickupContactCallCustomer.checked = found.pickupContactCallCustomer !== undefined ? found.pickupContactCallCustomer : true;
             pickupLandmark.value = found.pickupLandmark || '';
             if (found.pickupObstacles) setSelectedObstacles('pickup-obstacle', found.pickupObstacles);
             deliveryAddress.value = found.deliveryAddress || '';
             deliveryContactName.value = found.deliveryContactName || '';
             deliveryContactPhone.value = found.deliveryContactPhone || '';
-            deliveryContactCallCustomer.checked = found.deliveryContactCallCustomer !== undefined ? found
-                .deliveryContactCallCustomer : true;
+            deliveryContactCallCustomer.checked = found.deliveryContactCallCustomer !== undefined ? found.deliveryContactCallCustomer : true;
             deliveryLandmark.value = found.deliveryLandmark || '';
             if (found.deliveryObstacles) setSelectedObstacles('delivery-obstacle', found.deliveryObstacles);
             clientName.value = found.clientName || '';
             clientPhone.value = found.clientPhone || '';
             cargoType.value = found.cargoType || 'Автомобиль';
-            if (found.measurements) {
-                setMeasurements(found.measurements);
-            }
+            if (found.measurements) setMeasurements(found.measurements);
             commentInput.value = found.comment || '';
             salesChannel.value = found.salesChannel || '';
             paymentMethod.value = found.paymentMethod || 'cash';
-            // Восстанавливаем пропуск (номер не вводился в форме, но мог быть установлен позже)
             if (found.passRequiredPickup !== undefined) {
                 const radio = document.querySelector(`input[name="passRequiredPickup"][value="${found.passRequiredPickup}"]`);
                 if (radio) radio.checked = true;
@@ -3170,15 +2507,10 @@
                 const radio = document.querySelector(`input[name="passRequiredDelivery"][value="${found.passRequiredDelivery}"]`);
                 if (radio) radio.checked = true;
             }
-
             updateContactFieldsVisibility();
-
             const draft = loadDraft();
             if (draft && draft.editingCardId === cardId) applyDraftIfValid(draft);
-
-            // Проверяем, если это наемник
             if (found.vehicleId === 'hired') {
-                // Включаем режим наемника и заполняем поля
                 showHiredFields();
                 document.getElementById('hiredName').value = found.hiredName || '';
                 document.getElementById('hiredPlate').value = found.hiredPlate || '';
@@ -3191,16 +2523,13 @@
                 extraHours = found.extraHours || 0;
                 extraHoursDisplay.textContent = extraHours;
                 updateTotalPrice();
-                // Устанавливаем select в 'hired'
                 const select = document.getElementById('vehicleSelect');
                 if (select) select.value = 'hired';
             } else {
-                // Обычный транспорт
                 const vehicle = fleet.find(v => v.id === found.vehicleId);
                 if (vehicle) {
                     selectedVehicle = vehicle;
                     selectedDriver = found.selectedDriver || vehicle.driver;
-                    // Восстанавливаем select
                     if (isHiredMode) hideHiredFields();
                     updateVehicleList();
                     const select = document.getElementById('vehicleSelect');
@@ -3218,7 +2547,6 @@
                     selectedVehicleInfo.classList.remove('visible');
                 }
             }
-
             renderDynamicFields();
             if (found.cargoDetails) {
                 const container = dynamicContainer;
@@ -3239,11 +2567,7 @@
                     }
                 }, 50);
             }
-
-            if (found.vehicleId !== 'hired' && !selectedVehicle) {
-                updateVehicleList();
-            }
-
+            if (found.vehicleId !== 'hired' && !selectedVehicle) updateVehicleList();
             modalTitle.textContent = 'Редактирование заказа';
             submitBtn.textContent = 'Сохранить изменения';
             modalOverlay.classList.add('active');
@@ -3251,13 +2575,11 @@
             updateVehicleDisplay();
         }
 
-        // ----- ДИНАМИЧЕСКИЕ ПОЛЯ -----
         function renderDynamicFields() {
             const type = cargoType.value;
             dynamicContainer.innerHTML = '';
             if (!type) return;
             let html = '<div class="form-row full">';
-
             switch (type) {
                 case 'Автомобиль':
                     html += `
@@ -3296,52 +2618,25 @@
                 case 'Контейнер':
                     html += `
                         <label>Тип</label>
-                        <select id="dyn_containerType">
-                            <option value="5ft">5ft (1.5×1.2×1.2 м)</option>
-                            <option value="10ft">10ft (3.0×1.2×1.2 м)</option>
-                            <option value="20ft">20ft (6.0×2.4×2.4 м)</option>
-                            <option value="40ft">40ft (12.0×2.4×2.4 м)</option>
-                            <option value="40ft HC">40ft HC (12.0×2.4×2.7 м)</option>
-                            <option value="Другой">Другой</option>
-                        </select>
+                        <select id="dyn_containerType"><option value="5ft">5ft (1.5×1.2×1.2 м)</option><option value="10ft">10ft (3.0×1.2×1.2 м)</option><option value="20ft">20ft (6.0×2.4×2.4 м)</option><option value="40ft">40ft (12.0×2.4×2.4 м)</option><option value="40ft HC">40ft HC (12.0×2.4×2.7 м)</option><option value="Другой">Другой</option></select>
                         <label>Количество</label>
-                        <select id="dyn_quantity">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                        </select>
+                        <select id="dyn_quantity"><option value="1">1</option><option value="2">2</option></select>
                         <label>Груз внутри</label>
                         <select id="dyn_innerLoad"><option value="Пустой">Пустой</option><option value="С грузом">С грузом</option></select>
                         <label>Выступающие элементы</label>
-                        <select id="dyn_protrusions">
-                            <option value="Нет" selected>Нет</option>
-                            <option value="Кондиционер">Кондиционер</option>
-                            <option value="Другое">Другое</option>
-                        </select>
-                        <div id="protrusionDetailsWrapper" style="display:none; margin-top:4px;">
-                            <label>Уточнение</label>
-                            <input type="text" id="dyn_protrusionDetails" placeholder="Уточните" />
-                        </div>
+                        <select id="dyn_protrusions"><option value="Нет" selected>Нет</option><option value="Кондиционер">Кондиционер</option><option value="Другое">Другое</option></select>
+                        <div id="protrusionDetailsWrapper" style="display:none; margin-top:4px;"><label>Уточнение</label><input type="text" id="dyn_protrusionDetails" placeholder="Уточните" /></div>
                     `;
                     break;
                 case 'Бытовка, модуль':
                     html += `
                         <label>Количество</label>
-                        <select id="dyn_quantity">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                        </select>
+                        <select id="dyn_quantity"><option value="1">1</option><option value="2">2</option></select>
                         <label>Груз внутри</label>
                         <select id="dyn_innerLoad"><option value="Пустой">Пустой</option><option value="С грузом">С грузом</option></select>
                         <label>Выступающие элементы</label>
-                        <select id="dyn_protrusions">
-                            <option value="Нет" selected>Нет</option>
-                            <option value="Кондиционер">Кондиционер</option>
-                            <option value="Другое">Другое</option>
-                        </select>
-                        <div id="protrusionDetailsWrapper" style="display:none; margin-top:4px;">
-                            <label>Уточнение</label>
-                            <input type="text" id="dyn_protrusionDetails" placeholder="Уточните" />
-                        </div>
+                        <select id="dyn_protrusions"><option value="Нет" selected>Нет</option><option value="Кондиционер">Кондиционер</option><option value="Другое">Другое</option></select>
+                        <div id="protrusionDetailsWrapper" style="display:none; margin-top:4px;"><label>Уточнение</label><input type="text" id="dyn_protrusionDetails" placeholder="Уточните" /></div>
                     `;
                     break;
                 case 'Спецтехника':
@@ -3387,21 +2682,11 @@
                 case 'Гараж':
                     html += `
                         <label>Полы</label>
-                        <select id="dyn_floors">
-                            <option value="деревянные">деревянные</option>
-                            <option value="железные">железные</option>
-                            <option value="бетонные">бетонные</option>
-                        </select>
+                        <select id="dyn_floors"><option value="деревянные">деревянные</option><option value="железные">железные</option><option value="бетонные">бетонные</option></select>
                         <label>Есть ли крюки, рыма</label>
-                        <select id="dyn_hooks">
-                            <option value="да">да</option>
-                            <option value="нет" selected>нет</option>
-                        </select>
+                        <select id="dyn_hooks"><option value="да">да</option><option value="нет" selected>нет</option></select>
                         <label>Расположение</label>
-                        <select id="dyn_location">
-                            <option value="в строчке">в строчке</option>
-                            <option value="отдельно" selected>отдельно</option>
-                        </select>
+                        <select id="dyn_location"><option value="в строчке">в строчке</option><option value="отдельно" selected>отдельно</option></select>
                         <label>Описание груза</label>
                         <textarea id="dyn_cargoDesc" rows="2" placeholder="Описание груза"></textarea>
                     `;
@@ -3409,12 +2694,7 @@
                 case 'Водный транспорт':
                     html += `
                         <label>Тип</label>
-                        <select id="dyn_waterType">
-                            <option value="Катер">Катер</option>
-                            <option value="Лодка">Лодка</option>
-                            <option value="Яхта">Яхта</option>
-                            <option value="Гидроцикл">Гидроцикл</option>
-                        </select>
+                        <select id="dyn_waterType"><option value="Катер">Катер</option><option value="Лодка">Лодка</option><option value="Яхта">Яхта</option><option value="Гидроцикл">Гидроцикл</option></select>
                         <label>Марка</label>
                         <input type="text" id="dyn_waterBrand" placeholder="Например, Yamaha, Sea-Doo">
                     `;
@@ -3424,8 +2704,7 @@
             }
             html += '</div>';
             dynamicContainer.innerHTML = html;
-
-            // Для контейнера
+            // Обработчики для контейнера
             if (type === 'Контейнер') {
                 const protrusions = document.getElementById('dyn_protrusions');
                 const wrapper = document.getElementById('protrusionDetailsWrapper');
@@ -3436,7 +2715,6 @@
                     protrusions.addEventListener('change', toggleProtrusionDetails);
                     toggleProtrusionDetails();
                 }
-
                 const ct = document.getElementById('dyn_containerType');
                 const qty = document.getElementById('dyn_quantity');
                 if (ct) {
@@ -3458,8 +2736,7 @@
                     setTimeout(updateContainerDimensions, 50);
                 }
             }
-
-            // Для бытовки, модуля
+            // Для бытовки
             if (type === 'Бытовка, модуль') {
                 const protrusions = document.getElementById('dyn_protrusions');
                 const wrapper = document.getElementById('protrusionDetailsWrapper');
@@ -3471,7 +2748,6 @@
                     toggleProtrusionDetails();
                 }
             }
-
             const container = dynamicContainer;
             if (container) {
                 container.querySelectorAll('input, select, textarea').forEach(el => {
@@ -3503,12 +2779,8 @@
             if (!data) return;
             let finalQty = Math.min(qty, data.maxQuantity);
             if (quantity.value != finalQty) quantity.value = finalQty;
-            if (measWeight.checked) {
-                document.getElementById('cargoWeight').value = data.weight * finalQty;
-            }
-            if (measVolume.checked) {
-                document.getElementById('cargoVolume').value = data.volume * finalQty;
-            }
+            if (measWeight.checked) document.getElementById('cargoWeight').value = data.weight * finalQty;
+            if (measVolume.checked) document.getElementById('cargoVolume').value = data.volume * finalQty;
             if (measDimensions.checked) {
                 document.getElementById('cargoDimLength').value = data.length * finalQty;
                 document.getElementById('cargoDimWidth').value = data.width;
@@ -3517,100 +2789,63 @@
             updateVehicleList();
         }
 
-        // ----- ВЫБОР ТРАНСПОРТА -----
         function updateVehicleList() {
-            // Если включен режим наемника, просто обновляем select, но не меняем поля
             const type = cargoType.value;
             if (!type) {
-                vehicleListContainer.innerHTML =
-                    '<p style="color:var(--text-muted);font-size:14px;">Выберите тип груза для подбора транспорта.</p>';
+                vehicleListContainer.innerHTML = '<p style="color:var(--text-muted);font-size:14px;">Выберите тип груза для подбора транспорта.</p>';
                 selectedVehicleInfo.classList.remove('visible');
                 selectedVehicle = null;
                 selectedDriver = null;
                 return;
             }
-
-            let weight = 0;
-            if (measWeight.checked) {
-                weight = parseFloat(document.getElementById('cargoWeight').value) || 0;
-            } else {
-                weight = 1;
-            }
-
+            let weight = measWeight.checked ? parseFloat(document.getElementById('cargoWeight').value) || 0 : 1;
             let filtered = fleet.filter(v => {
                 if (!v.prices) return false;
                 if (weight > v.capacity) return false;
                 if (!v.suitableTypes) return false;
                 return v.suitableTypes.includes(type);
             });
-
-            // Создаём select
-            let html =
-                `<select id="vehicleSelect" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border-medium);font-size:15px;background:var(--bg-card);color:var(--text-primary);">
-                <option value="hired">Наемник (ввести свои данные)</option>
-                `;
+            let html = `<select id="vehicleSelect" style="width:100%;padding:10px 14px;border-radius:12px;border:1px solid var(--border-medium);font-size:15px;background:var(--bg-card);color:var(--text-primary);"><option value="hired">Наемник (ввести свои данные)</option>`;
             filtered.forEach(v => {
                 const short = formatVehicleShort(v);
                 const price = v.prices?.cityCash?.base || 0;
                 const selectedAttr = (selectedVehicle && selectedVehicle.id === v.id) ? 'selected' : '';
-                html +=
-                    `<option value="${v.id}" data-vehicle='${JSON.stringify(v)}' ${selectedAttr}>${short} (${price.toLocaleString()} ₽)</option>`;
+                html += `<option value="${v.id}" data-vehicle='${JSON.stringify(v)}' ${selectedAttr}>${short} (${price.toLocaleString()} ₽)</option>`;
             });
             html += '</select>';
-
-            // Если уже есть контейнер с полями наемника, не перезаписываем его, только select
             const existingHired = document.getElementById('hiredFieldsContainer');
             if (existingHired) {
-                // Удаляем старый select, если он есть, и вставляем новый перед полями наемника
                 const oldSelect = document.getElementById('vehicleSelect');
-                if (oldSelect) {
-                    oldSelect.remove();
-                }
-                // Вставляем новый select перед hiredFieldsContainer
+                if (oldSelect) oldSelect.remove();
                 vehicleListContainer.insertAdjacentHTML('afterbegin', html);
-                // Восстанавливаем выбор наемника, если он был
                 if (isHiredMode) {
                     const newSelect = document.getElementById('vehicleSelect');
                     if (newSelect) newSelect.value = 'hired';
                 }
-                // Привязываем обработчик
                 const select = document.getElementById('vehicleSelect');
                 if (select) {
                     select.addEventListener('change', function() {
                         const val = this.value;
                         if (val === 'hired') {
-                            // Показываем поля наемника
                             showHiredFields();
-                            // Сбрасываем выбранную машину
                             selectedVehicle = null;
                             selectedDriver = '';
                             updateTotalPrice();
                             saveDraft();
                             return;
                         }
-                        // Если был наемник, скрываем его поля
-                        if (isHiredMode) {
-                            hideHiredFields();
-                        }
-                        // Выбираем машину
+                        if (isHiredMode) hideHiredFields();
                         if (val) {
                             const v = JSON.parse(this.options[this.selectedIndex].dataset.vehicle);
                             selectVehicle(v);
                         }
                     });
                 }
-                // Если режим наемника, скрываем водителя
-                if (isHiredMode) {
-                    driverRow.style.display = 'none';
-                } else {
-                    driverRow.style.display = 'flex';
-                }
+                if (isHiredMode) driverRow.style.display = 'none';
+                else driverRow.style.display = 'flex';
                 return;
             }
-
-            // Если нет полей наемника, просто создаём select
             vehicleListContainer.innerHTML = html;
-
             const select = document.getElementById('vehicleSelect');
             select.addEventListener('change', function() {
                 const val = this.value;
@@ -3622,21 +2857,16 @@
                     saveDraft();
                     return;
                 }
-                if (isHiredMode) {
-                    hideHiredFields();
-                }
+                if (isHiredMode) hideHiredFields();
                 if (val) {
                     const v = JSON.parse(this.options[this.selectedIndex].dataset.vehicle);
                     selectVehicle(v);
                 }
             });
-
-            // Если уже выбран vehicle, устанавливаем его
             if (selectedVehicle) {
                 const opt = select.querySelector(`option[value="${selectedVehicle.id}"]`);
-                if (opt) { select.value = selectedVehicle.id; }
+                if (opt) select.value = selectedVehicle.id;
             } else {
-                // Иначе выбираем первую машину (не наемник)
                 const firstOpt = select.querySelector('option:not([value="hired"])');
                 if (firstOpt) {
                     select.value = firstOpt.value;
@@ -3649,24 +2879,20 @@
             saveDraft();
         }
 
-        // ----- ОСНОВНОЙ РЕНДЕРИНГ ДОСКИ -----
         function renderBoard() {
             const board = document.getElementById('kanban-board');
             board.innerHTML = '';
-            let total = 0,
-                active = 0;
+            let total = 0, active = 0;
             columnsData.forEach((col, idx) => {
                 const colDiv = document.createElement('div');
                 colDiv.className = `column column-${idx}`;
                 colDiv.dataset.columnId = col.id;
                 const header = document.createElement('div');
                 header.className = 'column-header';
-                header.innerHTML =
-                    `<h2>${col.name}</h2><span class="badge">${col.cards.length} / ${col.wipLimit}</span>`;
+                header.innerHTML = `<h2>${col.name}</h2><span class="badge">${col.cards.length} / ${col.wipLimit}</span>`;
                 colDiv.appendChild(header);
                 const body = document.createElement('div');
                 body.className = 'column-body';
-
                 if (!col.cards.length) {
                     const empty = document.createElement('div');
                     empty.className = 'empty-message';
@@ -3679,41 +2905,21 @@
                         card.draggable = true;
                         card.dataset.cardId = cardData.id;
                         card.dataset.sourceColumn = col.id;
-
-                        // --- Исправление: обработка одиночного и двойного клика через таймер ---
                         let clickTimer = null;
                         card.addEventListener('click', function(e) {
-                            // Игнорируем клики по кнопкам
-                            if (e.target.closest('.delete-btn-inline') ||
-                                e.target.closest('.print-btn-inline') ||
-                                e.target.closest('.copy-btn-inline') ||
-                                e.target.closest('.history-toggle')) {
-                                return;
-                            }
-                            if (clickTimer) {
-                                clearTimeout(clickTimer);
+                            if (e.target.closest('.delete-btn-inline') || e.target.closest('.print-btn-inline') || e.target.closest('.copy-btn-inline') || e.target.closest('.history-toggle')) return;
+                            if (clickTimer) { clearTimeout(clickTimer);
                                 clickTimer = null;
-                                // Двойной клик – открываем редактирование
-                                editCard(cardData.id);
-                                return;
-                            }
+                                editCard(cardData.id); return; }
                             clickTimer = setTimeout(() => {
                                 clickTimer = null;
-                                // Одиночный клик – переключаем extra-details
                                 const extra = document.getElementById(`extra-${cardData.id}`);
-                                if (extra) {
-                                    extra.classList.toggle('show');
-                                }
+                                if (extra) extra.classList.toggle('show');
                             }, 300);
                         });
-
-                        const mgr = cardData.manager && cardData.manager !== '—' ?
-                            `<div class="manager">Менеджер: ${cardData.manager}</div>` : '';
-                        const clientNameLine = cardData.clientName && cardData.clientName !== '—' ?
-                            `<div class="client-name">Клиент: ${cardData.clientName}</div>` : '';
-                        const clientPhoneLine = cardData.clientPhone && cardData.clientPhone !== '—' ?
-                            `<div class="client-phone">Телефон: ${cardData.clientPhone}</div>` : '';
-                        // Груз
+                        const mgr = cardData.manager && cardData.manager !== '—' ? `<div class="manager">Менеджер: ${cardData.manager}</div>` : '';
+                        const clientNameLine = cardData.clientName && cardData.clientName !== '—' ? `<div class="client-name">Клиент: ${cardData.clientName}</div>` : '';
+                        const clientPhoneLine = cardData.clientPhone && cardData.clientPhone !== '—' ? `<div class="client-phone">Телефон: ${cardData.clientPhone}</div>` : '';
                         let measurementsText = '';
                         if (cardData.measurements) {
                             const m = cardData.measurements;
@@ -3723,74 +2929,33 @@
                             if (m.measurementState && m.measurementState.dimensions) parts.push(`Габариты: ${m.dimLength || 0}×${m.dimWidth || 0}×${m.dimHeight || 0} м`);
                             measurementsText = parts.length ? parts.join('; ') : '';
                         }
-                        const cargoLine = cardData.cargoType && cardData.cargoType !== '—' ?
-                            `<div class="cargo-line">Груз: ${cardData.cargoType} ${measurementsText}</div>` : '';
-
-                        // Внутренние детали (extra-details)
-                        const pickupDisplay = cardData.pickupDateTime ? new Date(cardData.pickupDateTime)
-                            .toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric',
-                                hour: '2-digit', minute: '2-digit' }) : '—';
-
+                        const cargoLine = cardData.cargoType && cardData.cargoType !== '—' ? `<div class="cargo-line">Груз: ${cardData.cargoType} ${measurementsText}</div>` : '';
+                        const pickupDisplay = cardData.pickupDateTime ? new Date(cardData.pickupDateTime).toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
                         const detailsHtml = formatCargoDetails(cardData.cargoDetails || {});
                         const timelineHtml = columnsData.map(c => {
-                            const ts = cardData.timeline && cardData.timeline[c.id] ? formatTimestamp(
-                                cardData.timeline[c.id]) : '—';
+                            const ts = cardData.timeline && cardData.timeline[c.id] ? formatTimestamp(cardData.timeline[c.id]) : '—';
                             return `<div class="detail-item"><span class="key">${c.name}</span><span class="value">${ts}</span></div>`;
                         }).join('');
-
                         const pContact = [];
                         if (cardData.pickupContactName) pContact.push(`Имя: ${cardData.pickupContactName}`);
                         if (cardData.pickupContactPhone) pContact.push(`Тел: ${cardData.pickupContactPhone}`);
                         if (cardData.pickupContactCallCustomer) pContact.push('Звонить заказчику');
                         const pContactStr = pContact.length ? pContact.join('; ') : '—';
-
                         const dContact = [];
                         if (cardData.deliveryContactName) dContact.push(`Имя: ${cardData.deliveryContactName}`);
                         if (cardData.deliveryContactPhone) dContact.push(`Тел: ${cardData.deliveryContactPhone}`);
                         if (cardData.deliveryContactCallCustomer) dContact.push('Звонить заказчику');
                         const dContactStr = dContact.length ? dContact.join('; ') : '—';
-
-                        const returnBadge = cardData.returnReason ?
-                            `<div class="return-reason-badge">Возврат: ${cardData.returnReason}</div>` : '';
-                        const refusalBadge = cardData.refusalReason ?
-                            `<div class="refusal-reason-badge">Отказ: ${cardData.refusalReason}</div>` : '';
-
-                        const printBtnHtml = `
-                            <button class="print-btn-inline" data-card-id="${cardData.id}">Распечатать заказ</button>
-                        `;
-                        const deleteBtnHtml = `
-                            <button class="delete-btn-inline" data-card-id="${cardData.id}">Удалить заказ</button>
-                        `;
-                        const actionButtonsHtml = `
-                            <div style="margin-top:16px; border-top:1px solid var(--border-light); padding-top:10px;">
-                                ${printBtnHtml}
-                                ${deleteBtnHtml}
-                            </div>
-                        `;
-
-                        const copyDriverBtnHtml = `
-                            <div class="action-group">
-                                <button class="copy-btn-inline" data-card-id="${cardData.id}" data-action="driver" data-original-text="Отправить водителю">Отправить водителю</button>
-                            </div>
-                        `;
-
-                        const copyReviewBtnHtml = `
-                            <div class="action-group">
-                                <button class="copy-btn-inline" data-card-id="${cardData.id}" data-action="review" data-original-text="Запросить отзыв">Запросить отзыв</button>
-                            </div>
-                        `;
-
-                        const cargoInfoBlock = `
-                            <div class="info-block">
-                                <div class="block-title">Детали груза</div>
-                                ${detailsHtml}
-                            </div>
-                        `;
-
-                        // ---- Сборка extra-details: левое выравнивание, новый блок транспорта ----
+                        const returnBadge = cardData.returnReason ? `<div class="return-reason-badge">Возврат: ${cardData.returnReason}</div>` : '';
+                        const refusalBadge = cardData.refusalReason ? `<div class="refusal-reason-badge">Отказ: ${cardData.refusalReason}</div>` : '';
+                        const printBtnHtml = `<button class="print-btn-inline" data-card-id="${cardData.id}">Распечатать заказ</button>`;
+                        const deleteBtnHtml = `<button class="delete-btn-inline" data-card-id="${cardData.id}">Удалить заказ</button>`;
+                        const actionButtonsHtml = `<div style="margin-top:16px; border-top:1px solid var(--border-light); padding-top:10px;">${printBtnHtml}${deleteBtnHtml}</div>`;
+                        const copyDriverBtnHtml = `<div class="action-group"><button class="copy-btn-inline" data-card-id="${cardData.id}" data-action="driver" data-original-text="Отправить водителю">Отправить водителю</button></div>`;
+                        const copyReviewBtnHtml = `<div class="action-group"><button class="copy-btn-inline" data-card-id="${cardData.id}" data-action="review" data-original-text="Запросить отзыв">Запросить отзыв</button></div>`;
+                        const cargoInfoBlock = `<div class="info-block"><div class="block-title">Детали груза</div>${detailsHtml}</div>`;
                         let transportHtml = '';
                         if (cardData.vehicleId === 'hired') {
-                            // Наемник
                             transportHtml = `
                                 <div class="label">Наемник</div>
                                 <div class="detail-item"><span class="key">Имя наемника:</span><span class="value">${cardData.hiredName || '—'}</span></div>
@@ -3799,7 +2964,6 @@
                                 <div class="detail-item"><span class="key">Телефон:</span><span class="value">${cardData.hiredPhone || '—'}</span></div>
                             `;
                         } else {
-                            // Машина из автопарка
                             const vehicle = fleet.find(v => v.id === cardData.vehicleId);
                             const brand = vehicle ? vehicle.brand : '—';
                             const typeName = vehicle ? vehicle.typeName : '—';
@@ -3815,8 +2979,6 @@
                                 <div class="detail-item"><span class="key">Водитель:</span><span class="value">${driver}</span></div>
                             `;
                         }
-
-                        // Блоки Погрузка, Выгрузка, Доп. информация
                         const loadHtml = `
                             <div class="label">Погрузка</div>
                             <div class="detail-item"><span class="key">Дата/время:</span><span class="value">${pickupDisplay}</span></div>
@@ -3825,7 +2987,6 @@
                             <div class="detail-item"><span class="key">Помехи:</span><span class="value">${cardData.pickupObstacles ? cardData.pickupObstacles.join(', ') : '—'}</span></div>
                             <div class="detail-item"><span class="key">Контакт:</span><span class="value">${pContactStr}</span></div>
                         `;
-
                         const unloadHtml = `
                             <div class="label">Выгрузка</div>
                             <div class="detail-item"><span class="key">Адрес:</span><span class="value">${cardData.deliveryAddress || '—'}</span></div>
@@ -3833,20 +2994,13 @@
                             <div class="detail-item"><span class="key">Помехи:</span><span class="value">${cardData.deliveryObstacles ? cardData.deliveryObstacles.join(', ') : '—'}</span></div>
                             <div class="detail-item"><span class="key">Контакт:</span><span class="value">${dContactStr}</span></div>
                         `;
-
-                        // Информация о пропусках: отображаем номер, если он есть
                         const passInfo = cardData.passNumber ? `<div class="detail-item"><span class="key">Пропуск:</span><span class="value">№ ${cardData.passNumber}</span></div>` : '';
-
                         const infoHtml = `
                             <div class="label">Дополнительная информация</div>
                             <div class="detail-item"><span class="key">Комментарий:</span><span class="value">${cardData.comment || '—'}</span></div>
                             <div class="detail-item"><span class="key">Канал продаж:</span><span class="value">${cardData.salesChannel || '—'}</span></div>
-                            ${returnBadge}
-                            ${refusalBadge}
-                            ${passInfo}
+                            ${returnBadge}${refusalBadge}${passInfo}
                         `;
-
-                        // Цена и доп. часы в конце
                         const priceHtml = `
                             <div style="margin-top:12px; border-top:1px solid var(--border-light); padding-top:8px;">
                                 <div class="detail-item"><span class="key">Способ оплаты:</span><span class="value">${getPaymentDisplay(cardData.paymentMethod)}</span></div>
@@ -3854,46 +3008,21 @@
                                 <div class="detail-item"><span class="key">Итоговая цена:</span><span class="value">${cardData.totalPrice ? cardData.totalPrice.toLocaleString() + ' ₽' : '—'}</span></div>
                             </div>
                         `;
-
                         const extraDetails = `
                             <div class="extra-details" id="extra-${cardData.id}">
-                                ${transportHtml}
-                                ${loadHtml}
-                                ${unloadHtml}
-                                ${infoHtml}
-                                ${priceHtml}
-
-                                <!-- История перемещений -->
+                                ${transportHtml}${loadHtml}${unloadHtml}${infoHtml}${priceHtml}
                                 <div style="margin-top:12px; border-top:1px solid var(--border-light); padding-top:8px;">
-                                    <div class="history-toggle" data-target="history-content-${cardData.id}">
-                                        <span class="arrow">▶</span>
-                                        <span>История перемещений</span>
-                                    </div>
-                                    <div class="history-content" id="history-content-${cardData.id}">
-                                        ${timelineHtml}
-                                    </div>
+                                    <div class="history-toggle" data-target="history-content-${cardData.id}"><span class="arrow">▶</span><span>История перемещений</span></div>
+                                    <div class="history-content" id="history-content-${cardData.id}">${timelineHtml}</div>
                                 </div>
-
-                                <!-- Кнопки -->
-                                ${copyDriverBtnHtml}
-                                ${copyReviewBtnHtml}
-                                ${actionButtonsHtml}
+                                ${copyDriverBtnHtml}${copyReviewBtnHtml}${actionButtonsHtml}
                             </div>
                         `;
-
                         card.innerHTML = `
                             <div class="order-id">Заказ №${cardData.orderNumber}</div>
-                            ${mgr}
-                            ${clientNameLine}
-                            ${clientPhoneLine}
-                            ${cargoLine}
-                            ${extraDetails}
-                            <div class="meta">
-                                <span>${cardData.statusTime || ''}</span>
-                            </div>
+                            ${mgr}${clientNameLine}${clientPhoneLine}${cargoLine}${extraDetails}
+                            <div class="meta"><span>${cardData.statusTime || ''}</span></div>
                         `;
-
-                        // Обработчик аккордеона истории
                         const toggle = card.querySelector('.history-toggle');
                         if (toggle) {
                             toggle.addEventListener('click', function(e) {
@@ -3907,8 +3036,6 @@
                                 }
                             });
                         }
-
-                        // Обработчики копирования
                         card.querySelectorAll('.copy-btn-inline').forEach(btn => {
                             btn.addEventListener('click', function(e) {
                                 e.stopPropagation();
@@ -3920,16 +3047,10 @@
                                     if (c) { found = c; break; }
                                 }
                                 if (!found) { alert('Данные заказа не найдены'); return; }
-                                let text = '';
-                                if (action === 'driver') {
-                                    text = buildDriverMessageText(found);
-                                } else if (action === 'review') {
-                                    text = getReviewMessage();
-                                }
+                                let text = action === 'driver' ? buildDriverMessageText(found) : getReviewMessage();
                                 copyToClipboard(text, this);
                             });
                         });
-
                         card.querySelector('.print-btn-inline')?.addEventListener('click', function(e) {
                             e.stopPropagation();
                             const cardId = this.dataset.cardId;
@@ -3940,19 +3061,14 @@
                             }
                             if (found) printOrder(found);
                         });
-
                         card.querySelector('.delete-btn-inline')?.addEventListener('click', function(e) {
                             e.stopPropagation();
                             deleteCardWithPassword(this.dataset.cardId);
                         });
-
                         card.addEventListener('dragstart', handleDragStart);
                         card.addEventListener('dragend', handleDragEnd);
                         body.appendChild(card);
-
-                        if (col.id === 'col0' || col.id === 'col1') {
-                            if (cardData.vehicleId) active++;
-                        }
+                        if (col.id === 'col0' || col.id === 'col1') { if (cardData.vehicleId) active++; }
                         if (cardData.orderNumber && cardData.orderNumber !== '—') total++;
                     });
                 }
@@ -3987,7 +3103,6 @@
         closeReportModalBtn.addEventListener('click', () => reportModal.classList.remove('active'));
         reportModal.addEventListener('click', (e) => { if (e.target === reportModal) reportModal.classList.remove('active'); });
 
-        // Функция фильтрации карточек по дате
         function filterCardsByPeriod(cards, from, to) {
             if (!from && !to) return cards;
             const fromDate = from ? new Date(from) : null;
@@ -4001,7 +3116,6 @@
             });
         }
 
-        // Форматирование даты/времени без секунд
         function formatDateTimeWithoutSeconds(dateStr) {
             if (!dateStr) return '—';
             const d = new Date(dateStr);
@@ -4013,20 +3127,11 @@
             const type = document.querySelector('input[name="reportType"]:checked').value;
             const from = document.getElementById('reportDateFrom').value;
             const to = document.getElementById('reportDateTo').value;
-            let rows = [],
-                filename = `отчет_${new Date().toISOString().slice(0,10)}`;
-            // Получаем все карточки и фильтруем по периоду (если даты указаны)
+            let rows = [], filename = `отчет_${new Date().toISOString().slice(0,10)}`;
             let allCards = getAllCards();
-            if (from || to) {
-                allCards = filterCardsByPeriod(allCards, from, to);
-            }
-            // Если после фильтрации нет данных, выдаём предупреждение
-            if (allCards.length === 0) {
-                alert('Нет данных за выбранный период.');
-                reportModal.classList.remove('active');
-                return;
-            }
-
+            if (from || to) allCards = filterCardsByPeriod(allCards, from, to);
+            if (allCards.length === 0) { alert('Нет данных за выбранный период.');
+                reportModal.classList.remove('active'); return; }
             switch (type) {
                 case 'all':
                     rows = generateAllReport(allCards);
@@ -4064,24 +3169,13 @@
             reportModal.classList.remove('active');
         });
 
-        // ===== ОТЧЁТ «ВСЕ ЗАКАЗЫ» (ОБНОВЛЁННЫЙ СПИСОК ПОЛЕЙ) =====
         function generateAllReport(cards) {
-            const headers = [
-                'Номер заказа', 'Менеджер', 'Время поступления', 'Дата/время подачи',
-                'Тип клиента', 'Статус',
-                'Адрес погрузки', 'Адрес выгрузки',
-                'Клиент', 'Телефон клиента',
-                'Тип груза', 'Детали груза',
-                'Транспорт/Наемник', 'Водитель/контакт',
-                'Доп. часы', 'Итоговая цена (₽)',
-                'Комментарий', 'Канал продаж'
-            ];
+            const headers = ['Номер заказа', 'Менеджер', 'Время поступления', 'Дата/время подачи', 'Тип клиента', 'Статус', 'Адрес погрузки', 'Адрес выгрузки', 'Клиент', 'Телефон клиента', 'Тип груза', 'Детали груза', 'Транспорт/Наемник', 'Водитель/контакт', 'Доп. часы', 'Итоговая цена (₽)', 'Комментарий', 'Канал продаж'];
             const rows = [headers];
             cards.forEach(card => { rows.push(formatCardRowAll(card)); });
             return rows;
         }
 
-        // Форматирование строки для отчёта «Все заказы» (только нужные поля)
         function formatCardRowAll(card) {
             let detailsStr = '';
             if (card.cargoDetails) {
@@ -4121,9 +3215,7 @@
                 }
                 detailsStr = parts.join('; ');
             }
-
-            let transport = '',
-                driver = '';
+            let transport = '', driver = '';
             if (card.vehicleId === 'hired') {
                 transport = `Наемник: ${card.hiredName || '—'} (${card.hiredPlate || '—'})`;
                 driver = card.hiredPhone || '—';
@@ -4131,7 +3223,6 @@
                 transport = card.vehicleName || '—';
                 driver = card.selectedDriver || '—';
             }
-
             return [
                 card.orderNumber || '',
                 card.manager || '',
@@ -4154,9 +3245,7 @@
             ];
         }
 
-        // ===== ДРУГИЕ ОТЧЁТЫ (остаются с полным набором полей, но с исправленным временем) =====
         function generateByStatusReport(cards) {
-            // Группировка по статусам
             const groups = {};
             cards.forEach(card => {
                 const status = card.status || 'Не указан';
@@ -4179,15 +3268,13 @@
                         card.totalPrice || 0
                     ]);
                 });
-                rows.push([]); // разделитель
+                rows.push([]);
             }
             return rows;
         }
 
         function generateByVehicleReport(cards) {
-            const rows = [
-                ['Машина', 'Количество заказов', 'Сумма (₽)']
-            ];
+            const rows = [['Машина', 'Количество заказов', 'Сумма (₽)']];
             const groups = {};
             cards.forEach(card => {
                 const vehicle = card.vehicleName || 'Не указан';
@@ -4204,10 +3291,7 @@
         function generateRefusalsReport(cards) {
             const filtered = cards.filter(c => c.status === 'Отказ' || c.refusalReason);
             if (!filtered.length) return [];
-            const headers = [
-                'Номер заказа', 'Менеджер', 'Дата/время подачи', 'Клиент', 'Телефон',
-                'Груз', 'Транспорт', 'Причина отказа'
-            ];
+            const headers = ['Номер заказа', 'Менеджер', 'Дата/время подачи', 'Клиент', 'Телефон', 'Груз', 'Транспорт', 'Причина отказа'];
             const rows = [headers];
             filtered.forEach(card => {
                 rows.push([
@@ -4227,10 +3311,7 @@
         function generateCompletedReport(cards) {
             const filtered = cards.filter(c => c.status === 'Заказ выполнен');
             if (!filtered.length) return [];
-            const headers = [
-                'Номер заказа', 'Менеджер', 'Дата/время подачи', 'Клиент', 'Телефон',
-                'Груз', 'Транспорт', 'Цена (₽)'
-            ];
+            const headers = ['Номер заказа', 'Менеджер', 'Дата/время подачи', 'Клиент', 'Телефон', 'Груз', 'Транспорт', 'Цена (₽)'];
             const rows = [headers];
             filtered.forEach(card => {
                 rows.push([
@@ -4248,9 +3329,7 @@
         }
 
         function generateHistoryReport(cards) {
-            const rows = [
-                ['Номер заказа', 'Статус', 'Время перехода', 'Менеджер', 'Клиент']
-            ];
+            const rows = [['Номер заказа', 'Статус', 'Время перехода', 'Менеджер', 'Клиент']];
             cards.forEach(card => {
                 if (card.timeline) {
                     for (const [colId, ts] of Object.entries(card.timeline)) {
@@ -4279,43 +3358,31 @@
         // ----- ОТПРАВКА ФОРМЫ -----
         form.addEventListener('submit', (e) => {
             e.preventDefault();
-
             const manager = getManagerValue();
             if (!manager) { alert('Выберите менеджера.'); return; }
             if (!pickupDate.value || !pickupTime.value) { alert('Укажите дату и время подачи.'); return; }
-            if (!pickupAddress.value.trim() || !deliveryAddress.value.trim()) {
-                alert('Заполните адреса погрузки и выгрузки.'); return;
-            }
-            if (!clientName.value.trim() || !clientPhone.value.trim()) {
-                alert('Заполните имя и телефон клиента.'); return;
-            }
+            if (!pickupAddress.value.trim() || !deliveryAddress.value.trim()) { alert('Заполните адреса погрузки и выгрузки.'); return; }
+            if (!clientName.value.trim() || !clientPhone.value.trim()) { alert('Заполните имя и телефон клиента.'); return; }
             if (!cargoType.value) { alert('Выберите тип груза.'); return; }
-            // Проверка выбора транспорта
-            if (!isHiredMode && !selectedVehicle) {
-                alert('Выберите транспорт или наемника.'); return;
-            }
+            if (!isHiredMode && !selectedVehicle) { alert('Выберите транспорт или наемника.'); return; }
             if (isHiredMode) {
                 const hiredName = document.getElementById('hiredName').value.trim();
                 const hiredPrice = parseFloat(document.getElementById('hiredPrice').value) || 0;
                 if (!hiredName) { alert('Введите имя/название наемника.'); return; }
                 if (hiredPrice <= 0) { alert('Укажите нашу цену для наемника.'); return; }
             }
-
             const dateStr = pickupDate.value;
             const timeStr = pickupTime.value;
             const pickupDateTime = new Date(`${dateStr}T${timeStr}:00`);
             if (isNaN(pickupDateTime)) { alert('Некорректные дата или время.'); return; }
             const pickupDateTimeISO = pickupDateTime.toISOString();
-
             const cargoDetails = getCargoDetails();
             const now = new Date();
             const statusTime = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
             const timestamp = now.toISOString();
-
             let vehicleId, vehicleName, selectedDriver, vehiclePrice, totalPrice;
             let hiredName = '', hiredPlate = '', hiredPhone = '', hiredPriceHirerVal = 0, hiredPriceHirerExtraVal = 0;
             let hiredPaymentMethodVal = '', hiredPriceVal = 0, hiredPriceExtraVal = 0;
-
             if (isHiredMode) {
                 vehicleId = 'hired';
                 vehicleName = 'Наемник';
@@ -4339,9 +3406,7 @@
                 const priceData = getPriceForPaymentMethod(selectedVehicle, paymentMethod.value);
                 vehiclePrice = priceData ? priceData.base : 0;
             }
-
             const measurements = getMeasurements();
-
             const cardData = {
                 id: editingCardId ? editingCardId : 'c' + (nextCardId++),
                 orderNumber: editingCardId ? orderNumberInput.value : String(nextOrderNumber++),
@@ -4380,7 +3445,6 @@
                 returnReason: '',
                 refusalReason: '',
                 measurements: measurements,
-                // Поля наемника
                 hiredName: hiredName,
                 hiredPlate: hiredPlate,
                 hiredPhone: hiredPhone,
@@ -4389,12 +3453,10 @@
                 hiredPaymentMethod: hiredPaymentMethodVal,
                 hiredPrice: hiredPriceVal,
                 hiredPriceExtra: hiredPriceExtraVal,
-                // Новые поля: пропуск (номер не вводится в форме, будет заполнен позже)
                 passRequiredPickup: document.querySelector('input[name="passRequiredPickup"]:checked').value === 'true',
                 passRequiredDelivery: document.querySelector('input[name="passRequiredDelivery"]:checked').value === 'true',
-                passNumber: '' // будет заполнено при перемещении
+                passNumber: ''
             };
-
             if (editingCardId) {
                 const old = columnsData.flatMap(col => col.cards).find(c => c.id === editingCardId);
                 if (old?.timeline) cardData.timeline = { ...old.timeline };
@@ -4402,7 +3464,6 @@
                 if (old?.refusalReason) cardData.refusalReason = old.refusalReason;
             }
             if (!cardData.timeline['col0']) cardData.timeline['col0'] = timestamp;
-
             if (editingCardId) {
                 for (const col of columnsData) {
                     const idx = col.cards.findIndex(c => c.id === editingCardId);
@@ -4412,14 +3473,13 @@
             } else {
                 columnsData[0].cards.push(cardData);
             }
-
             closeModal();
             renderBoard();
             saveData();
             clearDraft();
         });
 
-        // ----- ОБРАБОТЧИКИ ДОПОЛНИТЕЛЬНЫХ ЭЛЕМЕНТОВ -----
+        // ----- ТЕМА -----
         function toggleTheme() {
             document.body.classList.toggle('dark');
             const btn = document.getElementById('themeToggle');
@@ -4440,24 +3500,18 @@
 
         document.getElementById('themeToggle').addEventListener('click', toggleTheme);
 
-        // ----- ОБРАБОТЧИК ИЗМЕНЕНИЯ ТИПА ГРУЗА -----
         cargoType.addEventListener('change', function() {
             renderDynamicFields();
-            if (this.value === 'Контейнер') {
-                setTimeout(updateContainerDimensions, 50);
-            }
-            if (!isHiredMode) {
-                updateVehicleList();
-            }
+            if (this.value === 'Контейнер') { setTimeout(updateContainerDimensions, 50); }
+            if (!isHiredMode) { updateVehicleList(); }
             saveDraft();
         });
 
-        // ===== ЗАПУСК ПРИЛОЖЕНИЯ =====
+        // ===== ЗАПУСК =====
         async function initApp() {
             loadTheme();
             const loaded = await loadData();
-            renderBoard(); // всегда рендерим, даже если данные не загружены
-            // Остальная инициализация
+            renderBoard();
             setTimeout(() => {
                 renderDynamicFields();
                 updateContactFieldsVisibility();
@@ -4465,10 +3519,10 @@
                 if (!isHiredMode) updateVehicleList();
                 updateMeasurementFields();
             }, 100);
-            // Слушатель уже подключён выше, он будет обновлять доску при изменениях
         }
-
         initApp();
+
+        console.log('🏁 Скрипт завершил загрузку');
     </script>
 </body>
 </html>
