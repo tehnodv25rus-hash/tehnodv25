@@ -2084,12 +2084,27 @@
         }
 
         function executeMove(cardId, sourceCol, targetColId, reason, isRefusal) {
+            console.log('MOVE START', { cardId, sourceCol, targetColId });
+
             const srcCol = columnsData.find(c => c.id === sourceCol);
             const tgtCol = columnsData.find(c => c.id === targetColId);
-            if (!srcCol || !tgtCol) return;
-            const idx = srcCol.cards.findIndex(c => c.id === cardId);
-            if (idx === -1) return;
-            const [moved] = srcCol.cards.splice(idx, 1);
+
+            if (!srcCol || !tgtCol) {
+                console.error('MOVE ERROR: column not found', { sourceCol, targetColId });
+                return;
+            }
+
+            const idx = srcCol.cards.findIndex(c => String(c.id) === String(cardId));
+
+            if (idx === -1) {
+                console.error('MOVE ERROR: card not found', cardId);
+                return;
+            }
+
+            // Сначала сохраняем ссылку на карточку, затем удаляем из источника
+            const moved = srcCol.cards[idx];
+            srcCol.cards.splice(idx, 1);
+
             if (isRefusal) {
                 moved.refusalReason = reason;
                 delete moved.returnReason;
@@ -2100,11 +2115,20 @@
                 delete moved.returnReason;
                 delete moved.refusalReason;
             }
-            tgtCol.cards.push(moved);
+
             const now = new Date();
             moved.statusTime = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            moved.updatedAt = now.toISOString();
+
             if (!moved.timeline) moved.timeline = {};
             moved.timeline[targetColId] = now.toISOString();
+            moved.status = targetColId;
+
+            // Добавляем только после полной подготовки карточки
+            tgtCol.cards.push(moved);
+
+            console.log('MOVE SUCCESS', moved);
+
             renderBoard();
             saveData();
         }
