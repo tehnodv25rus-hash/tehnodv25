@@ -959,6 +959,9 @@
         const db = getDatabase(app);
         const dataRef = ref(db, 'kanban');
 
+        console.log('🔥 Firebase подключён:', firebaseConfig.projectId);
+
+
         const ADMIN_PASSWORD = 'admin123';
         const DRAFT_KEY = 'kanbanDraft';
         const BACKUP_KEY = 'kanbanLocalBackup';
@@ -1171,18 +1174,36 @@
 
         // ---- Слушатель реального времени ----
         onValue(dataRef, (snapshot) => {
+            console.log('☁ Firebase update received');
+
             const data = snapshot.val();
-            if (!data) return;
+
+            if (!data) {
+                console.log('ℹ Firebase: kanban пуст');
+                return;
+            }
+
+            console.log('📦 Firebase cards:', data.columnsData);
+
             const migrated = migrateData(data);
+
             if (migrated.columnsData && Array.isArray(migrated.columnsData)) {
                 columnsData.length = 0;
                 migrated.columnsData.forEach(col => columnsData.push(col));
+
                 if (migrated.nextOrderNumber) nextOrderNumber = migrated.nextOrderNumber;
                 if (migrated.nextCardId) nextCardId = migrated.nextCardId;
+
+                localStorage.setItem(BACKUP_KEY, JSON.stringify(migrated));
+
                 renderBoard();
                 updateStats();
                 updateAddressList();
+
+                console.log('✅ Kanban обновлён из Firebase');
             }
+        }, (error) => {
+            console.error('❌ Firebase realtime error:', error);
         });
 
         // ----- ЧЕРНОВИК -----
@@ -1550,6 +1571,8 @@
         }
 
         function attachAutoSave() {
+            if (form.dataset.autoSaveAttached === 'true') return;
+            form.dataset.autoSaveAttached = 'true';
             const fields = [
                 'pickupDate', 'pickupTime', 'clientType',
                 'pickupAddress', 'pickupContactName', 'pickupContactPhone',
@@ -2359,7 +2382,9 @@
             orderNumberInput.value = nextOrderNumber;
             const now = new Date();
             receivedTimeInput.value = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            const today = now.toISOString().slice(0, 10);
+            // Используем локальную дату, а не UTC (toISOString), чтобы во Владивостоке
+            // и других часовых поясах дата заявки не смещалась на предыдущий день.
+            const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
             pickupDate.value = today;
             let h = now.getHours(), m = now.getMinutes() + 15;
             if (m >= 60) { h += 1; m -= 60; }
@@ -2441,8 +2466,75 @@
             form.reset();
         }
 
+        // ----- АВТОЗАПОЛНЕНИЕ ТЕСТОВОЙ ЗАЯВКИ -----
+        // Кнопка была в HTML, но обработчик отсутствовал.
+        // Заполняем только безопасными тестовыми данными и выбираем первый
+        // доступный реальный автомобиль из текущего списка транспорта.
+        function fillFormAutomatically() {
+            console.log('🧪 Заполнение заявки автоматически');
+
+            const manager = document.querySelector('input[name="managerRadio"][value="Диана"]');
+            if (manager) manager.checked = true;
+
+            clientType.value = 'Частное лицо';
+            clientName.value = 'Тестовый клиент';
+            clientPhone.value = '+7 900 000-00-00';
+
+            pickupAddress.value = 'г. Владивосток, ул. Светланская, 1';
+            pickupContactName.value = 'Тестовый клиент';
+            pickupContactPhone.value = '+7 900 000-00-00';
+            pickupContactCallCustomer.checked = true;
+            pickupLandmark.value = '';
+
+            deliveryAddress.value = 'г. Владивосток, ул. Русская, 10';
+            deliveryContactName.value = 'Тестовый получатель';
+            deliveryContactPhone.value = '+7 900 000-00-01';
+            deliveryContactCallCustomer.checked = true;
+            deliveryLandmark.value = '';
+
+            cargoType.value = 'Автомобиль';
+            cargoType.dispatchEvent(new Event('change', { bubbles: true }));
+
+            // Базовые параметры измерений
+            measWeight.checked = true;
+            measVolume.checked = false;
+            measDimensions.checked = false;
+            document.getElementById('cargoWeight').value = '1';
+            document.getElementById('cargoVolume').value = '1';
+            document.getElementById('cargoDimLength').value = '2';
+            document.getElementById('cargoDimWidth').value = '1.5';
+            document.getElementById('cargoDimHeight').value = '1.5';
+            updateMeasurementFields();
+
+            // После обновления списка транспорта выбираем первый доступный автомобиль.
+            updateVehicleList();
+            const vehicleSelect = document.getElementById('vehicleSelect');
+            if (vehicleSelect) {
+                const firstVehicle = Array.from(vehicleSelect.options).find(opt => opt.value && opt.value !== 'hired');
+                if (firstVehicle) {
+                    vehicleSelect.value = firstVehicle.value;
+                    vehicleSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                } else {
+                    console.warn('⚠️ Для автозаполнения не найден подходящий транспорт');
+                }
+            }
+
+            paymentMethod.value = 'cash';
+            extraHours = 0;
+            extraHoursDisplay.textContent = '0';
+            comment.value = 'Тестовая заявка — можно удалить';
+            salesChannel.value = 'Интернет';
+
+            updateContactFieldsVisibility();
+            updateTotalPrice();
+            saveDraft();
+
+            console.log('✅ Форма заполнена автоматически');
+        }
+
         // Привязка обработчиков
         showModalBtn.addEventListener('click', openModal);
+        document.getElementById('fillAutoBtn')?.addEventListener('click', fillFormAutomatically);
         closeBtn.addEventListener('click', closeModal);
         modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
 
