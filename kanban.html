@@ -922,6 +922,7 @@
                         <input type="date" id="reportDateTo" />
                     </div>
                 </div>
+                <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);">Оставьте обе даты пустыми, чтобы выгрузить все заказы.</div>
             </div>
             <div class="actions">
                 <button type="button" class="btn-secondary" id="closeReportModalBtn">Отмена</button>
@@ -1562,6 +1563,9 @@
             };
             for (const [id, val] of Object.entries(map)) {
                 if (val !== undefined && val !== null) {
+                    // Пустой старый черновик не должен стирать автоматически
+                    // рассчитанные дату и время подачи.
+                    if ((id === 'pickupDate' || id === 'pickupTime') && String(val).trim() === '') continue;
                     const el = document.getElementById(id);
                     if (el) el.value = val;
                 }
@@ -2469,18 +2473,31 @@
             saveDraft();
         });
 
+        function formatLocalDateInput(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
+
         function setAutoFields() {
             orderNumberInput.value = nextOrderNumber;
             const now = new Date();
             receivedTimeInput.value = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            // Используем локальную дату, а не UTC (toISOString), чтобы во Владивостоке
-            // и других часовых поясах дата заявки не смещалась на предыдущий день.
-            const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-            pickupDate.value = today;
-            let h = now.getHours(), m = now.getMinutes() + 15;
-            if (m >= 60) { h += 1; m -= 60; }
-            if (h >= 24) h -= 24;
-            pickupTime.value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+
+            // Подача по умолчанию: не раньше чем через 15 минут,
+            // округляем ВВЕРХ до ближайших 15 минут. Это важно, потому что
+            // input[type=time] имеет step=900 (15 минут).
+            const pickup = new Date(now.getTime() + 15 * 60 * 1000);
+            pickup.setSeconds(0, 0);
+            const roundedMinutes = Math.ceil(pickup.getMinutes() / 15) * 15;
+            if (roundedMinutes >= 60) {
+                pickup.setHours(pickup.getHours() + 1, 0, 0, 0);
+            } else {
+                pickup.setMinutes(roundedMinutes, 0, 0);
+            }
+
+            // Берём локальные дату и время из рассчитанного времени подачи.
+            // Так корректно обрабатывается и переход через полночь.
+            pickupDate.value = formatLocalDateInput(pickup);
+            pickupTime.value = `${String(pickup.getHours()).padStart(2,'0')}:${String(pickup.getMinutes()).padStart(2,'0')}`;
         }
 
         function openModal() {
@@ -2563,6 +2580,9 @@
         // доступный реальный автомобиль из текущего списка транспорта.
         function fillFormAutomatically() {
             console.log('🧪 Заполнение заявки автоматически');
+
+            // В том числе заполняем номер, время поступления, дату и время подачи.
+            setAutoFields();
 
             const manager = document.querySelector('input[name="managerRadio"][value="Диана"]');
             if (manager) manager.checked = true;
@@ -2655,13 +2675,19 @@
             if (radio) radio.checked = true;
             if (found.pickupDateTime) {
                 const dt = new Date(found.pickupDateTime);
-                if (!isNaN(dt)) {
-                    pickupDate.value = dt.toISOString().slice(0, 10);
+                if (!Number.isNaN(dt.getTime())) {
+                    // Не используем toISOString() для поля даты: оно переводит дату в UTC
+                    // и может показать предыдущий день в локальном часовом поясе.
+                    pickupDate.value = formatLocalDateInput(dt);
                     pickupTime.value = `${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
-                } else { pickupDate.value = '';
-                    pickupTime.value = ''; }
-            } else { pickupDate.value = '';
-                pickupTime.value = ''; }
+                } else {
+                    pickupDate.value = found.pickupDate || '';
+                    pickupTime.value = found.pickupTime || '';
+                }
+            } else {
+                pickupDate.value = found.pickupDate || '';
+                pickupTime.value = found.pickupTime || '';
+            }
             clientType.value = found.clientType || 'Частное лицо';
             pickupAddress.value = found.pickupAddress || '';
             pickupContactName.value = found.pickupContactName || '';
@@ -3275,35 +3301,86 @@
         const reportPeriod = document.getElementById('reportPeriod');
 
         document.getElementById('exportBtn').addEventListener('click', function() {
-            const now = new Date();
-            const from = new Date(now);
-            from.setDate(from.getDate() - 30);
-            document.getElementById('reportDateFrom').value = from.toISOString().slice(0, 10);
-            document.getElementById('reportDateTo').value = now.toISOString().slice(0, 10);
+            // По умолчанию не ограничиваем отчёт скрытым периодом.
+            // Пустые поля = выгрузить все карточки. Пользователь при необходимости
+            // сам задаёт «Дата от» / «Дата до».
+            document.getElementById('reportDateFrom').value = '';
+            document.getElementById('reportDateTo').value = '';
             reportModal.classList.add('active');
         });
 
         closeReportModalBtn.addEventListener('click', () => reportModal.classList.remove('active'));
         reportModal.addEventListener('click', (e) => { if (e.target === reportModal) reportModal.classList.remove('active'); });
 
+        function parseLocalDateBoundary(value, endOfDay = false) {
+            if (!value) return null;
+            const parts = value.split('-').map(Number);
+            if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+            const [year, month, day] = parts;
+            return endOfDay
+                ? new Date(year, month - 1, day, 23, 59, 59, 999)
+                : new Date(year, month - 1, day, 0, 0, 0, 0);
+        }
+
+        // Возвращает дату карточки для фильтра отчёта. Новые карточки используют
+        // pickupDateTime. Для карточек старых версий предусмотрены fallback-поля,
+        // чтобы они не исчезали из отчёта после обновления структуры данных.
+        function getCardReportDate(card) {
+            const candidates = [];
+
+            if (card?.pickupDateTime) candidates.push(card.pickupDateTime);
+            if (card?.pickupDate) {
+                candidates.push(`${card.pickupDate}T${card.pickupTime || '00:00'}:00`);
+            }
+            if (card?.timeline?.col0) candidates.push(card.timeline.col0);
+            if (card?.createdAt) candidates.push(card.createdAt);
+            if (card?.updatedAt) candidates.push(card.updatedAt);
+
+            for (const value of candidates) {
+                const d = new Date(value);
+                if (!Number.isNaN(d.getTime())) return d;
+            }
+            return null;
+        }
+
         function filterCardsByPeriod(cards, from, to) {
             if (!from && !to) return cards;
-            const fromDate = from ? new Date(from) : null;
-            const toDate = to ? new Date(to + 'T23:59:59') : null;
-            return cards.filter(card => {
-                if (!card.pickupDateTime) return false;
-                const cardDate = new Date(card.pickupDateTime);
+            const fromDate = parseLocalDateBoundary(from, false);
+            const toDate = parseLocalDateBoundary(to, true);
+
+            const filtered = cards.filter(card => {
+                const cardDate = getCardReportDate(card);
+                if (!cardDate) return false;
                 if (fromDate && cardDate < fromDate) return false;
                 if (toDate && cardDate > toDate) return false;
                 return true;
             });
+
+            console.log('📊 Фильтр отчёта', {
+                всегоКарточек: cards.length,
+                послеФильтра: filtered.length,
+                from,
+                to
+            });
+            return filtered;
         }
 
         function formatDateTimeWithoutSeconds(dateStr) {
             if (!dateStr) return '—';
             const d = new Date(dateStr);
-            if (isNaN(d)) return '—';
+            if (Number.isNaN(d.getTime())) return '—';
             return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatCardPickupDateTime(card) {
+            if (card?.pickupDateTime) return formatDateTimeWithoutSeconds(card.pickupDateTime);
+            if (card?.pickupDate) {
+                const legacy = `${card.pickupDate}T${card.pickupTime || '00:00'}:00`;
+                return formatDateTimeWithoutSeconds(legacy);
+            }
+            const fallback = getCardReportDate(card);
+            if (!fallback) return '—';
+            return fallback.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
         }
 
         generateReportBtn.addEventListener('click', function() {
@@ -3313,8 +3390,10 @@
             let rows = [], filename = `отчет_${new Date().toISOString().slice(0,10)}`;
             let allCards = getAllCards();
             if (from || to) allCards = filterCardsByPeriod(allCards, from, to);
-            if (allCards.length === 0) { alert('Нет данных за выбранный период.');
-                reportModal.classList.remove('active'); return; }
+            if (allCards.length === 0) {
+                alert('За выбранный период карточки не найдены. Измените даты периода или очистите оба поля, чтобы выгрузить все заказы.');
+                return;
+            }
             switch (type) {
                 case 'all':
                     rows = generateAllReport(allCards);
@@ -3410,7 +3489,7 @@
                 card.orderNumber || '',
                 card.manager || '',
                 card.receivedTime || '',
-                formatDateTimeWithoutSeconds(card.pickupDateTime),
+                formatCardPickupDateTime(card),
                 card.clientType || 'Частное лицо',
                 card.status || '',
                 card.pickupAddress || '',
@@ -3443,7 +3522,7 @@
                     rows.push([
                         card.orderNumber || '',
                         card.manager || '',
-                        formatDateTimeWithoutSeconds(card.pickupDateTime),
+                        formatCardPickupDateTime(card),
                         card.clientName || '',
                         card.clientPhone || '',
                         card.cargoType || '',
@@ -3480,7 +3559,7 @@
                 rows.push([
                     card.orderNumber || '',
                     card.manager || '',
-                    formatDateTimeWithoutSeconds(card.pickupDateTime),
+                    formatCardPickupDateTime(card),
                     card.clientName || '',
                     card.clientPhone || '',
                     card.cargoType || '',
@@ -3500,7 +3579,7 @@
                 rows.push([
                     card.orderNumber || '',
                     card.manager || '',
-                    formatDateTimeWithoutSeconds(card.pickupDateTime),
+                    formatCardPickupDateTime(card),
                     card.clientName || '',
                     card.clientPhone || '',
                     card.cargoType || '',
@@ -3623,6 +3702,8 @@
                 comment: commentInput.value.trim() || '—',
                 salesChannel: salesChannel.value || '—',
                 statusTime: statusTime,
+                createdAt: timestamp,
+                updatedAt: timestamp,
                 timeline: {},
                 driverPhone: '',
                 returnReason: '',
@@ -3645,6 +3726,8 @@
                 if (old?.timeline) cardData.timeline = { ...old.timeline };
                 if (old?.returnReason) cardData.returnReason = old.returnReason;
                 if (old?.refusalReason) cardData.refusalReason = old.refusalReason;
+                if (old?.createdAt) cardData.createdAt = old.createdAt;
+                cardData.updatedAt = timestamp;
             }
             if (!cardData.timeline['col0']) cardData.timeline['col0'] = timestamp;
             if (editingCardId) {
